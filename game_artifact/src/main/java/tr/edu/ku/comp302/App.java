@@ -2,7 +2,6 @@ package tr.edu.ku.comp302;
 
 /**
  * Hello world!
- *
  */
 public class App 
 {
