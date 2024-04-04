@@ -29,7 +29,7 @@ public class DatabaseHandler {
         PASSWORD = prop.getProperty("database.password");
     }
 
-    public DatabaseHandler getInstance() {
+    public static DatabaseHandler getInstance() {
         if (instance == null) {
             instance = new DatabaseHandler();
         }
