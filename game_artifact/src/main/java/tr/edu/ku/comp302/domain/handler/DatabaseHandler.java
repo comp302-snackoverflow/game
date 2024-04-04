@@ -18,7 +18,7 @@ public class DatabaseHandler {
     private DatabaseHandler() {
         Properties prop = new Properties();
 
-        try (FileInputStream fis = new FileInputStream("./src/main/java/database/database.config")) {
+        try (FileInputStream fis = new FileInputStream("./src/main/database/database.config")) {
             prop.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
