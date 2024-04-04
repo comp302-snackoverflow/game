@@ -31,8 +31,7 @@ public class DatabaseHandler {
                 ResultSet rs = ps.executeQuery();
 
                 if (rs.next()) {
-                    String salt = rs.getString("salt");
-                    return salt;
+                    return rs.getString("salt");
                 }
             }
         } catch (SQLException e) {
@@ -64,5 +63,51 @@ public class DatabaseHandler {
     }
 
 
+    public boolean isUsernameUnique(String username) {
+        boolean usernameIsUnique = true;
+        String sqlQuery = "SELECT COUNT(*) FROM User WHERE username = ?";
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+                ps.setString(2, username);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        if (rs.getInt(1) != 0) {
+                            usernameIsUnique = false;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return usernameIsUnique;
+    }
+
+
+    /// This method assumes that the person who checked it already verified that the username is unique !!!
+    public boolean createUser(String username, String password, String salt) {
+        String sqlQuery = "INSERT INTO User (username, password, salt) VALUES (?,?,?)";
+
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+                ps.setString(2, username);
+                ps.setString(3, password);
+                ps.setString(4, salt);
+
+                if (ps.executeUpdate() > 0) {
+                    return true;
+                }
+            }
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
 }
