@@ -34,7 +34,7 @@ public class DatabaseHandler {
         }
     }
 
-    public String getSaltByUsername(String username) {
+    public static String getSaltByUsername(String username) {
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM User WHERE username = ?")) {
@@ -52,7 +52,7 @@ public class DatabaseHandler {
         return null;
     }
 
-    public boolean validateLogin(String username, String password) {
+    public static boolean validateLogin(String username, String password) {
         String sqlQuery = "SELECT * FROM User WHERE username = ? AND password = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -72,7 +72,7 @@ public class DatabaseHandler {
     }
 
 
-    public boolean isUsernameUnique(String username) {
+    public static boolean isUsernameUnique(String username) {
         boolean usernameIsUnique = true;
         String sqlQuery = "SELECT COUNT(*) FROM User WHERE username = ?";
         try (Connection connection = getConnection()) {
@@ -96,7 +96,7 @@ public class DatabaseHandler {
 
 
     /// This method assumes that the person who checked it already verified that the username is unique !!!
-    public boolean createUser(String username, String password, String salt) {
+    public static boolean createUser(String username, String password, String salt) {
         String sqlQuery = "INSERT INTO User (username, password, salt) VALUES (?,?,?)";
 
         try (Connection connection = getConnection()) {
