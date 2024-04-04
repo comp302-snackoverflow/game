@@ -105,7 +105,7 @@ public class DatabaseHandler {
 
     /// This method assumes that the person who checked it already verified that the username is unique !!!
     public boolean createUser(String username, String password, String salt) {
-        final String query = "INSERT INTO User (username, password, salt) VALUES (?, ?, ?)";
+        final String query = "INSERT INTO Player (username, password, salt) VALUES (?, ?, ?)";
 
         try (Connection connection = getConnection()) {
             assert connection != null;
