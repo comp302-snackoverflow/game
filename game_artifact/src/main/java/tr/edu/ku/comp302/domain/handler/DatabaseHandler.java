@@ -1,18 +1,30 @@
 package tr.edu.ku.comp302.domain.handler;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
+
 
 public class DatabaseHandler {
-
-    private static final String DATABASE_URL = "jdbc:mysql/34.165.13.125:3306/snackoverflow?allowPublicKeyRetrieval=true&useSSL=false";
-    private static final String USER = "comp302";
-    private static final String PASSWORD = "comp302snackoverflow";
-
     public static Connection getConnection() {
+        Properties prop = new Properties();
+
+        try (FileInputStream fis = new FileInputStream("./src/main/java/database/database.config")) {
+            prop.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        String DATABASE_URL = prop.getProperty("database.URI");
+        String USER = prop.getProperty("database.username");
+        String PASSWORD = prop.getProperty("database.password");
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
@@ -22,7 +34,7 @@ public class DatabaseHandler {
         }
     }
 
-    public static String getSaltByUsername(String username) {
+    public String getSaltByUsername(String username) {
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM User WHERE username = ?")) {
@@ -40,8 +52,7 @@ public class DatabaseHandler {
         return null;
     }
 
-    public static boolean validateLogin(String username, String password) {
-        boolean userExists = false;
+    public boolean validateLogin(String username, String password) {
         String sqlQuery = "SELECT * FROM User WHERE username = ? AND password = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -50,20 +61,18 @@ public class DatabaseHandler {
                 ps.setString(3, password);
 
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        userExists = true;
-                    }
+                    return rs.next();
                 }
 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return userExists;
+        return false;
     }
 
 
-    public static boolean isUsernameUnique(String username) {
+    public boolean isUsernameUnique(String username) {
         boolean usernameIsUnique = true;
         String sqlQuery = "SELECT COUNT(*) FROM User WHERE username = ?";
         try (Connection connection = getConnection()) {
@@ -74,7 +83,7 @@ public class DatabaseHandler {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         if (rs.getInt(1) != 0) {
-                            usernameIsUnique = false;
+                            return false;
                         }
                     }
                 }
@@ -82,12 +91,12 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return usernameIsUnique;
+        return true;
     }
 
 
     /// This method assumes that the person who checked it already verified that the username is unique !!!
-    public static boolean createUser(String username, String password, String salt) {
+    public boolean createUser(String username, String password, String salt) {
         String sqlQuery = "INSERT INTO User (username, password, salt) VALUES (?,?,?)";
 
         try (Connection connection = getConnection()) {
@@ -101,9 +110,7 @@ public class DatabaseHandler {
                     return true;
                 }
             }
-        }
-
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
