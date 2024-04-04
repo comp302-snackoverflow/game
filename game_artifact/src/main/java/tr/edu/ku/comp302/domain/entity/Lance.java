@@ -7,6 +7,8 @@ public class Lance {
     private int height;
     private double rotationDegrees;
 
+    
+
     public Lance(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;

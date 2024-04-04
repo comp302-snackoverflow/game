@@ -10,12 +10,14 @@ public class LanceController implements KeyListener {
 
     public LanceController(Lance lance) {
         this.lance = lance;
+        
     }
     @Override
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
                 lance.move(10);
+                System.out.println("here i am");
                 break;
             case KeyEvent.VK_LEFT:
                 lance.move(-10);

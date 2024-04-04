@@ -7,7 +7,27 @@ public class GameMap {
     //declare instances of this class here
     Lance currentLance;     //this is the lance object of the current player
     List<Barrier> barriers;  //this is the list of barriers of the current map
+
+
+
+
+
+
+
+    public Lance getCurrentLance() {
+        return currentLance;
+    }
+    public void setCurrentLance(Lance currentLance) {
+        this.currentLance = currentLance;
+    }
+    public List<Barrier> getBarriers() {
+        return barriers;
+    }
+    public void setBarriers(List<Barrier> barriers) {
+        this.barriers = barriers;
+    }
     
 
+    
     
 }

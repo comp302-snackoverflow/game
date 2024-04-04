@@ -5,12 +5,18 @@ public class Level {
     //declare instances of this class here
     GameMap currentMap;
 
-    Level(){
+    public Level(){
 
     }
 
-
-    public void setCurrentMap() {
-        this.currentMap = new GameMap();
+    public GameMap getCurrentMap() {
+        return currentMap;
     }
+
+
+    public void setCurrentMap(GameMap currentMap) {
+        this.currentMap = currentMap;
+    }
+    
+    
 }
