@@ -18,15 +18,15 @@ public class DatabaseHandler {
     private DatabaseHandler() {
         Properties prop = new Properties();
 
-        try (FileInputStream fis = new FileInputStream("./src/main/database/database.config")) {
+        try (FileInputStream fis = new FileInputStream("./src/main/resources/database.config")) {
             prop.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        DATABASE_URL = prop.getProperty("database.URI");
-        USER = prop.getProperty("database.username");
-        PASSWORD = prop.getProperty("database.password");
+        DATABASE_URL = prop.getProperty("url");
+        USER = prop.getProperty("username");
+        PASSWORD = prop.getProperty("password");
     }
 
     public static DatabaseHandler getInstance() {
