@@ -1,18 +1,31 @@
 package tr.edu.ku.comp302.domain.handler;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
+
 
 public class DatabaseHandler {
-
-    private static final String DATABASE_URL = "jdbc:mysql/34.165.13.125:3306/snackoverflow?allowPublicKeyRetrieval=true&useSSL=false";
-    private static final String USER = "comp302";
-    private static final String PASSWORD = "comp302snackoverflow";
-
     public static Connection getConnection() {
+        Properties prop = new Properties();
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+
+        try (FileInputStream fis = new FileInputStream("./src/main/java/database/database.config")) {
+            prop.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        String DATABASE_URL = prop.getProperty("database.URI");
+        String USER = prop.getProperty("database.username");
+        String PASSWORD = prop.getProperty("database.password");
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
@@ -41,7 +54,6 @@ public class DatabaseHandler {
     }
 
     public boolean validateLogin(String username, String password) {
-        boolean userExists = false;
         String sqlQuery = "SELECT * FROM User WHERE username = ? AND password = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -50,16 +62,14 @@ public class DatabaseHandler {
                 ps.setString(3, password);
 
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        userExists = true;
-                    }
+                    return rs.next();
                 }
 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return userExists;
+        return false;
     }
 
 
@@ -74,7 +84,7 @@ public class DatabaseHandler {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         if (rs.getInt(1) != 0) {
-                            usernameIsUnique = false;
+                            return false;
                         }
                     }
                 }
@@ -82,7 +92,7 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return usernameIsUnique;
+        return true;
     }
 
 
@@ -101,9 +111,7 @@ public class DatabaseHandler {
                     return true;
                 }
             }
-        }
-
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
