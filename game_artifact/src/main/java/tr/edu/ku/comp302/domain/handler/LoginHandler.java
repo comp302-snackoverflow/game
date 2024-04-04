@@ -4,13 +4,14 @@ import tr.edu.ku.comp302.domain.services.Hash;
 
 public class LoginHandler {
     private LoginHandler instance;
+    private final DatabaseHandler dbHandler;
     public static final int SUCCESS = 0;
     public static final int USERNAME_EMPTY = 1;
     public static final int PASSWORD_EMPTY = 2;
     public static final int USER_NOT_FOUND = 3;
 
     private LoginHandler() {
-
+        dbHandler = DatabaseHandler.getInstance();
     }
 
     public int login(String username, String password) {
@@ -18,13 +19,13 @@ public class LoginHandler {
         if (input_valid != SUCCESS) {
             return input_valid;
         }
-        String salt = DatabaseHandler.getSaltByUsername(username);
+        String salt = dbHandler.getSaltByUsername(username);
 
         if (salt == null) {
             return USER_NOT_FOUND;
         }
         String hash = Hash.hash(password, salt);
-        if (DatabaseHandler.validateLogin(username, hash)) {
+        if (dbHandler.validateLogin(username, hash)) {
             return SUCCESS;
         }
 
