@@ -50,7 +50,7 @@ public class DatabaseHandler {
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(2, username);
+                ps.setString(1, username);
 
                 ResultSet rs = ps.executeQuery();
 
@@ -69,8 +69,8 @@ public class DatabaseHandler {
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(2, username);
-                ps.setString(3, password);
+                ps.setString(1, username);
+                ps.setString(2, password);
 
                 try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();
@@ -90,7 +90,7 @@ public class DatabaseHandler {
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(2, username);
+                ps.setString(1, username);
 
                 try (ResultSet rs = ps.executeQuery()) {
                     return !rs.next();
@@ -110,9 +110,9 @@ public class DatabaseHandler {
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(2, username);
-                ps.setString(3, password);
-                ps.setString(4, salt);
+                ps.setString(1, username);
+                ps.setString(2, password);
+                ps.setString(3, salt);
 
                 return ps.executeUpdate() > 0;
             }
@@ -122,4 +122,6 @@ public class DatabaseHandler {
 
         return false;
     }
+
+
 }
