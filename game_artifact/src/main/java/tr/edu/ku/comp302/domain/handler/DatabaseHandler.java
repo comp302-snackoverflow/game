@@ -13,7 +13,6 @@ import java.util.Properties;
 public class DatabaseHandler {
     public static Connection getConnection() {
         Properties prop = new Properties();
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
         try (FileInputStream fis = new FileInputStream("./src/main/java/database/database.config")) {
             prop.load(fis);
