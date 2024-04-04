@@ -2,6 +2,8 @@
 
 **All rules in this guide must be followed or might get replaced without warning.**
 
+* All code must follow [this](https://google.github.io/styleguide/javaguide.html) guide.
+
 * Branch names must follow this naming convention:
   1. _fix/..._: Branches dedicated to fixing specific issues or bugs in the codebase.
   2. _feat/..._: Branches focused on implementing new features or functionalities.
