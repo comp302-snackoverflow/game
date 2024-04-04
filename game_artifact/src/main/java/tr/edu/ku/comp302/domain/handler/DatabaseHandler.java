@@ -11,7 +11,7 @@ import java.util.Properties;
 
 
 public class DatabaseHandler {
-    private DatabaseHandler instance;
+    private static DatabaseHandler instance;
     private final String DATABASE_URL;
     private final String USER;
     private final String PASSWORD;
