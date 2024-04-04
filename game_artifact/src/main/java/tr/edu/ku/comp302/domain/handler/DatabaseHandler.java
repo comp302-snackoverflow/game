@@ -11,21 +11,31 @@ import java.util.Properties;
 
 
 public class DatabaseHandler {
-    public static Connection getConnection() {
+    private DatabaseHandler instance;
+    private final String DATABASE_URL;
+    private final String USER;
+    private final String PASSWORD;
+    private DatabaseHandler() {
         Properties prop = new Properties();
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
         try (FileInputStream fis = new FileInputStream("./src/main/java/database/database.config")) {
             prop.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
 
-        String DATABASE_URL = prop.getProperty("database.URI");
-        String USER = prop.getProperty("database.username");
-        String PASSWORD = prop.getProperty("database.password");
+        DATABASE_URL = prop.getProperty("database.URI");
+        USER = prop.getProperty("database.username");
+        PASSWORD = prop.getProperty("database.password");
+    }
 
+    public DatabaseHandler getInstance() {
+        if (instance == null) {
+            instance = new DatabaseHandler();
+        }
+        return instance;
+    }
+    public Connection getConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
@@ -36,9 +46,10 @@ public class DatabaseHandler {
     }
 
     public String getSaltByUsername(String username) {
+        final String query = "SELECT salt FROM Player WHERE username = ? AND password = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
-            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM User WHERE username = ?")) {
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
                 ps.setString(2, username);
 
                 ResultSet rs = ps.executeQuery();
@@ -54,10 +65,10 @@ public class DatabaseHandler {
     }
 
     public boolean validateLogin(String username, String password) {
-        String sqlQuery = "SELECT * FROM User WHERE username = ? AND password = ?";
+        final String query = "SELECT * FROM Player WHERE username = ? AND password = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
-            try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
                 ps.setString(2, username);
                 ps.setString(3, password);
 
@@ -75,18 +86,14 @@ public class DatabaseHandler {
 
     public boolean isUsernameUnique(String username) {
         boolean usernameIsUnique = true;
-        String sqlQuery = "SELECT COUNT(*) FROM User WHERE username = ?";
+        final String query = "SELECT * FROM Player WHERE username = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
-            try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
                 ps.setString(2, username);
 
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        if (rs.getInt(1) != 0) {
-                            return false;
-                        }
-                    }
+                    return !rs.next();
                 }
             }
         } catch (SQLException e) {
@@ -98,18 +105,16 @@ public class DatabaseHandler {
 
     /// This method assumes that the person who checked it already verified that the username is unique !!!
     public boolean createUser(String username, String password, String salt) {
-        String sqlQuery = "INSERT INTO User (username, password, salt) VALUES (?,?,?)";
+        final String query = "INSERT INTO User (username, password, salt) VALUES (?, ?, ?)";
 
         try (Connection connection = getConnection()) {
             assert connection != null;
-            try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
                 ps.setString(2, username);
                 ps.setString(3, password);
                 ps.setString(4, salt);
 
-                if (ps.executeUpdate() > 0) {
-                    return true;
-                }
+                return ps.executeUpdate() > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -117,5 +122,4 @@ public class DatabaseHandler {
 
         return false;
     }
-
 }
