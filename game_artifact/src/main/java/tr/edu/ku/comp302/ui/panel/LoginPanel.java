@@ -1,31 +1,43 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.handler.LoginHandler;
 import tr.edu.ku.comp302.ui.frame.LoginRegisterFrame;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import java.awt.Font;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class LoginPanel extends JPanel {
 
     private LoginRegisterFrame loginRegisterFrame;
-    private JPasswordField pwdField;
-    private JTextField usernameTextField;
+    protected JPasswordField pwdField;
+    protected JTextField usernameTextField;
+    protected JTextArea errorTextArea;
 
     public LoginPanel() {
         setLayout(null);
 
+        errorTextArea = new JTextArea();
+        errorTextArea.setWrapStyleWord(true);
+        errorTextArea.setForeground(Color.RED);
+        errorTextArea.setLineWrap(true);
+        errorTextArea.setEditable(false);
+        errorTextArea.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        errorTextArea.setBounds(381, 217, 216, 77);
+        errorTextArea.setBackground(new Color(240, 240, 240));
+        add(errorTextArea);
+
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                usernameTextField.setText("");
+                pwdField.setText("");
+                errorTextArea.setText("");
                 setVisible(false);
-                // TODO: Add setVisible for register panel with true input, after creating registerPanel.
+                loginRegisterFrame.getRegisterPanel().setVisible(true);
+
             }
         });
         registerButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 16));
@@ -39,6 +51,25 @@ public class LoginPanel extends JPanel {
         add(dontHaveAnAccountLabel);
 
         JButton loginButton = new JButton("Login");
+        loginButton.addActionListener(e -> {
+            String username = usernameTextField.getText();
+            String password = new String(pwdField.getPassword());
+            int response = LoginHandler.getInstance().login(username, password);
+            switch(response) {
+                case LoginHandler.SUCCESS:
+                    new MainFrame();
+                    // TODO: Create user instance and open his game frame.
+                    usernameTextField.setText("");
+                    pwdField.setText("");
+                    errorTextArea.setText("");
+                case LoginHandler.USERNAME_EMPTY:
+                    errorTextArea.setText("You must enter a username!");
+                case LoginHandler.PASSWORD_EMPTY:
+                    errorTextArea.setText("You must enter a password!");
+                case LoginHandler.USER_NOT_FOUND:
+                    errorTextArea.setText("Username or password is not valid!");
+            }
+        });
         loginButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
         loginButton.setBounds(417, 305, 147, 43);
         add(loginButton);
