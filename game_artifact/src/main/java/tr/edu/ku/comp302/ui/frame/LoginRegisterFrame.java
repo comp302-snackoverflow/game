@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.ui.frame;
 
 import tr.edu.ku.comp302.ui.panel.LoginPanel;
+import tr.edu.ku.comp302.ui.panel.RegisterPanel;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -9,7 +10,7 @@ import javax.swing.border.EmptyBorder;
 public class LoginRegisterFrame extends JFrame {
 
     private JPanel contentPane;
-    // TODO: Add RegisterPanel field.
+    private RegisterPanel registerPanel;
     private LoginPanel loginPanel;
 
     public LoginRegisterFrame() {
@@ -22,18 +23,19 @@ public class LoginRegisterFrame extends JFrame {
         setContentPane(contentPane);
 
         createLoginPanel();
-        // TODO: use createRegisterPanel() method in here.
-        // TODO: Add registerPanel setVisible with input false.
+        createRegisterPanel();
+        registerPanel.setVisible(false);
         loginPanel.setVisible(true);
 
     }
-
 
     public LoginPanel getLoginPanel() {
         return loginPanel;
     }
 
-
+    public RegisterPanel getRegisterPanel() {
+        return registerPanel;
+    }
     private void createLoginPanel() {
         loginPanel = new LoginPanel();
         loginPanel.setBounds(0, 11, 804, 781);
@@ -42,9 +44,12 @@ public class LoginRegisterFrame extends JFrame {
         contentPane.add(loginPanel);
     }
 
-    // TODO: getRegisterPanel
-
-    // TODO: Implement createRegisterPanel() method in here.
-
+    private void createRegisterPanel() {
+        registerPanel = new RegisterPanel();
+        registerPanel.setBounds(0, 11, 804, 781);
+        registerPanel.setLayout(null);
+        registerPanel.setLoginRegisterFrame(this);
+        contentPane.add(registerPanel);
+    }
 
 }
