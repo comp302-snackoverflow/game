@@ -3,7 +3,7 @@ package tr.edu.ku.comp302.domain.handler;
 import tr.edu.ku.comp302.domain.services.Hash;
 
 public class LoginHandler {
-    private LoginHandler instance;
+    private static LoginHandler instance;
     private final DatabaseHandler dbHandler;
     public static final int SUCCESS = 0;
     public static final int USERNAME_EMPTY = 1;
@@ -32,7 +32,7 @@ public class LoginHandler {
         return USER_NOT_FOUND;
     }
 
-    public LoginHandler getInstance() {
+    public static LoginHandler getInstance() {
         if (instance == null) {
             instance = new LoginHandler();
         }
