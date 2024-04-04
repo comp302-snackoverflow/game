@@ -1,4 +1,4 @@
-package tr.edu.ku.comp302.domain.lanceofdestiny;
+package tr.edu.ku.comp302.domain.LanceOfDestiny;
 
 public class Player {
     
