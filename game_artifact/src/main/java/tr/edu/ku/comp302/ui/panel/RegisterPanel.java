@@ -92,24 +92,28 @@ public class RegisterPanel extends JPanel {
                 case RegisterHandler.SUCCESS:
                     new MainFrame();
                     // TODO: Create user object
-                    usernameTextField.setText("");
-                    pwdField.setText("");
-                    confirmPwdField.setText("");
-                    errorTextArea.setText("");
+                    clearInputs();
                 case RegisterHandler.USERNAME_TOO_SHORT:
                     errorTextArea.setText("Number of characters in username must be greater than 2");
+                    break;
                 case RegisterHandler.USERNAME_TOO_LONG:
                     errorTextArea.setText("Number of characters in username must be smaller than 33");
+                    break;
                 case RegisterHandler.USERNAME_NOT_UNIQUE:
                     errorTextArea.setText("Account already exists with that username");
+                    break;
                 case RegisterHandler.PASSWORD_TOO_SHORT:
                     errorTextArea.setText("Number of characters in password must be greater than 8");
+                    break;
                 case RegisterHandler.PASSWORD_TOO_LONG:
                     errorTextArea.setText("Number of characters in password must be greater than 8");
+                    break;
                 case RegisterHandler.PASSWORDS_DO_NOT_MATCH:
                     errorTextArea.setText("Passwords do not match");
-                case RegisterHandler.WOMP_WOMP:
+                    break;
+                default:
                     errorTextArea.setText("Womp Womp");
+                    break;
             }
         });
         registerButton.setBounds(418, 311, 147, 43);
@@ -131,10 +135,7 @@ public class RegisterPanel extends JPanel {
 
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                usernameTextField.setText("");
-                pwdField.setText("");
-                confirmPwdField.setText("");
-                errorTextArea.setText("");
+                clearInputs();
                 setVisible(false);
                 getLoginRegisterFrame().getLoginPanel().setVisible(true);
             }
@@ -181,4 +182,10 @@ public class RegisterPanel extends JPanel {
         this.confirmPwdField = confirmPwdField;
     }
 
+    private void clearInputs(){
+        usernameTextField.setText("");
+        pwdField.setText("");
+        confirmPwdField.setText("");
+        errorTextArea.setText("");
+    }
 }
