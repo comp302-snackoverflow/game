@@ -18,7 +18,7 @@ public class DatabaseHandler {
     private DatabaseHandler() {
         Properties prop = new Properties();
 
-        try (FileInputStream fis = new FileInputStream("./src/main/resources/database.config")) {
+        try (FileInputStream fis = new FileInputStream("./game_artifact/src/main/resources/database.config")) {
             prop.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,7 +46,7 @@ public class DatabaseHandler {
     }
 
     public String getSaltByUsername(String username) {
-        final String query = "SELECT salt FROM Player WHERE username = ? AND password = ?";
+        final String query = "SELECT salt FROM Player WHERE username = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
