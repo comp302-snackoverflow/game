@@ -32,9 +32,7 @@ public class LoginPanel extends JPanel {
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                usernameTextField.setText("");
-                pwdField.setText("");
-                errorTextArea.setText("");
+                clearInputs();
                 setVisible(false);
                 loginRegisterFrame.getRegisterPanel().setVisible(true);
 
@@ -59,15 +57,20 @@ public class LoginPanel extends JPanel {
                 case LoginHandler.SUCCESS:
                     new MainFrame();
                     // TODO: Create user instance and open his game frame.
-                    usernameTextField.setText("");
-                    pwdField.setText("");
-                    errorTextArea.setText("");
+                    clearInputs();
+                    break;
                 case LoginHandler.USERNAME_EMPTY:
                     errorTextArea.setText("You must enter a username!");
+                    break;
                 case LoginHandler.PASSWORD_EMPTY:
                     errorTextArea.setText("You must enter a password!");
+                    break;
                 case LoginHandler.USER_NOT_FOUND:
                     errorTextArea.setText("Username or password is not valid!");
+                    break;
+                default:
+                    errorTextArea.setText("Womp womp");
+                    break;
             }
         });
         loginButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
@@ -123,5 +126,9 @@ public class LoginPanel extends JPanel {
         this.usernameTextField = usernameTextField;
     }
 
-
+    private void clearInputs(){
+        usernameTextField.setText("");
+        pwdField.setText("");
+        errorTextArea.setText("");
+    }
 }
