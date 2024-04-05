@@ -46,7 +46,7 @@ public class DatabaseHandler {
     }
 
     public String getSaltByUsername(String username) {
-        final String query = "SELECT salt FROM Player WHERE username = ? AND password = ?";
+        final String query = "SELECT salt FROM Player WHERE username = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
