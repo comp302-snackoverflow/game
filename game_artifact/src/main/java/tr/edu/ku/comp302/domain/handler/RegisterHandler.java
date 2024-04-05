@@ -19,17 +19,16 @@ public class RegisterHandler {
     }
 
     public int register(String username, String password, String passwordRepeat) {
-        if (!dbHandler.isUsernameUnique(username)) {
-            return USERNAME_NOT_UNIQUE;
-        }
-
         int input_valid = validateInput(username, password, passwordRepeat);
         if (input_valid != SUCCESS) {
             return input_valid;
         }
 
-        String salt = Hash.generateSalt();
+        if (!dbHandler.isUsernameUnique(username)) {
+            return USERNAME_NOT_UNIQUE;
+        }
 
+        String salt = Hash.generateSalt();
         String hash = Hash.hash(password, salt);
 
         if (dbHandler.createUser(username, hash, salt)) {
