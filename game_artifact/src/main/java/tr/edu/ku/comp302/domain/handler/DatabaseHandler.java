@@ -18,7 +18,7 @@ public class DatabaseHandler {
     private DatabaseHandler() {
         Properties prop = new Properties();
 
-        try (FileInputStream fis = new FileInputStream("./src/main/resources/database.config")) {
+        try (FileInputStream fis = new FileInputStream("./game_artifact/src/main/resources/database.config")) {
             prop.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
