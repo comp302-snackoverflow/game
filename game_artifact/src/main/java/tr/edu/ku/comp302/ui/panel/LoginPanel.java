@@ -57,6 +57,7 @@ public class LoginPanel extends JPanel {
                 case LoginHandler.SUCCESS:
                     new MainFrame();
                     // TODO: Create user instance and open his game frame.
+                    JOptionPane.showMessageDialog(null, "Success", "Successfully logged in.", JOptionPane.INFORMATION_MESSAGE);
                     clearInputs();
                     break;
                 case LoginHandler.USERNAME_EMPTY:

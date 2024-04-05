@@ -93,6 +93,7 @@ public class RegisterPanel extends JPanel {
                     new MainFrame();
                     // TODO: Create user object
                     clearInputs();
+                    break;
                 case RegisterHandler.USERNAME_TOO_SHORT:
                     errorTextArea.setText("Number of characters in username must be greater than 2");
                     break;
