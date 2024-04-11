@@ -7,6 +7,7 @@ public class KeyboardHandler implements KeyListener {
 
     public static boolean leftArrowPressed = false;
     public static boolean rightArrowPressed = false;
+    public static boolean wPressed = false;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -22,6 +23,9 @@ public class KeyboardHandler implements KeyListener {
             case KeyEvent.VK_LEFT:
                 leftArrowPressed = true;
                 break;
+            case KeyEvent.VK_W:
+                wPressed = true;
+                break;
         }
     }
 
@@ -33,6 +37,9 @@ public class KeyboardHandler implements KeyListener {
                 break;
             case KeyEvent.VK_LEFT:
                 leftArrowPressed = false;
+                break;
+            case KeyEvent.VK_W:
+                wPressed = false;
                 break;
         }
     }

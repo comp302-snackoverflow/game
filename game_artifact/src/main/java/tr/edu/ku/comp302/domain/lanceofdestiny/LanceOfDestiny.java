@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
+import tr.edu.ku.comp302.domain.handler.CollisionHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
@@ -47,6 +48,12 @@ public class LanceOfDestiny implements Runnable{
                         total -= 1.0/speed;
                     }
                 }
+                if (KeyboardHandler.wPressed && levelPanel.getFireBallView().getFireBall().getDy() == 0) {
+                    levelPanel.getFireBallView().getFireBall().launchFireball();
+                }
+
+                levelPanel.getFireBallView().getFireBall().move();
+                CollisionHandler.checkCollisions(levelPanel.getFireBallView(), levelPanel.getLanceView());
                 updates++;
                 deltaUpdate--;
 
