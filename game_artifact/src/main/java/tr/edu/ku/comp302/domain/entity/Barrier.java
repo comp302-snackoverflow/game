@@ -24,14 +24,11 @@ public class Barrier extends Entity {
     public void setL(double l) {
         L = l;
         length = L / 5;
+        boundingBox.setRect(xPosition, yPosition, length, thickness);
     }
     @Override
     public void handleCollision(boolean isWall) {
-        if (isWall) {
-            speed = -speed;
-        } else {
-            health--;
-        }
+        health--;
     }
 
     public boolean isDead() {
