@@ -50,6 +50,7 @@ public class Lance extends Entity{
     private void updateRelativeToL(){
         setLength(L);
         setThickness(20);
+        boundingBox.setRect(xPosition, yPosition, length, thickness);
         setSpeedWithTap(L);
         setSpeedWithHold(2 * L);
     }
