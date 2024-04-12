@@ -4,22 +4,25 @@ import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class LevelPanel extends JPanel {
     private Level level;
     private LanceView lanceView;
     private FireBallView fireBallView;
+    private List<BarrierView> barriers;
 
-
-    public LevelPanel(Level level, LanceView lanceView, FireBallView fireBallView) {
+    public LevelPanel(Level level, LanceView lanceView, FireBallView fireBallView, List<BarrierView> barriers) {
         this.level = level;
         this.lanceView = lanceView;
         this.fireBallView = fireBallView;
+        this.barriers = barriers;
         addKeyListener(new KeyboardHandler());
     }
 
@@ -27,6 +30,7 @@ public class LevelPanel extends JPanel {
         super.paintComponent(g);
         lanceView.render(g);
         fireBallView.render(g);
+        barriers.forEach(barrier -> barrier.render(g));
     }
     public void setPanelSize(Dimension size){
         setMinimumSize(size);
@@ -39,6 +43,14 @@ public class LevelPanel extends JPanel {
         fireBallView.setFireBallImage(ImageHandler.resizeImage(fireBallView.getFireBallImage(),
                 fireBallView.getFireBall().getSize(),
                 fireBallView.getFireBall().getSize()));
+        barriers.forEach(barrierView -> {
+            barrierView.getBarrier().setL(size.getWidth() / 10.0);
+            barrierView.setBarrierImage(ImageHandler.resizeImage(
+                    barrierView.getBarrierImage(),
+                    (int) barrierView.getBarrier().getLength(),
+                    (int) barrierView.getBarrier().getThickness()
+            ));
+        });
     }
 
     public Level getLevel() {
@@ -62,5 +74,8 @@ public class LevelPanel extends JPanel {
 
     public void setFireBallView(FireBallView fireBallView) {
         this.fireBallView = fireBallView;
+    }
+    public List<BarrierView> getBarrierViews() {
+        return barriers;
     }
 }
