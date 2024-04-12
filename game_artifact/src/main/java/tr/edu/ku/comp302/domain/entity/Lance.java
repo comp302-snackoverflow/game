@@ -1,23 +1,29 @@
 package tr.edu.ku.comp302.domain.entity;
 
+import java.awt.geom.Rectangle2D;
 public class Lance extends Entity{
 
     private double length;
     private double L;
-
     private double thickness = 20;
-
     private double speedWithHold;
     private double speedWithTap;
 
     // TODO: add rotationAngle later on
 
-    public Lance(double xPosition, double yPosition) {
-        super(xPosition, yPosition);
+    public Lance(double xPosition, double yPosition, double screenWidth, double screenHeight) {
+        super(xPosition, yPosition, screenWidth, screenHeight);
+        boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
+        actualShape = boundingBox;
     }
 
     public void updateXPosition(int updateVal){
+        if (xPosition + updateVal < 0 || xPosition + updateVal + length > screenWidth) {
+            return;
+        }
         xPosition += updateVal;
+        boundingBox.setRect(xPosition, yPosition, length, thickness);
+        actualShape = boundingBox;
     }
 
     public void updateYPosition(int updateVal){
@@ -70,5 +76,9 @@ public class Lance extends Entity{
 
     public void setSpeedWithTap(double speedWithTap) {
         this.speedWithTap = speedWithTap;
+    }
+
+    public void handleCollision(boolean isWall) {
+        // nothing happens
     }
 }

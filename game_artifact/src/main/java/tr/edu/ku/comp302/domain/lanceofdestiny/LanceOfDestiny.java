@@ -1,5 +1,7 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
+import tr.edu.ku.comp302.domain.entity.Barrier;
+import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.handler.CollisionHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
@@ -53,13 +55,38 @@ public class LanceOfDestiny implements Runnable{
                 }
 
                 levelPanel.getFireBallView().getFireBall().move();
-                CollisionHandler.checkCollisions(levelPanel.getFireBallView(), levelPanel.getLanceView());
+                // TODO check collisions here
+                FireBall ball = levelPanel.getFireBallView().getFireBall();
+                if (CollisionHandler.hitCeiling(ball)) {
+                    ball.handleCollision(false);
+                }
+                if (CollisionHandler.hitLeftWall(ball) || CollisionHandler.hitRightWall(ball, mainFrame.getWidth())) {
+                    ball.handleCollision(true);
+                }
+                if (CollisionHandler.testFireballEntityOverlap(ball, levelPanel.getLanceView().getLance()) != null) {
+                    ball.handleCollision(false);
+                }
+                if (CollisionHandler.hitFloor(ball, mainFrame.getHeight())) {
+                    ball.handleCollision(false);
+                }
+                Barrier collidedBarrier = CollisionHandler.testBarrierFireballOverlap(ball, levelPanel.getBarrierViews());
+                if (collidedBarrier != null) {
+                    collidedBarrier.handleCollision(false);
+                }
+                for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
+                    if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
+                        levelPanel.getBarrierViews().remove(i);
+                        break;
+                    }
+                }
+
                 updates++;
                 deltaUpdate--;
 
             }
             if (deltaFrame >= 1){
                 levelPanel.repaint();
+                levelPanel.revalidate();
                 frames++;
                 deltaFrame--;
             }
