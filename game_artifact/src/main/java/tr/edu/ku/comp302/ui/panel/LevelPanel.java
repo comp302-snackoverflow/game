@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
@@ -11,6 +10,7 @@ import tr.edu.ku.comp302.ui.view.LanceView;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class LevelPanel extends JPanel {
     private Level level;
@@ -30,7 +30,8 @@ public class LevelPanel extends JPanel {
         super.paintComponent(g);
         lanceView.render(g);
         fireBallView.render(g);
-        barriers.forEach(barrier -> barrier.render(g));
+        IntStream.range(0, barriers.size()).forEach(i -> barriers.get(i).render(g)); // Below throws an exception.
+        // barriers.forEach(barrier -> barrier.render(g));
     }
     public void setPanelSize(Dimension size){
         setMinimumSize(size);
