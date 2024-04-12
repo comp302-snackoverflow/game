@@ -37,7 +37,7 @@ public class App
         for (int r = 0; r < 7; r++) {
             for (int c = 0; c < 30; c++) {
                 barriers.add(new BarrierView(new Barrier(10 + c * 30, 10 + r * 25, w, h)));
-            }
+            } // TODO: space between the barriers depend on the screen size.
         }
         return barriers;
     }
