@@ -14,7 +14,7 @@ public class MainFrame extends JFrame {
         add(levelPanel);
         setLocationRelativeTo(null);
         setResizable(false);
-        levelPanel.setPanelSize(new Dimension(1280, 800));
+        levelPanel.setPanelSize(new Dimension(1280, 720));
         pack();
         levelPanel.repaint();
         levelPanel.setFocusable(true);
