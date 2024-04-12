@@ -60,9 +60,11 @@ public class LanceOfDestiny implements Runnable{
                 if (CollisionHandler.hitCeiling(ball)) {
                     ball.handleCollision(false);
                 }
+
                 if (CollisionHandler.hitLeftWall(ball) || CollisionHandler.hitRightWall(ball, mainFrame.getWidth())) {
                     ball.handleCollision(true);
                 }
+
                 if (CollisionHandler.testFireballEntityOverlap(ball, levelPanel.getLanceView().getLance()) != null) {
                     ball.handleCollision(false);
                 }
@@ -72,6 +74,7 @@ public class LanceOfDestiny implements Runnable{
                 Barrier collidedBarrier = CollisionHandler.testBarrierFireballOverlap(ball, levelPanel.getBarrierViews());
                 if (collidedBarrier != null) {
                     collidedBarrier.handleCollision(false);
+                    ball.handleCollision(false);
                 }
                 for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
                     if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
