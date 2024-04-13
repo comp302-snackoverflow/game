@@ -7,10 +7,7 @@
         <RollingFile name="fileLogger"
                      fileName="logs/latest.log"
                      filePattern="logs/%d{yyyyMMdd}/%d{HH-mm-ss}.log">
-            <PatternLayout>
-                <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
-                </pattern>
-            </PatternLayout>
+            <PatternLayout pattern="%highlight{%-5level} %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %boldClass - %msg%n" disableAnsi="false"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true" />
                 <SizeBasedTriggeringPolicy size="10MB" />
