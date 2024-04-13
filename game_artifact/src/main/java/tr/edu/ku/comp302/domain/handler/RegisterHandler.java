@@ -15,6 +15,7 @@ public class RegisterHandler {
     public static final int PASSWORD_TOO_LONG = 5;
     public static final int PASSWORDS_DO_NOT_MATCH = 6;
     public static final int WOMP_WOMP = -1;
+
     private static final Logger logger = LogManager.getLogger();
     private RegisterHandler() {
         dbHandler = DatabaseHandler.getInstance();
