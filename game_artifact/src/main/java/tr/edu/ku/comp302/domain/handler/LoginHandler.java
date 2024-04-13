@@ -11,6 +11,7 @@ public class LoginHandler {
     public static final int USERNAME_EMPTY = 1;
     public static final int PASSWORD_EMPTY = 2;
     public static final int USER_NOT_FOUND = 3;
+
     private static final Logger logger = LogManager.getLogger();
     private LoginHandler() {
         dbHandler = DatabaseHandler.getInstance();
