@@ -1,4 +1,5 @@
 package tr.edu.ku.comp302.domain.entity.Barriers;
+import java.util.Random;
 
 public class FirmBarrier extends Barrier{
     
@@ -9,9 +10,9 @@ public class FirmBarrier extends Barrier{
         super(xPosition, yPosition, screenWidth, screenHeight);
         //TODO Auto-generated constructor stub
         ImagePath = "/assets/firm_barrier.png";
-        health = 3;
+        Random rand = new Random();
+        health = rand.nextInt(4) + 2;
 
     }
-    
 }
 

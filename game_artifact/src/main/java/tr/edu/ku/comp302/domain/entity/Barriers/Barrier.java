@@ -57,6 +57,14 @@ public class Barrier extends Entity {
         ImagePath = imagePath;
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
 
     
 
