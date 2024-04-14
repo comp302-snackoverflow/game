@@ -1,6 +1,6 @@
 package tr.edu.ku.comp302.ui.view;
 
-import tr.edu.ku.comp302.domain.entity.Barrier;
+import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 
 import java.awt.*;

@@ -1,7 +1,7 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
-import tr.edu.ku.comp302.domain.entity.Barrier;
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
 import tr.edu.ku.comp302.domain.handler.CollisionHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
@@ -64,18 +64,24 @@ public class LanceOfDestiny implements Runnable{
                 if (CollisionHandler.hitLeftWall(ball) || CollisionHandler.hitRightWall(ball, mainFrame.getWidth())) {
                     ball.handleCollision(true);
                 }
+                
 
+                //checking if the ball is hit lance
                 if (CollisionHandler.testFireballEntityOverlap(ball, levelPanel.getLanceView().getLance()) != null) {
                     ball.handleCollision(false);
+
                 }
                 if (CollisionHandler.hitFloor(ball, mainFrame.getHeight())) {
                     ball.handleCollision(false);
                 }
+
+                //handling barrier collision here
                 Barrier collidedBarrier = CollisionHandler.testBarrierFireballOverlap(ball, levelPanel.getBarrierViews());
                 if (collidedBarrier != null) {
                     collidedBarrier.handleCollision(false);
                     ball.handleCollision(false);
                 }
+
                 for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
                     if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
                         levelPanel.getBarrierViews().remove(i);

@@ -1,9 +1,10 @@
 package tr.edu.ku.comp302;
 
 
-import tr.edu.ku.comp302.domain.entity.Barrier;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.entity.Barriers.*;
+import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
@@ -34,9 +35,9 @@ public class App
 
     public static List<BarrierView> generateBarriers(double w, double h) {
         List<BarrierView> barriers = new ArrayList<>();
-        for (int r = 0; r < 7; r++) {
-            for (int c = 0; c < 30; c++) {
-                barriers.add(new BarrierView(new Barrier(10 + c * 30, 10 + r * 25, w, h)));
+        for (int r = (int) w/52; r < w; r += (int) w/52 + (int) w/50) {
+            for (int c = ( ((int)h / 2)-80)/5; c < (int)h/2; c += 20+ (((int)h / 2)-80)/5)  {
+                barriers.add(new BarrierView(new SimpleBarrier(r, c, w, h)));
             } // TODO: space between the barriers depend on the screen size.
         }
         return barriers;

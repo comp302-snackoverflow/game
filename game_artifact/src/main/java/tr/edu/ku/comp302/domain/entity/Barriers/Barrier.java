@@ -1,16 +1,19 @@
-package tr.edu.ku.comp302.domain.entity;
+package tr.edu.ku.comp302.domain.entity.Barriers;
 
 import java.awt.geom.Rectangle2D;
 
+import tr.edu.ku.comp302.domain.entity.Entity;
+import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.CollisionBehaviours.CollisionBehavior;
+
 public class Barrier extends Entity {
-    private static final double DEFAULT_THICKNESS = 20;
-    private static final int DEFAULT_HEALTH = 1;
-    private static final double DEFAULT_SPEED = 0;
-    private int health;
-    private double length;
-    private double thickness;
-    private double speed;
-    private double L;
+    protected static final double DEFAULT_THICKNESS = 20;
+    protected static final int DEFAULT_HEALTH = 1;
+    protected static final double DEFAULT_SPEED = 0;
+    protected int health;
+    protected double length;
+    protected double thickness;
+    protected double speed;
+    protected double L;
 
     public Barrier(double xPosition, double yPosition, double screenWidth, double screenHeight) {
         super(xPosition, yPosition, screenWidth, screenHeight);
@@ -29,6 +32,7 @@ public class Barrier extends Entity {
     @Override
     public void handleCollision(boolean isWall) {
         health--;
+        //CollisionBehavior.handleCollision(this);
     }
 
     public boolean isDead() {

@@ -1,8 +1,8 @@
 package tr.edu.ku.comp302.domain.handler;
 
-import tr.edu.ku.comp302.domain.entity.Barrier;
 import tr.edu.ku.comp302.domain.entity.Entity;
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
 import java.awt.geom.Ellipse2D;
@@ -11,6 +11,7 @@ import java.awt.geom.RectangularShape;
 import java.awt.geom.Rectangle2D;
 
 public class CollisionHandler {
+
     public static Entity testFireballEntityOverlap(FireBall fireBall, Entity entity) {
         Rectangle2D b1 = fireBall.getBoundingBox();
         Rectangle2D b2 = entity.getBoundingBox();
