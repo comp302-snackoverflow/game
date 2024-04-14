@@ -20,7 +20,7 @@ public class BarrierView {
     }
 
     public void setBarrierImage() {
-        barrierImage = ImageHandler.getImageFromPath("/assets/barrier_image.png");
+        barrierImage = ImageHandler.getImageFromPath(barrier.getImagePath());
     }
 
     public void setBarrierImage(BufferedImage image) {

@@ -35,9 +35,17 @@ public class App
 
     public static List<BarrierView> generateBarriers(double w, double h) {
         List<BarrierView> barriers = new ArrayList<>();
+        int queue = 0;
         for (int r = (int) w/52; r < w; r += (int) w/52 + (int) w/50) {
             for (int c = ( ((int)h / 2)-80)/5; c < (int)h/2; c += 20+ (((int)h / 2)-80)/5)  {
-                barriers.add(new BarrierView(new SimpleBarrier(r, c, w, h)));
+                if (queue == 0) {
+                    barriers.add(new BarrierView(new SimpleBarrier(r, c, w, h)));
+                    queue = 1;
+                }
+                else if (queue == 1){
+                    barriers.add(new BarrierView(new FirmBarrier(r, c, w, h)));
+                    queue = 0;
+                }
             } // TODO: space between the barriers depend on the screen size.
         }
         return barriers;

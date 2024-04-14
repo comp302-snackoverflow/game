@@ -14,6 +14,9 @@ public class Barrier extends Entity {
     protected double thickness;
     protected double speed;
     protected double L;
+    String ImagePath;
+
+
 
     public Barrier(double xPosition, double yPosition, double screenWidth, double screenHeight) {
         super(xPosition, yPosition, screenWidth, screenHeight);
@@ -45,5 +48,16 @@ public class Barrier extends Entity {
     public double getThickness() {
         return thickness;
     }
+
+    public String getImagePath() {
+        return ImagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        ImagePath = imagePath;
+    }
+
+
+    
 
 }
