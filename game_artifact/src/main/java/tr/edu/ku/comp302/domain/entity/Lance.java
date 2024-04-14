@@ -10,11 +10,47 @@ public class Lance extends Entity{
     private double speedWithHold;
     private double speedWithTap;
 
-    // TODO: add rotationAngle later on
+    private double rotationAngle;
+    public static final double rotationSpeed = 20.0;
+    public static final double horizontalRecoverySpeed = 45.0;
 
     public Lance(double xPosition, double yPosition) {
         super(xPosition, yPosition);
     }
+
+    public void incrementRotationAngle(double degrees){
+        if (rotationAngle + degrees <= 45 && rotationAngle + degrees >= -45){
+            rotationAngle += degrees;
+        }else if (rotationAngle + degrees < -45){
+            setRotationAngle(-45);
+        }else if (rotationAngle + degrees > 45){
+            setRotationAngle(45);
+        }
+    }
+
+    public void stayInSteadyState(double degrees){
+        if (rotationAngle > 0){
+            if (rotationAngle - degrees < 0){
+                setRotationAngle(0);
+            }else{
+                incrementRotationAngle(-degrees);
+            }
+        }else if (rotationAngle < 0){
+            if (rotationAngle + degrees > 0){
+                setRotationAngle(0);
+            }else{
+                incrementRotationAngle(degrees);
+            }
+        }
+    }
+    public boolean canRotateCounterClockwise(double degrees){
+        return rotationAngle + degrees >= -45;
+    }
+    public boolean canRotateClockwise(double degrees){
+        return rotationAngle + degrees <= 45;
+    }
+
+
 
     public void updateXPosition(int updateVal){
         xPosition += updateVal;
@@ -70,5 +106,13 @@ public class Lance extends Entity{
 
     public void setSpeedWithTap(double speedWithTap) {
         this.speedWithTap = speedWithTap;
+    }
+
+    public double getRotationAngle() {
+        return rotationAngle;
+    }
+
+    public void setRotationAngle(double rotationAngle) {
+        this.rotationAngle = rotationAngle;
     }
 }
