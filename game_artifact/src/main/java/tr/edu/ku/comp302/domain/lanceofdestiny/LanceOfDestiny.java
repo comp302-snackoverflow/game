@@ -2,7 +2,7 @@ package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 import tr.edu.ku.comp302.domain.entity.Barrier;
 import tr.edu.ku.comp302.domain.entity.FireBall;
-import tr.edu.ku.comp302.domain.handler.CollisionHandler;
+import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;

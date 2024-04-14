@@ -42,5 +42,5 @@ public abstract class Entity {
         return actualShape;
     }
 
-    public abstract void handleCollision(boolean isWall);
+    public abstract void handleCollision(boolean isWall); //entity,integer input ??
 }
