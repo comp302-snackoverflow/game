@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies;
 import java.util.List;
 
 import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
+import tr.edu.ku.comp302.ui.view.BarrierView;
 
 public class HorizontalMovement implements IMovementStrategy{
 
@@ -12,6 +13,8 @@ public class HorizontalMovement implements IMovementStrategy{
     double BarrierThickness;
     double BarrierLength;
     boolean stiffness = true;
+
+    
     int speed;
     short direction = RIGHT_DIRECTION; // 0 or 1, 0 meaning left, 1 meaning right !
 
@@ -38,11 +41,11 @@ public class HorizontalMovement implements IMovementStrategy{
      * If the barrier is not stiff and the determined direction for movement is left,
      * moves with a speed of L/4 to the left, otherwise, the same logic applies to the right.
      */
+    @Override
     public void move(){
 
-
         if (!stiffness){
-            Barrier.setSpeed(ScreenWidth/40);
+            Barrier.setSpeed(0.5);
 
             if (direction == RIGHT_DIRECTION) {
                 Barrier.setXPosition(Barrier.getXPosition() + Barrier.getSpeed());
@@ -64,10 +67,54 @@ public class HorizontalMovement implements IMovementStrategy{
      *
      * @param barrierViews
      */
+   
 
-    void checkCollision(List<BarrierView> BarrierViews){
+    /**
+     * This funciton takes the array of positions x and y a corner and checks if its intercepting other barrier area
+     *
+     *  */
+    boolean calculateInterception(double[] cornerPoint, Barrier barrier, boolean isWest ){
+
+        double xBarrier = barrier.getXPosition();
+        double yBarrier = barrier.getYPosition();
+        double lengthBarrier = barrier.getLength();
+        double thicknessBarrier = barrier.getThickness();
+
+        double cornerPointX = cornerPoint[0] + (isWest ? (-ScreenWidth/40) : (ScreenWidth/40));
+        double cornerPointY = cornerPoint[1];
+
+        boolean xFlag = false;
+        boolean yFlag = false;
+
+        if (cornerPointX <= xBarrier + lengthBarrier && cornerPointX >= xBarrier ){
+            xFlag = true;
+        }
+        if (cornerPointY <= yBarrier + thicknessBarrier && cornerPointY >= yBarrier ){
+            yFlag = true;
+        }
+
+        if (xFlag && yFlag){
+            return true;
+        }
+
+        return false;
+
+    }
 
 
+    void changeDirection(boolean isWest){
+        if (isWest) {
+            direction = RIGHT_DIRECTION;
+        }
+        else {
+            direction = LEFT_DIRECTION;
+        }
+    }
+
+
+    @Override
+    public void checkCollision(List<BarrierView> BarrierViews) {
+        // TODO Auto-generated method stub
         double xPosition = Barrier.getXPosition();
         double yPosition = Barrier.getYPosition();
 
@@ -89,8 +136,8 @@ public class HorizontalMovement implements IMovementStrategy{
 
         //TODO Avoid collision of barrier with itself!!!
         int i = 0;
-        while (i < barrierViews.size()) {
-            Barrier b = barrierViews.get(i);
+        while (i < BarrierViews.size()) {
+            Barrier b = BarrierViews.get(i).getBarrier();
 
             int j = 0;
             while (j < westCorners.length && !IsWestCollision) {
@@ -116,63 +163,19 @@ public class HorizontalMovement implements IMovementStrategy{
         }
 
 
-        //if there are two collisions on both sides keep stifness
+        //if there are two collisions on both sides keep stiffness
         if(IsEastCollision && IsWestCollision){
+           // System.out.println(IsEastCollision);
+           // System.out.println("********");
+           // System.out.println(IsWestCollision);
             stiffness = true;
         }
         else{
             stiffness = false;
+            System.out.println(stiffness);
             changeDirection(IsWestCollision);
 
 
-        }
-
-
-
-
-
-    }
-
-
-
-    /**
-     * This funciton takes the array of positions x and y a corner and checks if its intercepting other barrier area
-     *
-     *  */
-    boolean calculateInterception(double[] cornerPoint, Barrier barrier, boolean isWest ){
-
-        double xBarrier = barrier.getXPosition();
-        double yBarrier = barrier.getYPosition();
-        double lengthBarrier = barrier.getLength();
-        double thicknessBarrier = barrier.getThickness();
-
-        double cornerPointX = cornerPoint[0] + (isWest ? (-ScreenWidth/40) : (ScreenWidth/40));
-        double cornerPointY = cornerPoint[1];
-
-        boolean xFlag = false;
-        boolean yFlag = false;
-
-        if (cornerPointX <= xBarrier + lengthBarrier || cornerPointX >= xBarrier ){
-            xFlag = true;
-        }
-        if (cornerPointY <= yBarrier + thicknessBarrier || cornerPointY >= yBarrier ){
-            yFlag = true;
-        }
-
-        if (xFlag && yFlag){
-            return true;
-        }
-
-        return false;
-
-    }
-
-    void changeDirection(boolean isWest){
-        if (isWest) {
-            direction = RIGHT_DIRECTION;
-        }
-        else {
-            direction = LEFT_DIRECTION;
         }
     }
 

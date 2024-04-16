@@ -6,6 +6,7 @@ import tr.edu.ku.comp302.domain.handler.CollisionHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
+import tr.edu.ku.comp302.ui.view.BarrierView;
 
 public class LanceOfDestiny implements Runnable{
 
@@ -43,6 +44,7 @@ public class LanceOfDestiny implements Runnable{
             total +=  (currentTime - previousTime) / 1_000_000_000.0;
             previousTime = currentTime;
             if (deltaUpdate >= 1){
+
                 if ((KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed) ||
                         (!KeyboardHandler.rightArrowPressed && KeyboardHandler.leftArrowPressed)){
                     if (total >= 1.0/speed){
@@ -75,16 +77,12 @@ public class LanceOfDestiny implements Runnable{
                     ball.handleCollision(false);
                 }
 
-                //handling barrier  fireball collision here
+                //handling barrier collision here
                 Barrier collidedBarrier = CollisionHandler.testBarrierFireballOverlap(ball, levelPanel.getBarrierViews());
                 if (collidedBarrier != null) {
                     collidedBarrier.handleCollision(false);
                     ball.handleCollision(false);
                 }
-
-                //handling barrier to barrier collision
-                //
-
 
                 for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
                     if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
@@ -93,8 +91,17 @@ public class LanceOfDestiny implements Runnable{
                     }
                 }
 
+                //barrier movement 
+                for(BarrierView barrierView : levelPanel.getBarrierViews()){
+                    if(barrierView.getBarrier().getMovementStrategy()!= null){
+                        barrierView.getBarrier().getMovementStrategy().checkCollision(levelPanel.getBarrierViews());
+                        barrierView.getBarrier().move(); 
+                    }
+                }
                 updates++;
                 deltaUpdate--;
+
+
 
             }
             if (deltaFrame >= 1){

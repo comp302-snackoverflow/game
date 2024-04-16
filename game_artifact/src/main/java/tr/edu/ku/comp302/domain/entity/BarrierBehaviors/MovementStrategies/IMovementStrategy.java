@@ -7,5 +7,5 @@ import tr.edu.ku.comp302.ui.view.BarrierView;
 public interface IMovementStrategy {
     void move();
 
-    void checkCollison(List<BarrierView> BarrierViews);
+    void checkCollision(List<BarrierView> BarrierViews);
 }

@@ -71,9 +71,9 @@ public class Barrier extends Entity {
         this.health = health;
     }
 
-
-    public void checkCollison(List<BarrierView> barrierViews){
-        MovementStrategy.checkCollison(barrierViews);
+    
+    public void checkCollision(List<BarrierView> barrierViews){
+        MovementStrategy.checkCollision(barrierViews);
     }
 
     public void setSpeed(double speed) {
@@ -87,4 +87,14 @@ public class Barrier extends Entity {
     public void move() {
         MovementStrategy.move();
     }
+
+    public IMovementStrategy getMovementStrategy() {
+        return MovementStrategy;
+    }
+
+    public void setMovementStrategy(IMovementStrategy movementStrategy) {
+        MovementStrategy = movementStrategy;
+    }
+
+    
 }
