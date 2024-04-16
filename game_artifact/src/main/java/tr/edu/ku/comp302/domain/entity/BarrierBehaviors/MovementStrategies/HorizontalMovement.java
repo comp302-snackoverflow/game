@@ -13,12 +13,16 @@ public class HorizontalMovement implements IMovementStrategy{
     double BarrierLength;
     boolean stiffness = true;
     int speed;
-    int direction;
+    short direction = RIGHT_DIRECTION; // 0 or 1, 0 meaning left, 1 meaning right !
+
+    static final short RIGHT_DIRECTION = 1;
+    static final short LEFT_DIRECTION = 0;
+
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @param ScreenWidth
      * @param barrier the barrier that is modified or checked for collison
      */
@@ -30,14 +34,24 @@ public class HorizontalMovement implements IMovementStrategy{
     }
 
 
-
-    
-
-    void move(){
+    /**
+     * If the barrier is not stiff and the determined direction for movement is left,
+     * moves with a speed of L/4 to the left, otherwise, the same logic applies to the right.
+     */
+    public void move(){
 
 
         if (!stiffness){
-            
+            Barrier.setSpeed(ScreenWidth/40);
+
+            if (direction == RIGHT_DIRECTION) {
+                Barrier.setXPosition(Barrier.getXPosition() + Barrier.getSpeed());
+            }
+
+            else {
+                Barrier.setXPosition(Barrier.getXPosition() - Barrier.getSpeed());
+            }
+
         }
     }
 
@@ -47,13 +61,13 @@ public class HorizontalMovement implements IMovementStrategy{
      * This fucntion checks if the current barrier collides with any other barrier
      * If so, cahnges the driection or keep the stiffness
      * Otherwise, start the movement
-     * 
+     *
      * @param barrierViews
      */
-    @Override
-    void checkCollison(List<BarrierView> barrierViews){
 
-        
+    void checkCollision(List<BarrierView> BarrierViews){
+
+
         double xPosition = Barrier.getXPosition();
         double yPosition = Barrier.getYPosition();
 
@@ -66,8 +80,8 @@ public class HorizontalMovement implements IMovementStrategy{
             {xPosition + BarrierLength, yPosition},
             {xPosition + BarrierLength, yPosition + BarrierThickness}
         };
-        
-        
+
+
 
         boolean IsWestCollision = false;
         boolean IsEastCollision = false;
@@ -77,7 +91,7 @@ public class HorizontalMovement implements IMovementStrategy{
         int i = 0;
         while (i < barrierViews.size()) {
             Barrier b = barrierViews.get(i);
-            
+
             int j = 0;
             while (j < westCorners.length && !IsWestCollision) {
                 double[] corner = westCorners[j];
@@ -97,7 +111,7 @@ public class HorizontalMovement implements IMovementStrategy{
                 }
                 k++;
             }
-            
+
             i++;
         }
 
@@ -109,21 +123,21 @@ public class HorizontalMovement implements IMovementStrategy{
         else{
             stiffness = false;
             changeDirection(IsWestCollision);
-            
-            
+
+
         }
 
-        
 
 
-        
+
+
     }
 
 
 
     /**
      * This funciton takes the array of positions x and y a corner and checks if its intercepting other barrier area
-     * 
+     *
      *  */
     boolean calculateInterception(double[] cornerPoint, Barrier barrier, boolean isWest ){
 
@@ -154,7 +168,12 @@ public class HorizontalMovement implements IMovementStrategy{
     }
 
     void changeDirection(boolean isWest){
-
+        if (isWest) {
+            direction = RIGHT_DIRECTION;
+        }
+        else {
+            direction = LEFT_DIRECTION;
+        }
     }
 
 

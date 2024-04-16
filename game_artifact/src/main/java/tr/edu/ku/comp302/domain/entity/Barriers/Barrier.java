@@ -76,4 +76,15 @@ public class Barrier extends Entity {
         MovementStrategy.checkCollison(barrierViews);
     }
 
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void move() {
+        MovementStrategy.move();
+    }
 }
