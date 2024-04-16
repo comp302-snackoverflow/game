@@ -67,4 +67,19 @@ public class CollisionHandler {
     public static boolean hitFloor(FireBall fireBall, double height) {
         return fireBall.getYPosition() + fireBall.getSize() >= height;
     }
+
+
+    /**
+     * 
+     * This function calls the check collision function of every barrier.
+     * 
+     * */
+    public static Barrier testBarrierBarrierOverlap(List<BarrierView> barrierViews) {
+        for (BarrierView barrierView : barrierViews) {
+            Barrier barrier = barrierView.getBarrier();
+            barrier.checkCollison(barrierViews);
+            
+        }
+        return null;
+    }
 }

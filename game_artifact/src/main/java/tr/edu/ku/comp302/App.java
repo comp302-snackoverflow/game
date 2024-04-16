@@ -33,11 +33,15 @@ public class App
         new LanceOfDestiny(levelPanel);
     }
 
+    // xPositionStart : int r = (int) w/52
+    //x positionInterval : (int) w/52
+
     public static List<BarrierView> generateBarriers(double w, double h) {
         List<BarrierView> barriers = new ArrayList<>();
+        int x_interval = (int) w/52; // interval between the barriers
         int queue = 0;
-        for (int r = (int) w/52; r < w; r += (int) w/52 + (int) w/50) {
-            for (int c = ( ((int)h / 2)-80)/5; c < (int)h/2; c += 20+ (((int)h / 2)-80)/5)  {
+        for (int r = x_interval; r < w ; r += x_interval + (int) w/50) { // x position
+            for (int c = ( ((int)h / 2)-80)/5; c < (int)h/2; c += 20+ (((int)h / 2)-80)/5)  {//y position
                 if (queue == 0) {
                     barriers.add(new BarrierView(new SimpleBarrier(r, c, w, h)));
                     queue = 1;

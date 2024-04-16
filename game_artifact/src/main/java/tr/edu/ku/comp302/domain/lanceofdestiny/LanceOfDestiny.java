@@ -75,12 +75,16 @@ public class LanceOfDestiny implements Runnable{
                     ball.handleCollision(false);
                 }
 
-                //handling barrier collision here
+                //handling barrier  fireball collision here
                 Barrier collidedBarrier = CollisionHandler.testBarrierFireballOverlap(ball, levelPanel.getBarrierViews());
                 if (collidedBarrier != null) {
                     collidedBarrier.handleCollision(false);
                     ball.handleCollision(false);
                 }
+
+                //handling barrier to barrier collision
+                //
+
 
                 for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
                     if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {

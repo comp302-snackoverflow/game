@@ -1,9 +1,11 @@
 package tr.edu.ku.comp302.domain.entity.Barriers;
 
 import java.awt.geom.Rectangle2D;
+import java.util.List;
 
 import tr.edu.ku.comp302.domain.entity.Entity;
-import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.CollisionBehaviours.CollisionBehavior;
+import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.IMovementStrategy;
+import tr.edu.ku.comp302.ui.view.BarrierView;
 
 public class Barrier extends Entity {
     protected static final double DEFAULT_THICKNESS = 20;
@@ -15,6 +17,7 @@ public class Barrier extends Entity {
     protected double speed;
     protected double L;
     String ImagePath;
+    IMovementStrategy MovementStrategy;
 
 
 
@@ -25,6 +28,9 @@ public class Barrier extends Entity {
         health = DEFAULT_HEALTH;
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
         actualShape = boundingBox;
+
+
+       
     }
 
     public void setL(double l) {
@@ -66,6 +72,8 @@ public class Barrier extends Entity {
     }
 
 
-    
+    public void checkCollison(List<BarrierView> barrierViews){
+        MovementStrategy.checkCollison(barrierViews);
+    }
 
 }

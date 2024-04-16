@@ -1,6 +1,9 @@
 package tr.edu.ku.comp302.domain.entity.Barriers;
 import java.util.Random;
 
+import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.CircularMovement;
+import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.HorizontalMovement;
+
 public class FirmBarrier extends Barrier{
     
 
@@ -13,6 +16,7 @@ public class FirmBarrier extends Barrier{
         Random rand = new Random();
         health = rand.nextInt(4) + 2;
 
+        MovementStrategy = new HorizontalMovement(screenWidth, this);
     }
 }
 
