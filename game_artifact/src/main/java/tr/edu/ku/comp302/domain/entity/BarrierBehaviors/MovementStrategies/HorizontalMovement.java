@@ -10,13 +10,15 @@ public class HorizontalMovement implements IMovementStrategy{
 
     private Barrier Barrier;
     private double ScreenWidth;
+    private double ScreenHeight;
     double BarrierThickness;
     double BarrierLength;
     boolean stiffness = true;
 
+
     
     int speed;
-    short direction = RIGHT_DIRECTION; // 0 or 1, 0 meaning left, 1 meaning right !
+    short direction = LEFT_DIRECTION; // 0 or 1, 0 meaning left, 1 meaning right !
 
     static final short RIGHT_DIRECTION = 1;
     static final short LEFT_DIRECTION = 0;
@@ -27,11 +29,11 @@ public class HorizontalMovement implements IMovementStrategy{
      *
      *
      * @param ScreenWidth
-     * @param barrier the barrier that is modified or checked for collison
      */
-    public HorizontalMovement(double ScreenWidth, Barrier barrier){
+    public HorizontalMovement(double ScreenWidth, double ScreenHeight, Barrier barrier){
         this.Barrier = barrier;
         this.ScreenWidth = ScreenWidth;
+        this.ScreenHeight = ScreenHeight;
         BarrierLength = barrier.getLength();
         BarrierThickness = barrier.getThickness();
     }
@@ -56,6 +58,10 @@ public class HorizontalMovement implements IMovementStrategy{
             }
 
         }
+        System.out.println("/////////////");
+        System.out.println(direction);
+        System.out.println(stiffness);
+        System.out.println("*************");
     }
 
 
@@ -80,16 +86,31 @@ public class HorizontalMovement implements IMovementStrategy{
         double lengthBarrier = barrier.getLength();
         double thicknessBarrier = barrier.getThickness();
 
-        double cornerPointX = cornerPoint[0] + (isWest ? (-ScreenWidth/40) : (ScreenWidth/40));
+        double cornerPointX = cornerPoint[0] + (isWest ? (-ScreenWidth/52) : (ScreenWidth/52));
         double cornerPointY = cornerPoint[1];
 
         boolean xFlag = false;
         boolean yFlag = false;
+        boolean insideboundary = false;
+       
+        if(isWest){
+            insideboundary = cornerPointX >= 0;
+        }
+        else{
+            insideboundary = cornerPointX <= ScreenWidth;
+        }
 
-        if (cornerPointX <= xBarrier + lengthBarrier && cornerPointX >= xBarrier ){
+       // boolean insideBoundary = cornerPointX >= 0 && cornerPointX <= ScreenWidth;
+
+       // if barrier is colliding with the  screen edges then this corner is colliding 
+        if(!insideboundary){
+            return true;
+        }
+
+        if (cornerPointX <= xBarrier + lengthBarrier && cornerPointX >= xBarrier){
             xFlag = true;
         }
-        if (cornerPointY <= yBarrier + thicknessBarrier && cornerPointY >= yBarrier ){
+        if (cornerPointY <= yBarrier + thicknessBarrier && cornerPointY >= yBarrier){
             yFlag = true;
         }
 
@@ -172,9 +193,10 @@ public class HorizontalMovement implements IMovementStrategy{
         }
         else{
             stiffness = false;
-            System.out.println(stiffness);
-            changeDirection(IsWestCollision);
+            // System.out.println(stiffness);
 
+            changeDirection(IsWestCollision);
+            
 
         }
     }

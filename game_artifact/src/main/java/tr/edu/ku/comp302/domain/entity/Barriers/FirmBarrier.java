@@ -16,7 +16,7 @@ public class FirmBarrier extends Barrier{
         Random rand = new Random();
         health = rand.nextInt(4) + 2;
 
-        MovementStrategy = new HorizontalMovement(screenWidth, this);
+        MovementStrategy = new HorizontalMovement(screenWidth, screenHeight, this);
     }
 }
 

@@ -15,7 +15,7 @@ public class SimpleBarrier extends Barrier{
         //TODO Auto-generated constructor stub
         ImagePath = "/assets/barrier_image.png";
         health = 1;
-        this.MovementStrategy = new HorizontalMovement(screenWidth, this);
+        this.MovementStrategy = new HorizontalMovement(screenWidth, screenHeight, this);
     }
     
 }
