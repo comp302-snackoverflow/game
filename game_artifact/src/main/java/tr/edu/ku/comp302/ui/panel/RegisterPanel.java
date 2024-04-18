@@ -90,7 +90,7 @@ public class RegisterPanel extends JPanel {
 
             switch(response) {
                 case RegisterHandler.SUCCESS:
-                    new MainFrame();
+                    // new MainFrame();
                     // TODO: Create user object
                     clearInputs();
                     break;
