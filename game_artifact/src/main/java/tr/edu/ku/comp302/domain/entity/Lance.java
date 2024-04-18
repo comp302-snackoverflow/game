@@ -16,6 +16,7 @@ public class Lance extends Entity{
 
     public Lance(double xPosition, double yPosition) {
         super(xPosition, yPosition);
+        System.out.println(xPosition);
     }
 
     public void incrementRotationAngle(double degrees){
@@ -49,6 +50,7 @@ public class Lance extends Entity{
 
     public void updateXPosition(int updateVal){
         xPosition += updateVal;
+        System.out.println(xPosition);
     }
 
     public void updateYPosition(int updateVal){
