@@ -28,14 +28,14 @@ public class Barrier extends Entity {
         health = DEFAULT_HEALTH;
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
         actualShape = boundingBox;
-
+        length = screenWidth / 50;
 
        
     }
 
     public void setL(double l) {
         L = l;
-        length = L / 5;
+        length = L / (double) 5;
         boundingBox.setRect(xPosition, yPosition, length, thickness);
     }
     @Override
