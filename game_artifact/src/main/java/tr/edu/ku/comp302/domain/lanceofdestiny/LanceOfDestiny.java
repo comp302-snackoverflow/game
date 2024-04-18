@@ -1,7 +1,6 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 
-import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
@@ -53,9 +52,8 @@ public class LanceOfDestiny implements Runnable{
                 // Handle rotation logic for 'D' key
                 handleRotationLogic(KeyboardHandler.buttonDPressed && !KeyboardHandler.buttonAPressed, 20.0);
 
-                boolean steadyStateBoolean = KeyboardHandler.buttonAReleased && KeyboardHandler.buttonDReleased ||
-                                                (KeyboardHandler.buttonAPressed && KeyboardHandler.buttonDPressed);
-                handleSteadyStateLogic(steadyStateBoolean, 45);
+                handleSteadyStateLogic(KeyboardHandler.buttonAPressed == KeyboardHandler.buttonDPressed, 45);
+
                 updates++;
                 deltaUpdate--;
             }
