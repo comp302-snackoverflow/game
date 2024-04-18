@@ -12,3 +12,5 @@
   5. _hotfix/..._: Branches for addressing critical issues or bugs that require immediate action.
   6. _test/..._: Branches for testing purposes, such as writing or updating unit tests.
   7. _rules/..._: Branches for updating this file only.
+
+* Avoid unnecessary commenting.
