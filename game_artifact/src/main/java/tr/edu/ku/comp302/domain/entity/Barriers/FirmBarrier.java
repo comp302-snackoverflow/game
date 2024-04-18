@@ -1,7 +1,6 @@
 package tr.edu.ku.comp302.domain.entity.Barriers;
 import java.util.Random;
 
-import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.CircularMovement;
 import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.HorizontalMovement;
 
 public class FirmBarrier extends Barrier{

@@ -1,7 +1,7 @@
 package tr.edu.ku.comp302.domain.entity.Barriers;
 
 import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.CircularMovement;
-import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.HorizontalMovement;
+
 
 public class ExplosiveBarrier extends Barrier {
 
