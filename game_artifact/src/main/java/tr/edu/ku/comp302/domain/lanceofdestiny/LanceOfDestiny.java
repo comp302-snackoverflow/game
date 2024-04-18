@@ -151,10 +151,6 @@ public class LanceOfDestiny implements Runnable{
         }
     }
 
-    private void calculateAndMoveLance() {
-    }
-
-
 //    private void handleArrowKeyPress(boolean arrowKeyPressed, long[] keyPressTimes, int index, long currentTime, double speed, double[] remainderHolder) {
 //        if (arrowKeyPressed) { //
 //            if (keyPressTimes[index] == 0) {
