@@ -134,19 +134,17 @@ public class LanceOfDestiny implements Runnable{
         } else {
             if (lastMoving != null) {
                 int index = lastMoving == 'l' ? 1 : 0;
-                if (currentTime - keyPressTimes[index] >= 500_000_000) {
-                    keyPressTimes[index] = 0;
-                    remainder[index] = 0;
+                remainder[index] = 0;
+                keyPressTimes[index] = 0;
+                long elapsedTime = currentTime - lastMovingTime;
+                if (elapsedTime >= 500_000_000) {
                     lastMoving = null;
                     lastMovingTime = 0;
                 } else {
-                    long elapsedTime = currentTime - lastMovingTime;
-                    if (elapsedTime < 500_000_000) {
-                        int minPx = calculateMinIntegerPxMovement(tapSpeed);
-                        double minNsToMove = minPx / tapSpeed;
-                        if (elapsedTime >= minNsToMove) {
-                            levelPanel.getLanceView().getLance().updateXPosition(lastMoving == 'l' ? -minPx : minPx);
-                        }
+                    int minPx = calculateMinIntegerPxMovement(tapSpeed);
+                    double minNsToMove = minPx / tapSpeed;
+                    if (elapsedTime >= minNsToMove) {
+                        levelPanel.getLanceView().getLance().updateXPosition(lastMoving == 'l' ? -minPx : minPx);
                     }
                 }
             }
