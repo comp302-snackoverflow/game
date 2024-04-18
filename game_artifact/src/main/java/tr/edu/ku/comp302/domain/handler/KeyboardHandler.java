@@ -29,11 +29,9 @@ public class KeyboardHandler implements KeyListener {
                 break;
             case KeyEvent.VK_A:
                 buttonAPressed = true;
-                buttonAReleased = false;
                 break;
             case KeyEvent.VK_D:
                 buttonDPressed = true;
-                buttonDReleased = false;
                 break;
         }
     }
@@ -49,11 +47,9 @@ public class KeyboardHandler implements KeyListener {
                 break;
             case KeyEvent.VK_A:
                 buttonAPressed = false;
-                buttonAReleased = true;
                 break;
             case KeyEvent.VK_D:
                 buttonDPressed = false;
-                buttonDReleased = true;
                 break;
         }
     }

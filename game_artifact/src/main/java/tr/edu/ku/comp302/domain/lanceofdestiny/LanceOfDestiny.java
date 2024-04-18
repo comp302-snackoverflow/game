@@ -1,11 +1,8 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
-
-import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
-
 
 public class LanceOfDestiny implements Runnable{
 
@@ -59,7 +56,7 @@ public class LanceOfDestiny implements Runnable{
                 handleRotationLogic(KeyboardHandler.buttonDPressed, keyPressTimes, currentTime, 1, 0.4, remainderHolder);
 
 
-                if (KeyboardHandler.buttonAReleased && KeyboardHandler.buttonDReleased || (KeyboardHandler.buttonAPressed && KeyboardHandler.buttonDPressed)){
+                if (KeyboardHandler.buttonAPressed == KeyboardHandler.buttonDPressed) {
                         if (releaseTime == 0){
                             releaseTime = System.nanoTime();
                         }else{
