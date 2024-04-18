@@ -23,15 +23,6 @@ public class LanceView {
         g2d.drawImage(lanceImage, (int) lance.getXPosition(), (int) lance.getYPosition(), null);
     }
 
-    public void moveLance(int px){
-        if (KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed){
-            lance.updateXPosition(-px);
-        }else if (!KeyboardHandler.leftArrowPressed && KeyboardHandler.rightArrowPressed){
-            lance.updateXPosition(px);
-        }
-        // TODO: Add left or right arrow tap case in here.
-    }
-
     public void rotateLance(double degrees){
         lance.incrementRotationAngle(degrees);
     }
