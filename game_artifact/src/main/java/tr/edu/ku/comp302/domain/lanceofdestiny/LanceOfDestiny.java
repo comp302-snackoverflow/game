@@ -34,27 +34,24 @@ public class LanceOfDestiny implements Runnable{
         double steadyStateTime = 0.0;
         int frames = 0;
         int updates = 0;
-        double total = 0.0;
+        long[] arrowKeyPressTimes = new long[2];    // [rightArrowKeyPressTime, leftArrowKeyPressTime]
+        double[] totalArrowKeyPressTimes = new double[2];   // [totalRightArrowKey, totalLeftArrowKey]
         double deltaUpdate = 0.0;
         double deltaFrame = 0.0;
-        double speed = levelPanel.getLanceView().getLance().getSpeedWithHold();     // TODO: Change when player can resize screen
+        double speed = levelPanel.getLanceView().getLance().getSpeedWithHold();
         // TODO: Change while loop condition
         while (true){
             long currentTime = System.nanoTime();
             deltaUpdate += (currentTime - previousTime)/ timePerUpdate;
             deltaFrame += (currentTime - previousTime)/ timePerFrame;
-            total +=  (double)(currentTime - previousTime) / 1_000_000_000.0;
-
             previousTime = currentTime;
             if (deltaUpdate >= 1){
+                handleArrowKeyPress(KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed,
+                                    arrowKeyPressTimes, 0, currentTime, speed, totalArrowKeyPressTimes);
 
-                if ((KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed) ||
-                        (!KeyboardHandler.rightArrowPressed && KeyboardHandler.leftArrowPressed)){
-                    if (total >= 1.0/speed){
-                        levelPanel.getLanceView().moveLance(1);
-                        total -= 1.0/speed;
-                    }
-                }
+                handleArrowKeyPress(KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed,
+                        arrowKeyPressTimes, 1, currentTime, speed, totalArrowKeyPressTimes);
+
                 // Handle rotation logic for 'A' key
                 handleRotationLogic(KeyboardHandler.buttonAPressed, keyPressTimes, currentTime, 0, -0.4, remainderHolder);
 
@@ -75,9 +72,12 @@ public class LanceOfDestiny implements Runnable{
                                 releaseTime = 0;
                             }
                         }
+                }else{
+                    releaseTime = 0;
                 }
                 updates++;
                 deltaUpdate--;
+
 
             }
             if (deltaFrame >= 1){
@@ -86,6 +86,25 @@ public class LanceOfDestiny implements Runnable{
                 deltaFrame--;
             }
 
+        }
+    }
+
+    private void handleArrowKeyPress(boolean arrowKeyPressed, long[] keyPressTimes, int index, long currentTime, double speed, double[] remainderHolder) {
+        if (arrowKeyPressed) {
+            if (keyPressTimes[index] == 0) {
+                keyPressTimes[index] = currentTime;
+            } else {
+                long elapsedTime = currentTime - keyPressTimes[index];
+                double elapsedMs = (double) elapsedTime / 1_000_000.0 + remainderHolder[index];
+                if (elapsedMs >= 2.0 / speed) {
+                    levelPanel.getLanceView().moveLance(2);
+                    keyPressTimes[index] = 0;
+                    remainderHolder[index] -= 2.0 / speed;
+                }
+            }
+        } else {
+            keyPressTimes[index] = 0;
+            remainderHolder[index] = 0;
         }
     }
 
@@ -104,10 +123,9 @@ public class LanceOfDestiny implements Runnable{
             }
         } else {
             keyPressTimes[index] = 0;
+            remainderHolder[index] = 0;
         }
     }
-
-
 
     private void startGameLoop(){
         gameThread = new Thread(this);
