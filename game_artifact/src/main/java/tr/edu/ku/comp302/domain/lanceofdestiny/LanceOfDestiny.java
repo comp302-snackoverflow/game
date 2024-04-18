@@ -73,6 +73,7 @@ public class LanceOfDestiny implements Runnable{
 
         }
     }
+
     // Warning: DO NOT try to make this method clean. You will most likely fail.
     // Let's spend our time in more valuable stuff like writing actually useful code
     // instead of trying to invent key tap event in Swing.
@@ -100,9 +101,9 @@ public class LanceOfDestiny implements Runnable{
                 keyPressTimes[index] = currentTime;
             }
 
-            long elapsedTime = currentTime - keyPressTimes[index];
-            double elapsedMs = ((double) elapsedTime / 1_000_000.0) + remainder[index];
-            double speed = (currentTime - lastMovingTime) / 1_000_000. >= 50 ? holdSpeed : tapSpeed;
+            double elapsedTime = currentTime - keyPressTimes[index];
+            double elapsedMs = elapsedTime / 1_000_000.0 + remainder[index];
+            double speed = (currentTime - lastMovingTime) / 1_000_000.0 >= 50 ? holdSpeed : tapSpeed;
             int minPx = calculateMinIntegerPxMovement(speed);
             double minMsToMove = minPx * 1000.0 / speed;
 
@@ -119,7 +120,7 @@ public class LanceOfDestiny implements Runnable{
                     remainder[index] = 0;
                     keyPressTimes[index] = currentTime; // used as last moving time I guess
                 }
-                double tapTime = (currentTime - lastMovingTime) / 1_000_000.;
+                double tapTime = (currentTime - lastMovingTime) / 1_000_000.0;
                 if (tapTime >= 500) {
                     tapMoving = false;
                     lastMoving = null;
@@ -128,7 +129,7 @@ public class LanceOfDestiny implements Runnable{
                     keyPressTimes[index] = 0;
                 } else {
                     double elapsedTime = currentTime - keyPressTimes[index];
-                    double elapsedMs = elapsedTime / 1_000_000. + remainder[index];
+                    double elapsedMs = elapsedTime / 1_000_000.0 + remainder[index];
                     int minPx = calculateMinIntegerPxMovement(tapSpeed);
                     double minMsToMove = minPx * 1000. / tapSpeed;
                     if (elapsedMs >= minMsToMove) {
