@@ -7,17 +7,20 @@ import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 
 public class LanceOfDestiny implements Runnable{
-
     private MainFrame mainFrame;
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
     private Thread gameThread;
+    private Character lastMoving;
+    private long lastMovingTime;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
         mainFrame = new MainFrame(levelPanel);
         levelPanel.requestFocusInWindow();
+        lastMoving = null;
+        lastMovingTime = 0;
         startGameLoop();
     }
 
@@ -32,32 +35,35 @@ public class LanceOfDestiny implements Runnable{
         double[] totalArrowKeyPressTimes = new double[2];   // [totalRightArrowKey, totalLeftArrowKey]
         double deltaUpdate = 0.0;
         double deltaFrame = 0.0;
-        double speed = levelPanel.getLanceView().getLance().getSpeedWithHold();
+        double holdSpeed = levelPanel.getLanceView().getLance().getSpeedWithHold();
+        double tapSpeed = levelPanel.getLanceView().getLance().getSpeedWithTap();
         // TODO: Change while loop condition
-        while (true){
+        while (true) {
             long currentTime = System.nanoTime();
-            deltaUpdate += (currentTime - previousTime)/ timePerUpdate;
-            deltaFrame += (currentTime - previousTime)/ timePerFrame;
+            deltaUpdate += (currentTime - previousTime) / timePerUpdate;
+            deltaFrame += (currentTime - previousTime) / timePerFrame;
             previousTime = currentTime;
-            if (deltaUpdate >= 1){
-                handleArrowKeyPress(KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed,
-                                    arrowKeyPressTimes, 0, currentTime, speed, totalArrowKeyPressTimes);
+            if (deltaUpdate >= 1) {
+                boolean moveLeft = KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed;
+                boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
 
-                handleArrowKeyPress(KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed,
-                        arrowKeyPressTimes, 1, currentTime, speed, totalArrowKeyPressTimes);
+                handleLanceMovement(moveLeft, moveRight, arrowKeyPressTimes,        // I hate my life
+                        currentTime, tapSpeed, holdSpeed, totalArrowKeyPressTimes); // Thanks, COMP 302! ☺
 
-                // Handle rotation logic for 'A' key
-                handleRotationLogic(KeyboardHandler.buttonAPressed && !KeyboardHandler.buttonDPressed, -20.0);
+                // TODO check names
+                boolean rotateCCW = KeyboardHandler.buttonAPressed && !KeyboardHandler.buttonDPressed;
+                boolean rotateCW = KeyboardHandler.buttonDPressed && !KeyboardHandler.buttonAPressed;
 
-                // Handle rotation logic for 'D' key
-                handleRotationLogic(KeyboardHandler.buttonDPressed && !KeyboardHandler.buttonAPressed, 20.0);
+                handleRotationLogic(rotateCCW, -20.0);
+                handleRotationLogic(rotateCW, 20.0);
 
-                handleSteadyStateLogic(KeyboardHandler.buttonAPressed == KeyboardHandler.buttonDPressed, 45);
+                handleSteadyStateLogic(!rotateCCW && !rotateCW, 45);
 
                 updates++;
                 deltaUpdate--;
             }
-            if (deltaFrame >= 1){
+
+            if (deltaFrame >= 1) {
                 levelPanel.repaint();
                 frames++;
                 deltaFrame--;
@@ -66,25 +72,114 @@ public class LanceOfDestiny implements Runnable{
         }
     }
 
-    private void handleArrowKeyPress(boolean arrowKeyPressed, long[] keyPressTimes, int index, long currentTime, double speed, double[] remainderHolder) {
-        if (arrowKeyPressed) {
+//    private void handleArrowKeyPress(boolean arrowKeyPressed, long[] keyPressTimes, int index, long currentTime, double tapSpeed, double holdSpeed, double[] remainderHolder) {
+//        if (arrowKeyPressed || tapMoving) {
+//            if (keyPressTimes[index] == 0) {
+//                keyPressTimes[index] = currentTime;
+//                tapMoving = true;
+//            }
+//            if (currentTime - keyPressTimes[0]  500_000_000 || currentTime - keyPressTimes[1] < 500_000_000) {
+//                tapMoving = true;
+//            }
+//            long elapsedTime = currentTime - keyPressTimes[index];
+//            double elapsedMs = ((double) elapsedTime / 1_000_000.0) + remainderHolder[index];
+//            int minPx = calculateMinIntegerPxMovement();
+//            double speed = tapSpeed;
+//            if (elapsedMs >= 150) {
+//                speed = holdSpeed;
+//            }
+//            double minMsToMove =  minPx * 1000.0 / speed;
+//            if (elapsedMs >= minMsToMove){
+//                remainderHolder[index] = elapsedMs - minMsToMove;
+//                keyPressTimes[index] = System.nanoTime();
+//                levelPanel.getLanceView().moveLance(minPx);
+//            }
+//        } else {
+//            if (currentTime - keyPressTimes[0] < 500_000_000 || currentTime - keyPressTimes[1] < 500_000_000) {
+//                tapMoving = true;
+//            } else {
+//                tapMoving = false;
+//                keyPressTimes[index] = 0;
+//                remainderHolder[index] = 0;
+//            }
+//        }
+//    }
+
+    private void handleLanceMovement(boolean leftPressed, boolean rightPressed, long[] keyPressTimes, long currentTime, double tapSpeed, double holdSpeed, double[] remainder) {
+        if (leftPressed != rightPressed) {
+            int index = leftPressed ? 1 : 0;
+            Character oldLastMoving = lastMoving;
+            lastMoving = leftPressed ? 'l' : 'r';
+
+            if (oldLastMoving == null || !oldLastMoving.equals(lastMoving)) {
+                lastMovingTime = currentTime;
+            }
+
             if (keyPressTimes[index] == 0) {
                 keyPressTimes[index] = currentTime;
             }
+
+
             long elapsedTime = currentTime - keyPressTimes[index];
-            double elapsedMs = ((double) elapsedTime / 1_000_000.0) + remainderHolder[index];
-            int minPx = calculateMinIntegerPxMovement();
-            double minMsToMove =  minPx * 1000.0 / speed;
+            double elapsedMs = ((double) elapsedTime / 1_000_000.0) + remainder[index];
+            double speed = (currentTime - lastMovingTime) >= 50_000_000 ? holdSpeed : tapSpeed;
+            int minPx = calculateMinIntegerPxMovement(speed);
+            double minMsToMove = minPx * 1000.0 / speed;
+
             if (elapsedMs >= minMsToMove){
-                remainderHolder[index] = elapsedMs - minMsToMove;
+                levelPanel.getLanceView().getLance().updateXPosition(leftPressed ? -minPx : minPx);
+                remainder[index] = elapsedMs - minMsToMove;
                 keyPressTimes[index] = System.nanoTime();
-                levelPanel.getLanceView().moveLance(minPx);
             }
         } else {
-            keyPressTimes[index] = 0;
-            remainderHolder[index] = 0;
+            if (lastMoving != null) {
+                int index = lastMoving == 'l' ? 1 : 0;
+                if (currentTime - keyPressTimes[index] >= 500_000_000) {
+                    keyPressTimes[index] = 0;
+                    remainder[index] = 0;
+                    lastMoving = null;
+                    lastMovingTime = 0;
+                } else {
+                    long elapsedTime = currentTime - lastMovingTime;
+                    if (elapsedTime < 500_000_000) {
+                        int minPx = calculateMinIntegerPxMovement(tapSpeed);
+                        double minNsToMove = minPx / tapSpeed;
+                        if (elapsedTime >= minNsToMove) {
+                            levelPanel.getLanceView().getLance().updateXPosition(lastMoving == 'l' ? -minPx : minPx);
+                        }
+                    }
+                }
+            }
         }
     }
+
+    private void calculateAndMoveLance() {
+    }
+
+
+//    private void handleArrowKeyPress(boolean arrowKeyPressed, long[] keyPressTimes, int index, long currentTime, double speed, double[] remainderHolder) {
+//        if (arrowKeyPressed) { //
+//            if (keyPressTimes[index] == 0) {
+//                keyPressTimes[index] = currentTime;
+//            }
+//            long elapsedTime = currentTime - keyPressTimes[index];
+//            double elapsedMs = ((double) elapsedTime / 1_000_000.0) + remainderHolder[index];
+//            int minPx = calculateMinIntegerPxMovement();
+//            double minMsToMove =  minPx * 1000.0 / speed;
+//            if (elapsedMs >= minMsToMove){
+//                remainderHolder[index] = elapsedMs - minMsToMove;
+//                keyPressTimes[index] = System.nanoTime();
+//                levelPanel.getLanceView().moveLance(minPx);
+//            }
+//        } else if (currentTime - keyPressTimes[0] >= 500_000_000 && currentTime - keyPressTimes[1] >= 500_000_000) {
+//            keyPressTimes[index] = 0;
+//            remainderHolder[index] = 0;
+//        }
+//    }
+//
+//    private void tapMove(long[] keyPressTimes, int index, long currentTime, double speed, double[] remainderHolder) {
+//
+//    }
 
     private void handleRotationLogic(boolean keyPressed, double angularSpeed) {
         if (keyPressed) {
@@ -104,8 +199,8 @@ public class LanceOfDestiny implements Runnable{
         return angularSpeed * getMsPerUpdate() / 1000.0;
     }
 
-    private int calculateMinIntegerPxMovement(){
-        double speedInMs = levelPanel.getLanceView().getLance().getSpeedWithHold() / 1000.0;
+    private int calculateMinIntegerPxMovement(double speed){
+        double speedInMs = speed / 1000.0;
         double onePxMs = 1.0 / speedInMs;
         if (onePxMs >= getMsPerUpdate()){
             return 1;
