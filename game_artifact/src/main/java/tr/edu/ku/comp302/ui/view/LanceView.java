@@ -36,8 +36,6 @@ public class LanceView {
         lance.incrementRotationAngle(degrees);
     }
 
-
-
     public Lance getLance() {
         return lance;
     }
