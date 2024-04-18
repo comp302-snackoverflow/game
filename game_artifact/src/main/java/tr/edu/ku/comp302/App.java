@@ -36,6 +36,7 @@ public class App
     // xPositionStart : int r = (int) w/52
     //x positionInterval : (int) w/52
 
+    /*
     public static List<BarrierView> generateBarriers(double w, double h) {
         List<BarrierView> barriers = new ArrayList<>();
         int x_interval = (int) w/52; // interval between the barriers
@@ -54,19 +55,19 @@ public class App
         }
         return barriers;
     }
-
+*/
     //Generate single barrier for test purposes 
 
-    /*
+
     public static List<BarrierView> generateBarriers(double w, double h) {
         List<BarrierView> barriers = new ArrayList<>();
         int x_interval = (int) w/52; // interval between the barriers
         int queue = 0;
        
-        barriers.add(new BarrierView(new SimpleBarrier(w/2, w/2, w, h)));
+        barriers.add(new BarrierView(new ExplosiveBarrier(w/2, h/2, w, h)));
                 
         return barriers;
     }
-     */
+
     
 }
