@@ -96,10 +96,11 @@ public class LanceOfDestiny implements Runnable{
             } else {
                 long elapsedTime = currentTime - keyPressTimes[index];
                 double elapsedMs = (double) elapsedTime / 1_000_000.0 + remainderHolder[index];
-                if (elapsedMs >= 2.0 / speed) {
-                    levelPanel.getLanceView().moveLance(2);
+                int minIntPxMovement = calculateMinIntegerPxMovement();
+                if (elapsedMs >= minIntPxMovement / speed) {
+                    levelPanel.getLanceView().moveLance(minIntPxMovement);
                     keyPressTimes[index] = 0;
-                    remainderHolder[index] -= 2.0 / speed;
+                    remainderHolder[index] -= minIntPxMovement / speed;
                 }
             }
         } else {
@@ -126,6 +127,22 @@ public class LanceOfDestiny implements Runnable{
             remainderHolder[index] = 0;
         }
     }
+
+    private int calculateMinIntegerPxMovement(){
+        double speedInMs = levelPanel.getLanceView().getLance().getSpeedWithHold() / 1000.0;
+        double onePxMs = 1.0 / speedInMs;
+        if (onePxMs >= getMsPerUpdate()){
+            return 1;
+        }else{
+            double pxPerUpdate = getMsPerUpdate() / onePxMs;
+            return ((int) pxPerUpdate) + 1;
+        }
+    }
+    private double getMsPerUpdate(){
+        return 1000.0 / UPS_SET;
+    }
+
+
 
     private void startGameLoop(){
         gameThread = new Thread(this);
