@@ -37,3 +37,4 @@ public class MainMenuPanel extends JPanel {
         add(logoutButton);
     }
 }
+

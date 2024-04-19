@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.frame;
 
+import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
@@ -7,6 +8,7 @@ import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.panel.LoginPanel;
 import tr.edu.ku.comp302.ui.panel.MainMenuPanel;
 import tr.edu.ku.comp302.ui.panel.RegisterPanel;
+import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
 
 import javax.swing.*;
@@ -65,7 +67,8 @@ public class MainFrame extends JFrame {
         Lance lance = new Lance(576, 600);
         LanceView lv = new LanceView(lance);
         Level level = new Level();
-        levelPanel = new LevelPanel(level, lv);
+        // levelPanel = new LevelPanel(level, lv); TODO: FIX THIS
+        levelPanel = new LevelPanel(level, lv, new FireBallView(new FireBall(600, 560)));
         ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
         levelPanel.repaint();
         levelPanel.setFocusable(true);

@@ -175,3 +175,4 @@ public class RegisterPanel extends JPanel {
         errorTextArea.setText("");
     }
 }
+
