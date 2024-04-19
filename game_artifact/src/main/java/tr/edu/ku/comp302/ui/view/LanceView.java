@@ -2,10 +2,8 @@ package tr.edu.ku.comp302.ui.view;
 
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
-import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class LanceView {
@@ -23,9 +21,6 @@ public class LanceView {
         g2d.drawImage(lanceImage, (int) lance.getXPosition(), (int) lance.getYPosition(), null);
     }
 
-    public void rotateLance(double degrees){
-        lance.incrementRotationAngle(degrees);
-    }
 
     public Lance getLance() {
         return lance;
