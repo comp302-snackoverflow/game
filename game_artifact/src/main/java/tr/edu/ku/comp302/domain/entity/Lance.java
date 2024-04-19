@@ -29,15 +29,14 @@ public class Lance extends Entity{
         }
     }
 
-    public void stayInSteadyState(double degrees){
+    public void returnToHorizontalState(double degrees){
         if (degrees >= Math.abs(rotationAngle)) {
             rotationAngle = 0;
-        } else if (rotationAngle > 0) {       // can also use incrementRotationAngle(Math.signum(rotationAngle) * -degrees);
-            incrementRotationAngle(-degrees); // instead of another branch; however, this is probably more readable
+        } else if (rotationAngle > 0) {
+            incrementRotationAngle(-degrees);
         } else if (rotationAngle < 0) {
             incrementRotationAngle(degrees);
         }
-
     }
     public boolean canRotateCounterClockwise(double degrees){
         return rotationAngle + degrees >= -45;
