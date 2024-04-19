@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.entity.Barriers;
 
 import tr.edu.ku.comp302.domain.entity.Remains;
 import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.CircularMovement;
+import tr.edu.ku.comp302.ui.view.RemainsView;
 
 
 public class ExplosiveBarrier extends Barrier {
@@ -17,12 +18,13 @@ public class ExplosiveBarrier extends Barrier {
         this.MovementStrategy = new CircularMovement(screenWidth, screenHeight, this);
     }
 
-    public void dropRemains(){
+    public Remains dropRemains(){
         // barrier is removed then the asset remains added 
         // starting from the x and y position fot he center of 
         // the barrier that was destroyed the remains fall with constant speed 
         remain = new Remains(this.getXPosition() + this.getLength()/2, this.getYPosition() + this.getThickness()/2, screenWidth, screenHeight);
-        //call to remain view here 
+        //call to remain view here
+        return remain;
         
     }
 

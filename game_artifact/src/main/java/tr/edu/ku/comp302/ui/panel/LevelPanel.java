@@ -6,9 +6,11 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
+import tr.edu.ku.comp302.ui.view.RemainsView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -17,6 +19,8 @@ public class LevelPanel extends JPanel {
     private LanceView lanceView;
     private FireBallView fireBallView;
     private List<BarrierView> barriers;
+
+    private List <RemainsView> remains = new ArrayList<>();
 
     public LevelPanel(Level level, LanceView lanceView, FireBallView fireBallView, List<BarrierView> barriers) {
         this.level = level;
@@ -31,6 +35,7 @@ public class LevelPanel extends JPanel {
         lanceView.render(g);
         fireBallView.render(g);
         IntStream.range(0, barriers.size()).forEach(i -> barriers.get(i).render(g)); // Below throws an exception.
+        IntStream.range(0, remains.size()).forEach(i-> remains.get(i).render(g));
         // barriers.forEach(barrier -> barrier.render(g));
     }
     public void setPanelSize(Dimension size){
@@ -50,6 +55,13 @@ public class LevelPanel extends JPanel {
                     barrierView.getBarrierImage(),
                     (int) barrierView.getBarrier().getLength(),
                     (int) barrierView.getBarrier().getThickness()
+            ));
+        });
+        remains.forEach(remainView -> {
+            remainView.setRemainsImage(ImageHandler.resizeImage(
+                    remainView.getRemainsImage(),
+                     remainView.getRemains().getSize(),
+                     remainView.getRemains().getSize()
             ));
         });
     }
@@ -78,5 +90,13 @@ public class LevelPanel extends JPanel {
     }
     public List<BarrierView> getBarrierViews() {
         return barriers;
+    }
+
+    public List<RemainsView> getRemainViews() {
+        return remains;
+    }
+
+    public void setRemainView(List<RemainsView> remains) {
+        this.remains = remains;
     }
 }

@@ -3,11 +3,13 @@ package tr.edu.ku.comp302.domain.lanceofdestiny;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
 import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.Remains;
 import tr.edu.ku.comp302.domain.handler.CollisionHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.BarrierView;
+import tr.edu.ku.comp302.ui.view.RemainsView;
 
 public class LanceOfDestiny implements Runnable{
 
@@ -87,10 +89,12 @@ public class LanceOfDestiny implements Runnable{
 
                 for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
                     if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
-                        levelPanel.getBarrierViews().remove(i);
                         if(levelPanel.getBarrierViews().get(i).getBarrier() instanceof ExplosiveBarrier){
-                            ((ExplosiveBarrier)levelPanel.getBarrierViews().get(i).getBarrier()).dropRemains();
+                            Remains remain = ((ExplosiveBarrier)levelPanel.getBarrierViews().get(i).getBarrier()).dropRemains();
+                            RemainsView remainView = new RemainsView(remain);
+                            levelPanel.getRemainViews().add(remainView);
                         }
+                        levelPanel.getBarrierViews().remove(i);
                         break;
                     }
                 }
@@ -102,6 +106,12 @@ public class LanceOfDestiny implements Runnable{
                         barrierView.getBarrier().move(); 
                     }
                 }
+
+                for (RemainsView remainsView : levelPanel.getRemainViews()) {
+                    remainsView.getRemains().move();
+                    //TODO: handle collision with lance, and also remove when it goes below the wall.
+                }
+
                 updates++;
                 deltaUpdate--;
 
