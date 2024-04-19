@@ -19,9 +19,9 @@ public class LanceOfDestiny implements Runnable{
     private final int UPS_SET = 200;
     private Thread gameThread;
 
-    public LanceOfDestiny(LevelPanel levelPanel) {
+    public LanceOfDestiny(LevelPanel levelPanel, MainFrame mainFrame) {
         this.levelPanel = levelPanel;
-        mainFrame = new MainFrame(levelPanel);
+        this.mainFrame = mainFrame;
         levelPanel.requestFocusInWindow();
         startGameLoop();
     }

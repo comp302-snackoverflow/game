@@ -6,19 +6,25 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
-    private LevelPanel levelPanel;
+    private JPanel panel;
 
-    public MainFrame(LevelPanel levelPanel) {
-        this.levelPanel = levelPanel;
+    public MainFrame(JPanel panel) {
+        this.panel = panel;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(levelPanel);
+        add(panel);
         setLocationRelativeTo(null);
         setResizable(false);
-        levelPanel.setPanelSize(new Dimension(1280, 720));
+        Dimension size = new Dimension(1280, 720);
+        panel.setMinimumSize(size);
+        panel.setPreferredSize(size);
+        panel.setMaximumSize(size);
+        
         pack();
-        levelPanel.repaint();
-        levelPanel.setFocusable(true);
-        levelPanel.requestFocusInWindow();
+        panel.repaint();
+        panel.setFocusable(true);
+        panel.requestFocusInWindow();
         setVisible(true);
+
+        
     }
 }
