@@ -2,12 +2,10 @@ package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 import tr.edu.ku.comp302.domain.handler.CollisionHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
-import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 public class LanceOfDestiny implements Runnable{
 
-    private MainFrame mainFrame;
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
@@ -15,7 +13,6 @@ public class LanceOfDestiny implements Runnable{
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
-        mainFrame = new MainFrame(levelPanel);
         levelPanel.requestFocusInWindow();
         startGameLoop();
     }
