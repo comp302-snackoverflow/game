@@ -132,8 +132,8 @@ public class CircularMovement implements IMovementStrategy {
             i++;
         }
 
-        System.out.println(IsEastCollision + "__ EAST __ WEST __ " + IsWestCollision);
-        System.out.println(IsNorthCollision + "__ NORTH __ SOUTH __ " + IsSouthCollision);
+       // System.out.println(IsEastCollision + "__ EAST __ WEST __ " + IsWestCollision);
+        //System.out.println(IsNorthCollision + "__ NORTH __ SOUTH __ " + IsSouthCollision);
         //if there are collisions from the sides at the same time
         if(IsEastCollision && IsWestCollision){
             stiffness = true;
@@ -228,7 +228,7 @@ public class CircularMovement implements IMovementStrategy {
 
     }
 
-    //CHANGE DIRECTION TO BE ADDED
+    //CHANGE DIRECTION TO BE ADDED(?)
 
 
 }

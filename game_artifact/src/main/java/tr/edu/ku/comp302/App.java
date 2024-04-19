@@ -63,17 +63,18 @@ public class App
 
     //Generate single barrier for test purposes 
 
-/*
-    public static List<BarrierView> generateBarriers(double w, double h) {
+
+    /*public static List<BarrierView> generateBarriers(double w, double h) {
             List<BarrierView> barriers = new ArrayList<>();
             int x_interval = (int) w/52; // interval between the barriers
             int queue = 0;
         
-            barriers.add(new BarrierView(new ExplosiveBarrier(w/2, h/2, w, h)));
+            //barriers.add(new BarrierView(new ExplosiveBarrier(w/2, h/2, w, h)));
+            barriers.add(new BarrierView(new SimpleBarrier(w/2, h/2, w, h)));
                     
             return barriers;
-        }
- */
+        }*/
+ 
     
 
     

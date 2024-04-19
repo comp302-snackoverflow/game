@@ -18,6 +18,8 @@ public class HorizontalMovement implements IMovementStrategy{
     double BarrierThickness;
     double BarrierLength;
     boolean stiffness = true;
+    long previousTime = 0;
+    long currentTime = 0;
 
 
     
@@ -26,6 +28,9 @@ public class HorizontalMovement implements IMovementStrategy{
     static final short RIGHT_DIRECTION = 1;
     static final short LEFT_DIRECTION = 0;
     short direction = RIGHT_DIRECTION;
+    double probabilisticMove = 0;
+
+
 
 
     static final double BARRIER_SPEED = 0.5;
@@ -51,19 +56,29 @@ public class HorizontalMovement implements IMovementStrategy{
      */
     @Override
     public void move(){
+        currentTime = System.currentTimeMillis();
+        if (currentTime - previousTime >= 1000){
+            probabilisticMove = Math.random();
+            previousTime = currentTime;
 
-        if (!stiffness){
-            Barrier.setSpeed(BARRIER_SPEED);
-
-            if (direction == RIGHT_DIRECTION) {
-                Barrier.setXPosition(Barrier.getXPosition() + Barrier.getSpeed());
-            }
-
-            else {
-                Barrier.setXPosition(Barrier.getXPosition() - Barrier.getSpeed());
+        }
+        //System.out.println(probabilisticMove);
+        if(probabilisticMove <= 0.2 && probabilisticMove >= 0 ){
+            if (!stiffness){
+                Barrier.setSpeed(BARRIER_SPEED);
+    
+                if (direction == RIGHT_DIRECTION) {
+                    Barrier.setXPosition(Barrier.getXPosition() + Barrier.getSpeed());
+                }
+    
+                else {
+                    Barrier.setXPosition(Barrier.getXPosition() - Barrier.getSpeed());
+                }
+    
             }
 
         }
+
         
     }
 
