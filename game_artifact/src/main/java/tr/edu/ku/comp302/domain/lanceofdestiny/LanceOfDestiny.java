@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 
+import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
@@ -15,9 +16,11 @@ public class LanceOfDestiny implements Runnable {
     private Character lastMoving;
     private long lastMovingTime;
     private boolean tapMoving;
+    private final Lance lance;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
+        lance = levelPanel.getLanceView().getLance();
         mainFrame = new MainFrame(levelPanel);
         levelPanel.requestFocusInWindow();
         lastMoving = null;
@@ -37,8 +40,8 @@ public class LanceOfDestiny implements Runnable {
         double[] totalArrowKeyPressTimes = new double[2];   // [totalRightArrowKey, totalLeftArrowKey]
         double deltaUpdate = 0.0;
         double deltaFrame = 0.0;
-        double holdSpeed = levelPanel.getLanceView().getLance().getSpeedWithHold();
-        double tapSpeed = levelPanel.getLanceView().getLance().getSpeedWithTap();
+        double holdSpeed = lance.getSpeedWithHold();
+        double tapSpeed = lance.getSpeedWithTap();
         // TODO: Change while loop condition
         while (true) {
             long currentTime = System.nanoTime();
@@ -56,10 +59,10 @@ public class LanceOfDestiny implements Runnable {
                 boolean rotateCCW = KeyboardHandler.buttonAPressed && !KeyboardHandler.buttonDPressed;
                 boolean rotateCW = KeyboardHandler.buttonDPressed && !KeyboardHandler.buttonAPressed;
 
-                handleRotationLogic(rotateCCW, -20.0);
-                handleRotationLogic(rotateCW, 20.0);
+                handleRotationLogic(rotateCCW, -Lance.rotationSpeed);
+                handleRotationLogic(rotateCW, Lance.rotationSpeed);
 
-                handleSteadyStateLogic(!rotateCCW && !rotateCW, 45);
+                handleSteadyStateLogic(!rotateCCW && !rotateCW, Lance.horizontalRecoverySpeed);
 
                 updates++;
                 deltaUpdate--;
@@ -108,7 +111,7 @@ public class LanceOfDestiny implements Runnable {
             double minMsToMove = minPx * 1000.0 / speed;
 
             if (elapsedMs >= minMsToMove) {
-                levelPanel.getLanceView().getLance().updateXPosition(leftPressed ? -minPx : minPx);
+                lance.updateXPosition(leftPressed ? -minPx : minPx);
                 remainder[index] = elapsedMs - minMsToMove;
                 keyPressTimes[index] = System.nanoTime();
             }
@@ -133,7 +136,7 @@ public class LanceOfDestiny implements Runnable {
                     int minPx = calculateMinIntegerPxMovement(tapSpeed);
                     double minMsToMove = minPx * 1000. / tapSpeed;
                     if (elapsedMs >= minMsToMove) {
-                        levelPanel.getLanceView().getLance().updateXPosition(lastMoving == 'l' ? -minPx : minPx);
+                        lance.updateXPosition(lastMoving == 'l' ? -minPx : minPx);
                         remainder[index] = elapsedMs - minMsToMove;
                         keyPressTimes[index] = System.nanoTime();
                     }
@@ -145,14 +148,14 @@ public class LanceOfDestiny implements Runnable {
     private void handleRotationLogic(boolean keyPressed, double angularSpeed) {
         if (keyPressed) {
             double angularChange = calculateAngularChangePerUpdate(angularSpeed);
-            levelPanel.getLanceView().rotateLance(angularChange);
+            lance.incrementRotationAngle(angularChange);
         }
     }
 
     private void handleSteadyStateLogic(boolean keyPressed, double angularSpeed) {
         if (keyPressed) {
             double angularChange = calculateAngularChangePerUpdate(angularSpeed);
-            levelPanel.getLanceView().getLance().returnToHorizontalState(angularChange);
+            lance.returnToHorizontalState(angularChange);
         }
     }
 
