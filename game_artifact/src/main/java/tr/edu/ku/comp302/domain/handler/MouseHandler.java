@@ -6,34 +6,35 @@ import java.awt.event.MouseListener;
 
 public class MouseHandler implements MouseListener{
 
+    public static boolean mouseClicked = false;
     @Override
     public void mouseClicked(MouseEvent arg0) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mouseClicked'");
+        return;
     }
 
     @Override
     public void mouseEntered(MouseEvent arg0) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mouseEntered'");
+        return;
     }
 
     @Override
     public void mouseExited(MouseEvent arg0) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mouseExited'");
+        return;
     }
 
     @Override
     public void mousePressed(MouseEvent arg0) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mousePressed'");
+        mouseClicked = true;
     }
 
     @Override
     public void mouseReleased(MouseEvent arg0) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mouseReleased'");
+        mouseClicked = false;
     }
     
 }

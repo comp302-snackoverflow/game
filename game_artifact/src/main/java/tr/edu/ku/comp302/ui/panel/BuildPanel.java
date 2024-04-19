@@ -5,15 +5,24 @@ import java.awt.Graphics;
 import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
+import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.Barriers.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
+import tr.edu.ku.comp302.domain.handler.MouseHandler;
+import tr.edu.ku.comp302.ui.view.BarrierView;
 
 public class BuildPanel extends JPanel {
     double height;
@@ -23,11 +32,14 @@ public class BuildPanel extends JPanel {
     ArrayList<Double> y_indexes = new ArrayList<>();
    String displayImagePath = "/assets/barrier_image.png";
 
+   private List<BarrierView> barriers = new ArrayList<>();
+
     public BuildPanel(double height, double width) {
         this.height = height;
         this.width = width;
         this.setLayout(null);
         displayBarrierSelections();
+        addMouseListener(new MouseHandler());
     }
 
     public void paintComponent(Graphics g){
@@ -44,8 +56,31 @@ public class BuildPanel extends JPanel {
                     , (int) (currentBarrierY + ((height / 2) - 80) / 10)
                     , null);
         
-        
-        
+        if (MouseHandler.mouseClicked) {
+            switch (displayImagePath) {
+                case "/assets/barrier_image.png":
+                    SimpleBarrier simpleBarrier = new SimpleBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
+                    BarrierView simpleView = new BarrierView(simpleBarrier);
+                    barriers.add(simpleView);
+                    break;
+                case "/assets/explosive_barrier.png":
+                    Barrier explosiveBarrier = new ExplosiveBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
+                    BarrierView explosiveView = new BarrierView(explosiveBarrier);
+                    barriers.add(explosiveView);
+                    break;
+                case "/assets/firm_barrier.png":
+                    Barrier firmBarrier = new FirmBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
+                    BarrierView firmView = new BarrierView(firmBarrier);
+                    barriers.add(firmView);
+                    break;
+            }
+
+            //TODO: Add a gift barrier.
+
+        }
+
+        IntStream.range(0, barriers.size()).forEach(i -> barriers.get(i).render(g));
+
 
         
         //lanceView.render(g);
@@ -58,6 +93,15 @@ public class BuildPanel extends JPanel {
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
+
+        barriers.forEach(barrierView -> {
+            barrierView.getBarrier().setL(width / 10.0);
+            barrierView.setBarrierImage(ImageHandler.resizeImage(
+                    barrierView.getBarrierImage(),
+                    (int) barrierView.getBarrier().getLength(),
+                    (int) barrierView.getBarrier().getThickness()
+            ));
+        });
         
     }
 
