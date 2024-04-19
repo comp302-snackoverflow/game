@@ -8,11 +8,14 @@ import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.panel.LoginPanel;
 import tr.edu.ku.comp302.ui.panel.MainMenuPanel;
 import tr.edu.ku.comp302.ui.panel.RegisterPanel;
+import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainFrame extends JFrame {
     private static final String LOGIN = "login";
@@ -64,11 +67,16 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareLevelPanel() {
-        Lance lance = new Lance(576, 600);
+        Lance lance = new Lance(576, 600, frameWidth, frameHeight);
         LanceView lv = new LanceView(lance);
         Level level = new Level();
         // levelPanel = new LevelPanel(level, lv); TODO: FIX THIS
-        levelPanel = new LevelPanel(level, lv, new FireBallView(new FireBall(600, 560)));
+        // levelPanel = new LevelPanel(level, lv,
+        // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)));
+        // TODO: FIX THIS AS WELL
+        levelPanel = new LevelPanel(level, lv,
+                new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)),
+                new ArrayList<>());
         ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
         levelPanel.repaint();
         levelPanel.setFocusable(true);

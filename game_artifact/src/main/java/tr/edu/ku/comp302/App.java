@@ -33,6 +33,8 @@ public class App
     }
 
     public static List<BarrierView> generateBarriers(double w, double h) {
+        // TODO: in MainFrame class, prepareLevelPanel method,
+        //  the constructor of levelPanel needs List<BarrierView>
         List<BarrierView> barriers = new ArrayList<>();
         for (int r = 0; r < 7; r++) {
             for (int c = 0; c < 30; c++) {
