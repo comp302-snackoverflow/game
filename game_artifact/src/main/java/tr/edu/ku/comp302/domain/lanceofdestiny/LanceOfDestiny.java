@@ -152,7 +152,7 @@ public class LanceOfDestiny implements Runnable{
     private void handleSteadyStateLogic(boolean keyPressed, double angularSpeed){
         if (keyPressed){
             double angularChange = calculateAngularChangePerUpdate(angularSpeed);
-            levelPanel.getLanceView().getLance().stayInSteadyState(angularChange);
+            levelPanel.getLanceView().getLance().returnToHorizontalState(angularChange);
         }
     }
 
