@@ -1,21 +1,41 @@
 package tr.edu.ku.comp302.domain.entity;
 
+
+import javax.swing.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.security.SecureRandom;
+
 public class FireBall extends Entity {
     private boolean isOverwhelmed = false;
-    private int size = 16;
+    private int size = 32;
     private double dx = 0;
     private double dy = 0;
     private double speed = 2; // Might change the speed later.
-
     //TODO: Add the player!
 
-    public FireBall(double xPosition, double yPosition) {
-        super(xPosition, yPosition);
+    public FireBall(double xPosition, double yPosition, double screenWidth, double screenHeight) {
+        super(xPosition, yPosition, screenWidth, screenHeight);
+        boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
+        actualShape = new Ellipse2D.Double(xPosition, yPosition, size, size);
+
+    }
+
+    @Override
+    public void handleCollision(boolean isWall) {
+        if (isWall) {
+            dx = -dx;
+            return;
+        }
+        dy = -dy; // TODO calculate new speed here;
+        dx = new SecureRandom().nextInt(-3, 4);
     }
 
     public void move() {
         xPosition += dx;
         yPosition += dy;
+        boundingBox.setRect(xPosition, yPosition, size, size);
+        actualShape.setFrame(xPosition, yPosition, size, size);
     }
     public void launchFireball() {
         this.dy = speed;
