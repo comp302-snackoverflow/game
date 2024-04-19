@@ -4,10 +4,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyboardHandler implements KeyListener {
-
     public static boolean leftArrowPressed = false;
     public static boolean rightArrowPressed = false;
-    public static boolean wPressed = false;
+
+    public static boolean buttonAPressed = false;
+    public static boolean buttonDPressed = false;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -23,8 +24,11 @@ public class KeyboardHandler implements KeyListener {
             case KeyEvent.VK_LEFT:
                 leftArrowPressed = true;
                 break;
-            case KeyEvent.VK_W:
-                wPressed = true;
+            case KeyEvent.VK_A:
+                buttonAPressed = true;
+                break;
+            case KeyEvent.VK_D:
+                buttonDPressed = true;
                 break;
         }
     }
@@ -38,10 +42,12 @@ public class KeyboardHandler implements KeyListener {
             case KeyEvent.VK_LEFT:
                 leftArrowPressed = false;
                 break;
-            case KeyEvent.VK_W:
-                wPressed = false;
+            case KeyEvent.VK_A:
+                buttonAPressed = false;
+                break;
+            case KeyEvent.VK_D:
+                buttonDPressed = false;
                 break;
         }
     }
 }
-
