@@ -64,3 +64,4 @@ public class LevelPanel extends JPanel {
         this.fireBallView = fireBallView;
     }
 }
+

@@ -72,3 +72,4 @@ public class LanceOfDestiny implements Runnable{
         gameThread.start();
     }
 }
+

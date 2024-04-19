@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302;
 
-
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;

@@ -72,3 +72,4 @@ public class Lance extends Entity{
         this.speedWithTap = speedWithTap;
     }
 }
+
