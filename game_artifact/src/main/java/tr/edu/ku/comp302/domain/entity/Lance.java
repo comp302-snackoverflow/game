@@ -1,7 +1,6 @@
 package tr.edu.ku.comp302.domain.entity;
 
-public class Lance extends Entity{
-
+public class Lance extends Entity {
     private double length;
     private double L;
 
@@ -19,17 +18,17 @@ public class Lance extends Entity{
         System.out.println(xPosition);
     }
 
-    public void incrementRotationAngle(double degrees){
+    public void incrementRotationAngle(double degrees) {
         if (canRotateClockwise(degrees) && canRotateCounterClockwise(degrees)) {
             rotationAngle += degrees;
-        } else if (rotationAngle + degrees < -45){
+        } else if (rotationAngle + degrees < -45) {
             rotationAngle = -45;
-        } else if (rotationAngle + degrees > 45){
+        } else if (rotationAngle + degrees > 45) {
             rotationAngle = 45;
         }
     }
 
-    public void returnToHorizontalState(double degrees){
+    public void returnToHorizontalState(double degrees) {
         if (degrees >= Math.abs(rotationAngle)) {
             rotationAngle = 0;
         } else if (rotationAngle > 0) {
@@ -38,21 +37,22 @@ public class Lance extends Entity{
             incrementRotationAngle(degrees);
         }
     }
-    public boolean canRotateCounterClockwise(double degrees){
+
+    public boolean canRotateCounterClockwise(double degrees) {
         return rotationAngle + degrees >= -45;
     }
-    public boolean canRotateClockwise(double degrees){
+
+    public boolean canRotateClockwise(double degrees) {
         return rotationAngle + degrees <= 45;
     }
 
 
-
-    public void updateXPosition(int updateVal){
+    public void updateXPosition(int updateVal) {
         xPosition += updateVal;
         System.out.println(xPosition);
     }
 
-    public void updateYPosition(int updateVal){
+    public void updateYPosition(int updateVal) {
         yPosition += updateVal;
     }
 
@@ -73,7 +73,7 @@ public class Lance extends Entity{
         updateRelativeToL();
     }
 
-    private void updateRelativeToL(){
+    private void updateRelativeToL() {
         setLength(L);
         setThickness(20);
         setSpeedWithTap(L);
