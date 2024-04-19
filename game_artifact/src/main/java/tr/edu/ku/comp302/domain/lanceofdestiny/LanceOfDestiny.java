@@ -87,6 +87,8 @@ public class LanceOfDestiny implements Runnable{
                     ball.handleCollision(false);
                 }
 
+
+                //check if barrier is broken or not
                 for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
                     if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
                         if(levelPanel.getBarrierViews().get(i).getBarrier() instanceof ExplosiveBarrier){

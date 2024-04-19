@@ -46,9 +46,11 @@ public class LevelPanel extends JPanel {
         lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),
                 (int) lanceView.getLance().getLength(),
                 (int) lanceView.getLance().getThickness())) ;
+
         fireBallView.setFireBallImage(ImageHandler.resizeImage(fireBallView.getFireBallImage(),
                 fireBallView.getFireBall().getSize(),
                 fireBallView.getFireBall().getSize()));
+
         barriers.forEach(barrierView -> {
             barrierView.getBarrier().setL(size.getWidth() / 10.0);
             barrierView.setBarrierImage(ImageHandler.resizeImage(
@@ -57,13 +59,8 @@ public class LevelPanel extends JPanel {
                     (int) barrierView.getBarrier().getThickness()
             ));
         });
-        remains.forEach(remainView -> {
-            remainView.setRemainsImage(ImageHandler.resizeImage(
-                    remainView.getRemainsImage(),
-                     remainView.getRemains().getSize(),
-                     remainView.getRemains().getSize()
-            ));
-        });
+
+        
     }
 
     public Level getLevel() {

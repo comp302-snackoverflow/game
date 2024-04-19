@@ -14,6 +14,7 @@ public class RemainsView {
     public RemainsView(Remains remains){
         this.remains = remains;
         setRemainsImage();
+        
     }
 
     public void render(Graphics g){
@@ -37,6 +38,11 @@ public class RemainsView {
     }
 
     public void setRemainsImage() {
-        remainsImage = ImageHandler.getImageFromPath("/assets/remains_image.png");
+        remainsImage = 
+        ImageHandler.resizeImage(
+                    ImageHandler.getImageFromPath("/assets/remains_image.png"),
+                    getRemains().getSize(),
+                    getRemains().getSize()
+            );
     }
 }

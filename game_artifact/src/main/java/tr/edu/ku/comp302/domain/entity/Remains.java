@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 public class Remains extends Entity{
     
     private double speed = 1.5;
-    private int size = 1;
+    private int size = 50;
 
 
     public Remains(double xPosition, double yPosition, double screenWidth, double screenHeight) {
