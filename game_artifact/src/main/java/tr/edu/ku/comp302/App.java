@@ -19,12 +19,12 @@ import java.util.List;
 /**
  * Hello world!
  */
-public class App 
+public class App
 {
     public static void main(String[] args)
     {
         double w = 1280,
-               h = 800;
+                h = 800;
         Lance lance = new Lance(576, 600, w, h);
         LanceView lanceView = new LanceView(lance);
         FireBall fireBall = new FireBall(630, 500, w, h);
@@ -38,7 +38,7 @@ public class App
     // xPositionStart : int r = (int) w/52
     //x positionInterval : (int) w/52
 
-    
+
     public static List<BarrierView> generateBarriers(double w, double h) {
         List<BarrierView> barriers = new ArrayList<>();
         int x_interval = (int) w/52; // interval between the barriers
@@ -63,21 +63,21 @@ public class App
         return barriers;
     }
 
-    //Generate single barrier for test purposes 
+    //Generate single barrier for test purposes
 
 
     /*public static List<BarrierView> generateBarriers(double w, double h) {
             List<BarrierView> barriers = new ArrayList<>();
             int x_interval = (int) w/52; // interval between the barriers
             int queue = 0;
-        
+
             //barriers.add(new BarrierView(new ExplosiveBarrier(w/2, h/2, w, h)));
             barriers.add(new BarrierView(new SimpleBarrier(w/2, h/2, w, h)));
-                    
+
             return barriers;
         }*/
- 
-    
 
-    
+
+
+
 }

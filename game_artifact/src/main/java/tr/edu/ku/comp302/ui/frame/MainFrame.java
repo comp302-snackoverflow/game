@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.frame;
 
+import tr.edu.ku.comp302.ui.panel.BuildPanel;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 import javax.swing.*;
@@ -15,10 +16,14 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         Dimension size = new Dimension(1280, 720);
-        panel.setMinimumSize(size);
-        panel.setPreferredSize(size);
-        panel.setMaximumSize(size);
-        
+        if (panel instanceof LevelPanel) {
+            ((LevelPanel)panel).setPanelSize(size);
+        }
+        else if (panel instanceof BuildPanel) {
+            setMinimumSize(size);
+            setPreferredSize(size);
+            setMaximumSize(size);
+        }
         pack();
         panel.repaint();
         panel.setFocusable(true);
