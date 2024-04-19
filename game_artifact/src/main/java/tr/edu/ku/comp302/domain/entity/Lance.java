@@ -20,11 +20,11 @@ public class Lance extends Entity{
     }
 
     public void incrementRotationAngle(double degrees){
-        if (canRotateClockwise(degrees) && canRotateCounterClockwise(degrees)){
+        if (canRotateClockwise(degrees) && canRotateCounterClockwise(degrees)) {
             rotationAngle += degrees;
-        }else if (rotationAngle + degrees < -45){
+        } else if (rotationAngle + degrees < -45){
             rotationAngle = -45;
-        }else if (rotationAngle + degrees > 45){
+        } else if (rotationAngle + degrees > 45){
             rotationAngle = 45;
         }
     }

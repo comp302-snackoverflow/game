@@ -6,7 +6,7 @@ import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 
-public class LanceOfDestiny implements Runnable{
+public class LanceOfDestiny implements Runnable {
     private MainFrame mainFrame;
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
@@ -49,8 +49,8 @@ public class LanceOfDestiny implements Runnable{
                 boolean moveLeft = KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed;
                 boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
 
-                handleLanceMovement(moveLeft, moveRight, arrowKeyPressTimes,        // I hate my life
-                        currentTime, tapSpeed, holdSpeed, totalArrowKeyPressTimes); // Thanks, COMP 302! ☺
+                handleLanceMovement(moveLeft, moveRight, arrowKeyPressTimes,
+                        currentTime, tapSpeed, holdSpeed, totalArrowKeyPressTimes);
 
                 // TODO check names
                 boolean rotateCCW = KeyboardHandler.buttonAPressed && !KeyboardHandler.buttonDPressed;
@@ -107,7 +107,7 @@ public class LanceOfDestiny implements Runnable{
             int minPx = calculateMinIntegerPxMovement(speed);
             double minMsToMove = minPx * 1000.0 / speed;
 
-            if (elapsedMs >= minMsToMove){
+            if (elapsedMs >= minMsToMove) {
                 levelPanel.getLanceView().getLance().updateXPosition(leftPressed ? -minPx : minPx);
                 remainder[index] = elapsedMs - minMsToMove;
                 keyPressTimes[index] = System.nanoTime();
@@ -118,7 +118,7 @@ public class LanceOfDestiny implements Runnable{
                 if (!tapMoving) {
                     tapMoving = true;
                     remainder[index] = 0;
-                    keyPressTimes[index] = currentTime; // used as last moving time I guess
+                    keyPressTimes[index] = currentTime;
                 }
                 double tapTime = (currentTime - lastMovingTime) / 1_000_000.0;
                 if (tapTime >= 500) {
@@ -149,35 +149,34 @@ public class LanceOfDestiny implements Runnable{
         }
     }
 
-    private void handleSteadyStateLogic(boolean keyPressed, double angularSpeed){
-        if (keyPressed){
+    private void handleSteadyStateLogic(boolean keyPressed, double angularSpeed) {
+        if (keyPressed) {
             double angularChange = calculateAngularChangePerUpdate(angularSpeed);
             levelPanel.getLanceView().getLance().returnToHorizontalState(angularChange);
         }
     }
 
-    private double calculateAngularChangePerUpdate(double angularSpeed){
+    private double calculateAngularChangePerUpdate(double angularSpeed) {
         return angularSpeed * getMsPerUpdate() / 1000.0;
     }
 
-    private int calculateMinIntegerPxMovement(double speed){
+    private int calculateMinIntegerPxMovement(double speed) {
         double speedInMs = speed / 1000.0;
         double onePxMs = 1.0 / speedInMs;
-        if (onePxMs >= getMsPerUpdate()){
+        if (onePxMs >= getMsPerUpdate()) {
             return 1;
-        }else{
+        } else {
             double pxPerUpdate = getMsPerUpdate() / onePxMs;
             return ((int) pxPerUpdate) + 1;
         }
     }
 
-    private double getMsPerUpdate(){
+    private double getMsPerUpdate() {
         return 1000.0 / UPS_SET;
     }
 
 
-
-    private void startGameLoop(){
+    private void startGameLoop() {
         gameThread = new Thread(this);
         gameThread.start();
     }
