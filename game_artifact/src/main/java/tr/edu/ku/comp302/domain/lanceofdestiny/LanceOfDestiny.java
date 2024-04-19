@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
+import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.handler.CollisionHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
@@ -87,6 +88,9 @@ public class LanceOfDestiny implements Runnable{
                 for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
                     if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
                         levelPanel.getBarrierViews().remove(i);
+                        if(levelPanel.getBarrierViews().get(i).getBarrier() instanceof ExplosiveBarrier){
+                            ((ExplosiveBarrier)levelPanel.getBarrierViews().get(i).getBarrier()).dropRemains();
+                        }
                         break;
                     }
                 }
