@@ -16,12 +16,18 @@ public class CircularMovement implements IMovementStrategy {
     double BarrierThickness;
     double BarrierLength;
 
+
+    private double screenHeight;
     private double screenWidth;
     static final short CLOCKWISE = 1;
     static final short COUNTER_CLOCKWISE= 0;
     short direction = CLOCKWISE;
 
 
+    static private final short NORTH_WEST_CORNER= 0;
+    static private final short NORTH_EAST_CORNER= 1;
+    static private final short SOUTH_WEST_CORNER= 2;
+    static private final short SOUTH_EAST_CORNER= 3;
 
     public CircularMovement(double screenWidth, double screenHeight, Barrier barrier) {
         this.Barrier = barrier;
@@ -31,6 +37,7 @@ public class CircularMovement implements IMovementStrategy {
         this.angle = 0; 
         this.stiffness = false; 
         this.screenWidth =  screenWidth;
+        this.screenHeight = screenHeight;
         BarrierLength = barrier.getLength();
         BarrierThickness = barrier.getThickness();
     }
@@ -51,47 +58,7 @@ public class CircularMovement implements IMovementStrategy {
         }
     }
 
-    //OLD VERSION
-    boolean calculateInterception(double[] cornerPoint, Barrier barrier, boolean isWest ){
-
-        double xBarrier = barrier.getXPosition();
-        double yBarrier = barrier.getYPosition();
-        double lengthBarrier = screenWidth/50;
-        double thicknessBarrier = barrier.getThickness();
-
-        double cornerPointX = cornerPoint[0] + (isWest ? (-screenWidth/52) : (screenWidth/52));
-        double cornerPointY = cornerPoint[1];
-
-        boolean xFlag = false;
-        boolean yFlag = false;
-        boolean insideboundary = false;
-       
-        if(isWest){
-            insideboundary = cornerPointX >= 0;
-        }
-        else{
-            insideboundary = cornerPointX <= screenWidth;
-        }
-
-        if(!insideboundary){
-            return true;
-        }
-
-        if (cornerPointX <= xBarrier + lengthBarrier && cornerPointX >= xBarrier){
-            xFlag = true;
-        }
-        if (cornerPointY <= yBarrier + thicknessBarrier && cornerPointY >= yBarrier){
-            yFlag = true;
-            
-        }
-
-        if (xFlag && yFlag){
-            return true;
-        }
-
-        return false;
-
-    }
+    
 
     //IMPLEMENTED 
     @Override
@@ -100,85 +67,79 @@ public class CircularMovement implements IMovementStrategy {
         double xPosition = Barrier.getXPosition();
         double yPosition = Barrier.getYPosition();
 
-        double[][] WestCorners = {
-            {xPosition, yPosition},
-            {xPosition, yPosition + BarrierThickness}
-        };
-
-        double[][] EastCorners = {
-            {xPosition + BarrierLength, yPosition},
-            {xPosition + BarrierLength, yPosition + BarrierThickness}
-        };
-        double[][] NorthCorners = {
-            {xPosition, yPosition},
-            {xPosition + BarrierLength, yPosition},
-        };
-
-        double[][] SouthCorners = {
-            {xPosition, yPosition + BarrierThickness},
-            {xPosition + BarrierLength, yPosition + BarrierThickness}
-        };
+        double[] NorthWestCorner = {xPosition, yPosition};
+        double[] NorthEastCorner = {xPosition + BarrierLength, yPosition};
+        double[] SouthWestCorner = {xPosition, yPosition + BarrierThickness};
+        double[] SouthEastCorner = {xPosition + BarrierLength, yPosition + BarrierThickness};
+       
+        
         
 
-        boolean IsWestCollision = false;
-        boolean IsEastCollision = false;
         boolean IsNorthCollision = false;
+        boolean IsWestCollision = false;
         boolean IsSouthCollision = false;
+        boolean IsEastCollision = false;
 
+
+        
 
         //TODO Avoid collision of barrier with itself!!!
         int i = 0;
         while (i < BarrierViews.size()) {
             Barrier b = BarrierViews.get(i).getBarrier();
+            boolean[] output;
+            
+            if (!IsNorthCollision && !IsWestCollision) {
+                
+                
+                output = calculateInterception(NorthWestCorner, b, NORTH_WEST_CORNER);
+                
+                if (!IsNorthCollision) IsNorthCollision = output[0];
+                if (!IsWestCollision) IsWestCollision = output[1];
 
-            int j = 0;
-            while (j < WestCorners.length && !IsWestCollision) {
-                double[] corner = WestCorners[j];
-                if (calculateInterception(corner, b, true)) {
-                    // Handle interception
-                    IsWestCollision = true;
-                }
-                j++;
             }
 
-            int k = 0;
-            while (k < EastCorners.length && !IsEastCollision) {
-                double[] cornerEast = EastCorners[k];
-                if (calculateInterception(cornerEast, b, false)) {
-                    // Handle interception
-                    IsEastCollision = true;
-                }
-                k++;
+            if (!IsNorthCollision && !IsEastCollision) {
+                
+                
+                output = calculateInterception(NorthEastCorner, b, NORTH_EAST_CORNER);
+                
+                if (!IsNorthCollision) IsNorthCollision = output[0];
+                if (!IsEastCollision) IsEastCollision = output[1];
+
             }
 
-            int l = 0;
-            while (l < NorthCorners.length && !IsNorthCollision) {
-                double[] cornerNorth = WestCorners[l];
-                if (calculateInterception(cornerNorth, b, true)) {
-                    // Handle interception
-                    IsNorthCollision = true;
-                }
-                l++;
+            if (!IsSouthCollision && !IsWestCollision) {
+                
+                
+                output = calculateInterception(SouthWestCorner, b, SOUTH_WEST_CORNER);
+                
+                if (!IsSouthCollision) IsSouthCollision = output[0];
+                if (!IsWestCollision) IsWestCollision = output[1];
+
             }
 
-            int m = 0;
-            while (m < SouthCorners.length && !IsSouthCollision) {
-                double[] cornerSouth = EastCorners[m];
-                if (calculateInterception(cornerSouth, b, false)) {
-                    // Handle interception
-                    IsSouthCollision = true;
-                }
-                m++;
+            if (!IsSouthCollision && !IsEastCollision) {
+                
+                
+                output = calculateInterception(SouthEastCorner, b, SOUTH_EAST_CORNER);
+                
+                if (!IsSouthCollision) IsSouthCollision = output[0];
+                if (!IsEastCollision) IsEastCollision = output[1];
+
             }
 
             i++;
         }
+
+        System.out.println(IsEastCollision + "__ EAST __ WEST __ " + IsWestCollision);
+        System.out.println(IsNorthCollision + "__ NORTH __ SOUTH __ " + IsSouthCollision);
         //if there are collisions from the sides at the same time
         if(IsEastCollision && IsWestCollision){
             stiffness = true;
         }
         else if(IsEastCollision || IsWestCollision){
-            stiffness = false;
+            stiffness = true;
 
             //changeDirection(IsWestCollision);
             
@@ -205,6 +166,69 @@ public class CircularMovement implements IMovementStrategy {
         }
     }
 
+    //OLD VERSION
+    /**
+     * 
+     * @param cornerPoint
+     * @param barrier
+     * @param CornerNumber 0: NORTH WEST, 1: NORTH EAST, 2: SOUTH WEST, 3: SOUTH EAST
+     * @return
+     */
+    boolean[] calculateInterception(double[] cornerPoint, Barrier barrier, short CornerNumber ){
+
+        boolean horizontalCollision = false;
+        boolean verticalCollision = false;
+
+        double xBarrier = barrier.getXPosition();
+        double yBarrier = barrier.getYPosition();
+        double lengthBarrier = screenWidth/50;
+        double thicknessBarrier = barrier.getThickness();
+
+        double cornerPointX = cornerPoint[0];
+        double cornerPointY = cornerPoint[1];
+
+        double horizontalCornerPointX = cornerPointX + (CornerNumber % 2 == 0 ? (-screenWidth/52) : (screenWidth/52));
+    
+       
+
+        double verticalCornerPointY = cornerPointY + (CornerNumber <= 1 ? (-screenWidth/52) : (screenWidth/52));
+
+
+        //Calculate Horizontal Collision
+        if (horizontalCornerPointX <= xBarrier + lengthBarrier && horizontalCornerPointX >= xBarrier){
+            if (cornerPointY <= yBarrier + thicknessBarrier && cornerPointY >= yBarrier){
+                horizontalCollision = true;
+            }
+        }
+        
+        //Calculate Vertical Collision
+        if (cornerPointX <= xBarrier + lengthBarrier && cornerPointX >= xBarrier){
+            if (verticalCornerPointY <= yBarrier + thicknessBarrier && verticalCornerPointY >= yBarrier){
+                verticalCollision = true;
+                
+            }
+        }
+
+        //Calculate Horizontal Boundary Exceed
+        
+        if (horizontalCornerPointX >= screenWidth || horizontalCornerPointX <= 0){
+            horizontalCollision = true;
+        }
+
+        //Calculate Vertical Boundary Exceed
+        
+        if (verticalCornerPointY >= screenHeight || verticalCornerPointY <= 0){
+            verticalCollision = true;
+            System.out.println("boundary collision error");
+        }
+        
+        boolean[] output = {verticalCollision, horizontalCollision};
+
+        return output;
+
+    }
+
     //CHANGE DIRECTION TO BE ADDED
+
 
 }
