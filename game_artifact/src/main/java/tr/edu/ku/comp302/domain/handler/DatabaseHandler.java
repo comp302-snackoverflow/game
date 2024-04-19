@@ -18,15 +18,15 @@ public class DatabaseHandler {
     private DatabaseHandler() {
         Properties prop = new Properties();
 
-        try (FileInputStream fis = new FileInputStream("./src/main/java/database/database.config")) {
+        try (FileInputStream fis = new FileInputStream("./game_artifact/src/main/resources/database.config")) {
             prop.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        DATABASE_URL = prop.getProperty("database.URI");
-        USER = prop.getProperty("database.username");
-        PASSWORD = prop.getProperty("database.password");
+        DATABASE_URL = prop.getProperty("url");
+        USER = prop.getProperty("username");
+        PASSWORD = prop.getProperty("password");
     }
 
     public static DatabaseHandler getInstance() {
@@ -46,11 +46,11 @@ public class DatabaseHandler {
     }
 
     public String getSaltByUsername(String username) {
-        final String query = "SELECT salt FROM Player WHERE username = ? AND password = ?";
+        final String query = "SELECT salt FROM Player WHERE username = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(2, username);
+                ps.setString(1, username);
 
                 ResultSet rs = ps.executeQuery();
 
@@ -69,8 +69,8 @@ public class DatabaseHandler {
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(2, username);
-                ps.setString(3, password);
+                ps.setString(1, username);
+                ps.setString(2, password);
 
                 try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();
@@ -90,7 +90,7 @@ public class DatabaseHandler {
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(2, username);
+                ps.setString(1, username);
 
                 try (ResultSet rs = ps.executeQuery()) {
                     return !rs.next();
@@ -105,14 +105,14 @@ public class DatabaseHandler {
 
     /// This method assumes that the person who checked it already verified that the username is unique !!!
     public boolean createUser(String username, String password, String salt) {
-        final String query = "INSERT INTO User (username, password, salt) VALUES (?, ?, ?)";
+        final String query = "INSERT INTO Player (username, password, salt) VALUES (?, ?, ?)";
 
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(2, username);
-                ps.setString(3, password);
-                ps.setString(4, salt);
+                ps.setString(1, username);
+                ps.setString(2, password);
+                ps.setString(3, salt);
 
                 return ps.executeUpdate() > 0;
             }
@@ -122,4 +122,6 @@ public class DatabaseHandler {
 
         return false;
     }
+
+
 }
