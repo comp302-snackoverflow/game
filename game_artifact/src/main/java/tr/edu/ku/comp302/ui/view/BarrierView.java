@@ -16,6 +16,7 @@ public class BarrierView {
     public BarrierView(Barrier barrier) {
         this.barrier = barrier;
         setBarrierImage();
+        
     }
 
     public void render(Graphics g) {

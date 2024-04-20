@@ -1,17 +1,18 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import java.awt.Dimension;
+
 import java.awt.Graphics;
 import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
+
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import javax.swing.BorderFactory;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -33,6 +34,7 @@ public class BuildPanel extends JPanel {
    String displayImagePath = "/assets/barrier_image.png";
 
    private List<BarrierView> barriers = new ArrayList<>();
+   HashMap<List<Double>, BarrierView> putBarriersView = new HashMap<>();
 
     public BuildPanel(double height, double width) {
         this.height = height;
@@ -45,41 +47,57 @@ public class BuildPanel extends JPanel {
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         displayGridLines(g, width, height);
-        ArrayList<ArrayList<Double>> list = new ArrayList<>();
-        list.add( x_indexes);
-        list.add( y_indexes);
-        double currentBarrierX = returnStart(list)[0];
-        double currentBarrierY = returnStart(list)[1];
-        
-        g.drawImage(ImageHandler.createCustomImage(displayImagePath, (int)width/50, 20)
+        ArrayList<ArrayList<Double>> gridCoordinateList = new ArrayList<>();
+        gridCoordinateList.add( x_indexes);
+        gridCoordinateList.add( y_indexes);
+        double currentBarrierX = returnStart(gridCoordinateList)[0];
+        double currentBarrierY = returnStart(gridCoordinateList)[1];
+        ArrayList<Double> coordinateList = new ArrayList<>();
+        coordinateList.add(currentBarrierX);
+        coordinateList.add(currentBarrierY);
+
+        if (!putBarriersView.containsKey(coordinateList)){
+            g.drawImage(ImageHandler.createCustomImage(displayImagePath, (int)width/50, 20)
                     , (int) (currentBarrierX + width/104)
                     , (int) (currentBarrierY + ((height / 2) - 80) / 10)
                     , null);
+            
+        }
+        
         
         if (MouseHandler.mouseClicked) {
+            
+
+
             switch (displayImagePath) {
                 case "/assets/barrier_image.png":
                     SimpleBarrier simpleBarrier = new SimpleBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
                     BarrierView simpleView = new BarrierView(simpleBarrier);
-                    barriers.add(simpleView);
+                    scaleBarrierImages(simpleView);
+                    putBarriersView.put(coordinateList, simpleView);
                     break;
                 case "/assets/explosive_barrier.png":
                     Barrier explosiveBarrier = new ExplosiveBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
                     BarrierView explosiveView = new BarrierView(explosiveBarrier);
-                    barriers.add(explosiveView);
+                    scaleBarrierImages(explosiveView);
+                    putBarriersView.put(coordinateList, explosiveView);
                     break;
                 case "/assets/firm_barrier.png":
                     Barrier firmBarrier = new FirmBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
                     BarrierView firmView = new BarrierView(firmBarrier);
-                    barriers.add(firmView);
+                    scaleBarrierImages(firmView);
+                    putBarriersView.put(coordinateList, firmView);
                     break;
             }
 
             //TODO: Add a gift barrier.
 
+            
+            
+
         }
 
-        IntStream.range(0, barriers.size()).forEach(i -> barriers.get(i).render(g));
+        putBarriersView.values().forEach(barriersView -> barriersView.render(g));
 
 
         
@@ -89,22 +107,7 @@ public class BuildPanel extends JPanel {
         
         
     }
-    public void setPanelSize(Dimension size){
-        setMinimumSize(size);
-        setPreferredSize(size);
-        setMaximumSize(size);
-
-        barriers.forEach(barrierView -> {
-            barrierView.getBarrier().setL(width / 10.0);
-            barrierView.setBarrierImage(ImageHandler.resizeImage(
-                    barrierView.getBarrierImage(),
-                    (int) barrierView.getBarrier().getLength(),
-                    (int) barrierView.getBarrier().getThickness()
-            ));
-        });
-        
-    }
-
+    
     
 
  
@@ -213,4 +216,13 @@ public class BuildPanel extends JPanel {
     }
 
 
+
+    void scaleBarrierImages(BarrierView barrierView){
+        barrierView.getBarrier().setL(width / 10.0);
+            barrierView.setBarrierImage(ImageHandler.resizeImage(
+                    barrierView.getBarrierImage(),
+                    (int) barrierView.getBarrier().getLength(),
+                    (int) barrierView.getBarrier().getThickness()
+            ));
+    }
 }
