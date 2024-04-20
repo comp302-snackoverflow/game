@@ -33,6 +33,8 @@ public class BuildPanel extends JPanel {
     ArrayList<Double> y_indexes = new ArrayList<>();
    String displayImagePath = "/assets/barrier_image.png";
 
+   BuildPanelModel viewModel;
+
    private List<BarrierView> barriers = new ArrayList<>();
    HashMap<List<Double>, BarrierView> putBarriersView = new HashMap<>();
 
@@ -42,6 +44,7 @@ public class BuildPanel extends JPanel {
         this.setLayout(null);
         displayBarrierSelections();
         addMouseListener(new MouseHandler());
+        this.viewModel = new BuildPanelModel();
     }
 
     public void paintComponent(Graphics g){
@@ -90,8 +93,14 @@ public class BuildPanel extends JPanel {
                     break;
 
                 case "/assets/bin.png":
-                    putBarriersView.remove(coordinateList);
+                    BarrierView deletedView = putBarriersView.remove(coordinateList);
+                    break;
+
             }
+            viewModel.countBarriers(putBarriersView);
+            System.out.println(viewModel.getSimpleBarrierCount());
+            System.out.println(viewModel.getExplosiveBarrierCount());
+            System.out.println(viewModel.getFirmBarrierCount());
 
             //TODO: Add a gift barrier.
 
@@ -101,6 +110,7 @@ public class BuildPanel extends JPanel {
         }
 
         putBarriersView.values().forEach(barriersView -> barriersView.render(g));
+
 
 
         
