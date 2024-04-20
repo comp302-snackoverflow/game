@@ -1,5 +1,7 @@
 package tr.edu.ku.comp302.domain.entity;
 
+import java.awt.geom.Rectangle2D;
+
 public class Lance extends Entity{
 
     private double length;
@@ -14,8 +16,10 @@ public class Lance extends Entity{
     public static final double rotationSpeed = 20.0;
     public static final double horizontalRecoverySpeed = 45.0;
 
-    public Lance(double xPosition, double yPosition) {
-        super(xPosition, yPosition);
+    public Lance(double xPosition, double yPosition, double screenWidth, double screenHeight) {
+        super(xPosition, yPosition, screenWidth, screenHeight);
+        boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
+        actualShape = boundingBox;
         System.out.println(xPosition);
     }
 
@@ -77,6 +81,7 @@ public class Lance extends Entity{
     private void updateRelativeToL(){
         setLength(L);
         setThickness(20);
+        boundingBox.setRect(xPosition, yPosition, length, thickness);
         setSpeedWithTap(L);
         setSpeedWithHold(2 * L);
     }
@@ -111,5 +116,10 @@ public class Lance extends Entity{
 
     public void setRotationAngle(double rotationAngle) {
         this.rotationAngle = rotationAngle;
+    }
+
+    // TODO: Implement collision for Lance
+    public void handleCollision(boolean isWall) {
+        // nothing happens
     }
 }

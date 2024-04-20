@@ -28,7 +28,8 @@ public class FireBall extends Entity {
             return;
         }
         dy = -dy; // TODO calculate new speed here;
-        dx = new SecureRandom().nextInt(-3, 4);
+        dx = -dx;
+        //dx = new SecureRandom().nextInt(-3, 4);
     }
 
     public void move() {

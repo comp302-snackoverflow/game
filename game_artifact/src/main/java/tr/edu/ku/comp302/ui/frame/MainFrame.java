@@ -37,10 +37,10 @@ public class MainFrame extends JFrame {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setResizable(false);
         pack();
         setSize(frameWidth, frameHeight);
+        setLocationRelativeTo(null);
 
         layout = new CardLayout();
         cards = new JPanel(layout);

@@ -6,6 +6,7 @@ import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
@@ -21,6 +22,7 @@ public class App
 {
     public static void main(String[] args)
     {
+        /*
         double w = 1280,
                h = 800;
         Lance lance = new Lance(576, 600, w, h);
@@ -30,6 +32,11 @@ public class App
         Level level = new Level();
         LevelPanel levelPanel = new LevelPanel(level, lanceView, fireBallView, generateBarriers(w, h));
         new LanceOfDestiny(levelPanel);
+         */
+
+        MainFrame frame = MainFrame.createMainFrame();
+        frame.showLevelPanel();
+        frame.setVisible(true);
     }
 
     public static List<BarrierView> generateBarriers(double w, double h) {
