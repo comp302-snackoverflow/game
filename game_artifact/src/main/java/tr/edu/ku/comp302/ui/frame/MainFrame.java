@@ -124,5 +124,13 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
+
+    public int getFrameWidth() {
+        return frameWidth;
+    }
+
+    public int getFrameHeight() {
+        return frameHeight;
+    }
 }
 
