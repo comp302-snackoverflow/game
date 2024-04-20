@@ -88,6 +88,9 @@ public class BuildPanel extends JPanel {
                     scaleBarrierImages(firmView);
                     putBarriersView.put(coordinateList, firmView);
                     break;
+
+                case "/assets/bin.png":
+                    putBarriersView.remove(coordinateList);
             }
 
             //TODO: Add a gift barrier.
@@ -116,20 +119,18 @@ public class BuildPanel extends JPanel {
         double y_interval = ((height / 2) - 80) / 5 ;
         double final_vertical = 0;
     
-    
-
-        for (double x = 0; x < width; x += x_interval + width / 50) {
+        for (double x = x_interval- x_interval/2; x < width; x += x_interval + x_interval/2 + width / 50) {
             g.drawLine((int)x, 0 , (int)x, (int)height/2);
             x_indexes.add(x);
             final_vertical=x;
 
         }
-        
 
-        for (double y = 0; y <= height / 2; y += y_interval) {
+
+        for (double y = y_interval; y <= height / 2; y += 20 + y_interval) {
             g.drawLine((int)(x_interval-x_interval/2),(int) y, (int)final_vertical, (int)y); 
             y_indexes.add(y);
-            
+
         }
     
         
@@ -173,14 +174,16 @@ public class BuildPanel extends JPanel {
         
 
         // Add the barrier button to the panel.
-        JButton simpleBarrierButton = createButton(20, (int)(height*0.7), "/assets/barrier_image.png");
-        JButton explosiveBarrierButton = createButton(20, (int)(height*0.7) + 30, "/assets/explosive_barrier.png");
-        JButton firmBarrierButton = createButton(20, (int)(height*0.7) + 60, "/assets/firm_barrier.png");
-        JButton giftBarrierButton = createButton(20, (int)(height*0.7) + 90, "/assets/barrier_image.png");
+        JButton simpleBarrierButton = createButton(20, (int)(height*0.6), "/assets/barrier_image.png");
+        JButton explosiveBarrierButton = createButton(20, (int)(height*0.6) + 30, "/assets/explosive_barrier.png");
+        JButton firmBarrierButton = createButton(20, (int)(height*0.6) + 60, "/assets/firm_barrier.png");
+        JButton giftBarrierButton = createButton(20, (int)(height*0.6) + 90, "/assets/barrier_image.png");
+        JButton deleteButton = createButton(20, (int)(height*0.6) + 120, "/assets/bin.png");
         add(simpleBarrierButton);
         add(explosiveBarrierButton);
         add(firmBarrierButton);
         add(giftBarrierButton);
+        add(deleteButton);
     }
 
 
