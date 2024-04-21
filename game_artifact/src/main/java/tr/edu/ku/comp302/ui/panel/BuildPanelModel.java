@@ -96,15 +96,14 @@ public class BuildPanelModel {
         // this method generates barriers in random parts of the map according to their size.
         //TODO: ADD logic for the gift barrier later!!!!!
         public void generateRandomBarrierType (HashMap<List<Double>, BarrierView> barrierMap, ArrayList<Double> xIndices, ArrayList<Double> yIndices, int barrierNum, String barrierType) {
-            ArrayList<Double> coordinates = new ArrayList<>();
 
             for (int i = 1; i <= barrierNum; i++) {
+                ArrayList<Double> coordinates = new ArrayList<>();
                 Random random = new Random();
                 int randomXIndex = random.nextInt(xIndices.size());
                 int randomYIndex = random.nextInt(yIndices.size());
                 double x = xIndices.remove(randomXIndex);
                 double y = yIndices.remove(randomYIndex);
-                System.out.println(yIndices);
                 coordinates.add(x);
                 coordinates.add(y);
                 Barrier barrier;
