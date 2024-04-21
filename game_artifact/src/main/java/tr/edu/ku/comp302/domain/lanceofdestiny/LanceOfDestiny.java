@@ -16,12 +16,13 @@ public class LanceOfDestiny implements Runnable {
     private double deltaFrame = 0.0;
     private long updates = 0L;
     private long frames = 0L;
+    private GameState currentGameState;
     private Thread gameThread;
     private Character lastMoving;
     private long lastMovingTime;
     private long previousTime;
     private long[] arrowKeyPressTimes = new long[2];    // [rightArrowKeyPressTime, leftArrowKeyPressTime]
-    private double[] lanceMovementRemainder = new double[2];   // [totalRightArrowKey, totalLeftArrowKey]
+    private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private final Lance lance;  // TODO: Later change this.
 
@@ -30,6 +31,7 @@ public class LanceOfDestiny implements Runnable {
         lance = levelPanel.getLanceView().getLance();
         mainFrame = new MainFrame(levelPanel);
         levelPanel.requestFocusInWindow();
+        currentGameState = GameState.PLAYING;   // for testing purposes.
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
@@ -43,11 +45,19 @@ public class LanceOfDestiny implements Runnable {
         previousTime = System.nanoTime();
         // TODO: Change while loop condition
         while (true) {
-            long currentTime = System.nanoTime();
-            deltaUpdate += (currentTime - previousTime) / timePerUpdate;
-            deltaFrame += (currentTime - previousTime) / timePerFrame;
-            update(currentTime);
-            previousTime = currentTime;
+            if (currentGameState.isPlaying()){
+                long currentTime = System.nanoTime();
+                deltaUpdate += (currentTime - previousTime) / timePerUpdate;
+                deltaFrame += (currentTime - previousTime) / timePerFrame;
+                update(currentTime);
+                previousTime = currentTime;
+            }else{  // TODO: Change this else statement whenever implemented other game states.
+                try{
+                    Thread.sleep(1000 / UPS_SET);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
     private void update(long currentTime){
