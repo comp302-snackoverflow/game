@@ -47,6 +47,5 @@ public class LanceView {
         this.lanceImage = lanceImage;
     }
 
-
 }
 
