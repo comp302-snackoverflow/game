@@ -1,19 +1,26 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
 import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.Barriers.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
+import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BuildPanelModel {
     int simpleBarrierCount = 0;
     int firmBarrierCount = 0;
     int explosiveBarrierCount = 0;
     int giftBarrierCount = 0;
+
+    double width;
+    double height;
+    public BuildPanelModel(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
 
     public int getFirmBarrierCount() {
         return firmBarrierCount;
@@ -70,6 +77,73 @@ public class BuildPanelModel {
         this.firmBarrierCount = firmCount;
         this.explosiveBarrierCount = explosiveCount;
         }
+
+
+        //This method assumes that the correct number of barriers have been given, and also the total barrier
+        //number does not exceed the whole map.
+        public HashMap<List<Double>, BarrierView> generateRandomMap(ArrayList<Double> xIndices, ArrayList<Double> yIndices, int simpleNum, int explosiveNum, int giftNum, int firmNum) {
+            HashMap<List<Double>, BarrierView> newMap = new HashMap<>();
+            ArrayList<Double> xCopy = new ArrayList<>(xIndices);
+            ArrayList<Double> yCopy = new ArrayList<>(yIndices);
+
+            generateRandomBarrierType(newMap, xIndices, yIndices, simpleNum, "simple");
+            generateRandomBarrierType(newMap, xIndices, yIndices, explosiveNum, "explosive");
+            generateRandomBarrierType(newMap, xIndices, yIndices, firmNum, "firm");
+
+            return newMap;
+        }
+
+        // this method generates barriers in random parts of the map according to their size.
+        //TODO: ADD logic for the gift barrier later!!!!!
+        public void generateRandomBarrierType (HashMap<List<Double>, BarrierView> barrierMap, ArrayList<Double> xIndices, ArrayList<Double> yIndices, int barrierNum, String barrierType) {
+            ArrayList<Double> coordinates = new ArrayList<>();
+
+            for (int i = 1; i <= barrierNum; i++) {
+                Random random = new Random();
+                int randomXIndex = random.nextInt(xIndices.size());
+                int randomYIndex = random.nextInt(yIndices.size());
+                double x = xIndices.remove(randomXIndex);
+                double y = yIndices.remove(randomYIndex);
+                coordinates.add(x);
+                coordinates.add(y);
+                Barrier barrier;
+                BarrierView view;
+
+                switch (barrierType) {
+                    case "simple":
+                        barrier = new SimpleBarrier(x + width/104, y + ((height / 2) - 80) / 10, width, height);
+                        view = new BarrierView(barrier);
+                        scaleBarrierImages(view);
+                        barrierMap.put(coordinates, view);
+                        break;
+                    case "explosive":
+                        barrier = new ExplosiveBarrier(x + width/104,y +((height / 2) - 80) / 10, width, height);
+                        view = new BarrierView(barrier);
+                        scaleBarrierImages(view);
+                        barrierMap.put(coordinates, view);
+                        break;
+                    case "firm":
+                        barrier = new FirmBarrier(x + width/104, y + ((height / 2) - 80) / 10, width, height);
+                        view = new BarrierView(barrier);
+                        scaleBarrierImages(view);
+                        barrierMap.put(coordinates, view);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        }
+
+    void scaleBarrierImages(BarrierView barrierView){
+        barrierView.getBarrier().setL(width / 10.0);
+        barrierView.setBarrierImage(ImageHandler.resizeImage(
+                barrierView.getBarrierImage(),
+                (int) barrierView.getBarrier().getLength(),
+                (int) barrierView.getBarrier().getThickness()
+        ));
+    }
+
     }
 
 

@@ -13,9 +13,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
 import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
@@ -43,8 +41,9 @@ public class BuildPanel extends JPanel {
         this.width = width;
         this.setLayout(null);
         displayBarrierSelections();
+        setUpUserInputs();
         addMouseListener(new MouseHandler());
-        this.viewModel = new BuildPanelModel();
+        this.viewModel = new BuildPanelModel(width,height);
     }
 
     public void paintComponent(Graphics g){
@@ -76,19 +75,19 @@ public class BuildPanel extends JPanel {
                 case "/assets/barrier_image.png":
                     SimpleBarrier simpleBarrier = new SimpleBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
                     BarrierView simpleView = new BarrierView(simpleBarrier);
-                    scaleBarrierImages(simpleView);
+                    viewModel.scaleBarrierImages(simpleView);
                     putBarriersView.put(coordinateList, simpleView);
                     break;
                 case "/assets/explosive_barrier.png":
                     Barrier explosiveBarrier = new ExplosiveBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
                     BarrierView explosiveView = new BarrierView(explosiveBarrier);
-                    scaleBarrierImages(explosiveView);
+                    viewModel.scaleBarrierImages(explosiveView);
                     putBarriersView.put(coordinateList, explosiveView);
                     break;
                 case "/assets/firm_barrier.png":
                     Barrier firmBarrier = new FirmBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
                     BarrierView firmView = new BarrierView(firmBarrier);
-                    scaleBarrierImages(firmView);
+                    viewModel.scaleBarrierImages(firmView);
                     putBarriersView.put(coordinateList, firmView);
                     break;
 
@@ -98,31 +97,19 @@ public class BuildPanel extends JPanel {
 
             }
             viewModel.countBarriers(putBarriersView);
-            System.out.println(viewModel.getSimpleBarrierCount());
-            System.out.println(viewModel.getExplosiveBarrierCount());
-            System.out.println(viewModel.getFirmBarrierCount());
 
             //TODO: Add a gift barrier.
-
-            
-            
 
         }
 
         putBarriersView.values().forEach(barriersView -> barriersView.render(g));
 
-
-
-        
         //lanceView.render(g);
         
         //IntStream.range(0, barriers.size()).forEach(i -> barriers.get(i).render(g));
         
         
     }
-    
-    
-
  
     public void displayGridLines(Graphics g, double width, double height) {
         double x_interval = width / 52;
@@ -228,14 +215,45 @@ public class BuildPanel extends JPanel {
     return BarrierButton;
     }
 
+    public void setUpUserInputs() {
+        int baseY = (int)(height * 0.6);
+        JTextField simpleBarrierCountField = new JTextField("0");
+        JTextField explosiveBarrierCountField = new JTextField("0");
+        JTextField firmBarrierCountField = new JTextField("0");
+        JTextField giftBarrierCountField = new JTextField("0");
 
+        JButton generateMapButton = new JButton("Generate Map");
 
-    void scaleBarrierImages(BarrierView barrierView){
-        barrierView.getBarrier().setL(width / 10.0);
-            barrierView.setBarrierImage(ImageHandler.resizeImage(
-                    barrierView.getBarrierImage(),
-                    (int) barrierView.getBarrier().getLength(),
-                    (int) barrierView.getBarrier().getThickness()
-            ));
+        int verticalSpacing = 30;
+
+        simpleBarrierCountField.setBounds((int)width - 120, baseY, 100, 25);
+        explosiveBarrierCountField.setBounds((int)width - 120, baseY + verticalSpacing, 100, 25);
+        firmBarrierCountField.setBounds((int)width - 120, baseY + 2 * verticalSpacing, 100, 25);
+        giftBarrierCountField.setBounds((int)width - 120, baseY + 3 * verticalSpacing, 100, 25);
+        generateMapButton.setBounds((int)width - 120, baseY + 4 * verticalSpacing, 100, 25);
+
+        add(simpleBarrierCountField);
+        add(explosiveBarrierCountField);
+        add(firmBarrierCountField);
+        add(giftBarrierCountField);
+        add(generateMapButton);
+
+        generateMapButton.addActionListener(new ActionListener() {
+            @Override
+            // Note that this action CURRENTLY empties the whole map. So when the user decides to randomize
+            // the map, their previous additions will be removed. This is done because the PDF specifies
+            // that the map is randomly generated FIRST.
+
+            public void actionPerformed(ActionEvent e) {
+                //TODO: Implement a function so that the user is WARNED
+                putBarriersView.clear();
+                int simpleCount = Integer.parseInt(simpleBarrierCountField.getText());
+                int explosiveCount = Integer.parseInt(explosiveBarrierCountField.getText());
+                int firmCount = Integer.parseInt(firmBarrierCountField.getText());
+                int giftCount = Integer.parseInt(giftBarrierCountField.getText());
+                putBarriersView = viewModel.generateRandomMap(x_indexes, y_indexes, simpleCount, explosiveCount, giftCount, firmCount);
+            }
+        });
     }
+
 }
