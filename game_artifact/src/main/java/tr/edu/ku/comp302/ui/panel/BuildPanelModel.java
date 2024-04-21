@@ -86,9 +86,9 @@ public class BuildPanelModel {
             ArrayList<Double> xCopy = new ArrayList<>(xIndices);
             ArrayList<Double> yCopy = new ArrayList<>(yIndices);
 
-            generateRandomBarrierType(newMap, xIndices, yIndices, simpleNum, "simple");
-            generateRandomBarrierType(newMap, xIndices, yIndices, explosiveNum, "explosive");
-            generateRandomBarrierType(newMap, xIndices, yIndices, firmNum, "firm");
+            generateRandomBarrierType(newMap, xCopy, yCopy, simpleNum, "simple");
+            generateRandomBarrierType(newMap, xCopy, yCopy, explosiveNum, "explosive");
+            generateRandomBarrierType(newMap, xCopy, yCopy, firmNum, "firm");
 
             return newMap;
         }
@@ -104,6 +104,7 @@ public class BuildPanelModel {
                 int randomYIndex = random.nextInt(yIndices.size());
                 double x = xIndices.remove(randomXIndex);
                 double y = yIndices.remove(randomYIndex);
+                System.out.println(yIndices);
                 coordinates.add(x);
                 coordinates.add(y);
                 Barrier barrier;
