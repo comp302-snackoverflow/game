@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.security.SecureRandom;
+import java.lang.Math.*;
 
 public class FireBall extends Entity {
     private boolean isOverwhelmed = false;
@@ -30,6 +31,40 @@ public class FireBall extends Entity {
         dy = -dy; // TODO calculate new speed here;
         dx = -dx;
         //dx = new SecureRandom().nextInt(-3, 4);
+    }
+
+    public void handleReflection(double surfaceAngleDegrees) {
+        double surfaceAngle = Math.toRadians(surfaceAngleDegrees);
+        double totalSpeedAngle = Math.atan2(dy, dx);
+
+        double newAngle = 2 * surfaceAngle - totalSpeedAngle;
+
+        double totalSpeed = Math.sqrt(dx * dx + dy * dy);
+        dx = totalSpeed * Math.cos(newAngle);
+        dy = totalSpeed * Math.sin(newAngle);
+    }
+
+    public void handleReflection(double surfaceAngleDegrees, double lanceSpeedX) {
+        double surfaceAngleRadians = Math.toRadians(surfaceAngleDegrees);
+        double totalSpeedAngle = Math.atan2(dy, dx); //FireBall speed angle
+        if (lanceSpeedX != 0) { // if the lance is moving
+            if (Math.signum(lanceSpeedX) == Math.signum(dx)) { // in the same direction
+                double currentSpeed = Math.sqrt(dx * dx + dy * dy);
+                double newSpeed = currentSpeed + 5; // increase total speed by 5
+                dx = newSpeed * Math.cos(totalSpeedAngle);
+                dy = newSpeed * Math.sin(totalSpeedAngle);
+            } else { // in the opposite direction
+                // mirror the movement of the FireBall
+                dx = -dx;
+                dy = -dy;
+            }
+        } else { // lance is not moving
+            // calculate reflection normally
+            double newAngle = 2 * surfaceAngleRadians - totalSpeedAngle;
+            double newSpeed = Math.sqrt(dx * dx + dy * dy);
+            dx = newSpeed * Math.cos(newAngle);
+            dy = newSpeed * Math.sin(newAngle);
+        }
     }
 
     public void move() {
