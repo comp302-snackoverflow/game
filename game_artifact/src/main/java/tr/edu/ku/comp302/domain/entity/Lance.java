@@ -8,6 +8,7 @@ public class Lance extends Entity {
 
     private double speedWithHold;
     private double speedWithTap;
+    private short direction;
 
     private double rotationAngle;
     public static final double rotationSpeed = 20.0;
@@ -15,7 +16,7 @@ public class Lance extends Entity {
 
     public Lance(double xPosition, double yPosition) {
         super(xPosition, yPosition);
-        System.out.println(xPosition);
+        direction = 0;
     }
 
     public void incrementRotationAngle(double degrees) {
@@ -47,11 +48,11 @@ public class Lance extends Entity {
     }
 
 
-    public void updateXPosition(int updateVal) {
-        xPosition += updateVal;
-        System.out.println(xPosition);
+    public void updateXPosition(int dx) {
+        xPosition += dx * direction;
     }
 
+    @Deprecated(forRemoval = true) // Lance doesn't move vertically, right?
     public void updateYPosition(int updateVal) {
         yPosition += updateVal;
     }
@@ -73,6 +74,7 @@ public class Lance extends Entity {
         updateRelativeToL();
     }
 
+    // I think this should be moved inside setL
     private void updateRelativeToL() {
         setLength(L);
         setThickness(20);
@@ -110,5 +112,12 @@ public class Lance extends Entity {
 
     public void setRotationAngle(double rotationAngle) {
         this.rotationAngle = rotationAngle;
+    }
+
+    public void setDirection(int direction) {
+        if (direction > 1 || direction < -1) {
+            throw new IllegalArgumentException("Direction can be -1 for left, 0 for no movement, 1 for right");
+        }
+        this.direction = (short) direction;
     }
 }

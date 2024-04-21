@@ -88,6 +88,8 @@ public class LanceOfDestiny implements Runnable {
             int index = leftPressed ? 1 : 0;
             Character oldLastMoving = lastMoving;
             lastMoving = leftPressed ? 'l' : 'r';
+            lance.setDirection(leftPressed ? -1 : 1);
+
             if (tapMoving) {
                 tapMoving = false;
                 keyPressTimes[0] = 0;
@@ -111,7 +113,7 @@ public class LanceOfDestiny implements Runnable {
             double minMsToMove = minPx * 1000.0 / speed;
 
             if (elapsedMs >= minMsToMove) {
-                lance.updateXPosition(leftPressed ? -minPx : minPx);
+                lance.updateXPosition(minPx);
                 remainder[index] = elapsedMs - minMsToMove;
                 keyPressTimes[index] = System.nanoTime();
             }
@@ -125,6 +127,7 @@ public class LanceOfDestiny implements Runnable {
                 }
                 double tapTime = (currentTime - lastMovingTime) / 1_000_000.0;
                 if (tapTime >= 500) {
+                    lance.setDirection(0);
                     tapMoving = false;
                     lastMoving = null;
                     lastMovingTime = 0;
@@ -136,7 +139,7 @@ public class LanceOfDestiny implements Runnable {
                     int minPx = calculateMinIntegerPxMovement(tapSpeed);
                     double minMsToMove = minPx * 1000. / tapSpeed;
                     if (elapsedMs >= minMsToMove) {
-                        lance.updateXPosition(lastMoving == 'l' ? -minPx : minPx);
+                        lance.updateXPosition(minPx);
                         remainder[index] = elapsedMs - minMsToMove;
                         keyPressTimes[index] = System.nanoTime();
                     }
