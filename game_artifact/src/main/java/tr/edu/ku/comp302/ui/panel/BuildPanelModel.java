@@ -102,6 +102,9 @@ public class BuildPanelModel {
                 Random random = new Random();
                 int randomXIndex = random.nextInt(xIndices.size());
                 int randomYIndex = random.nextInt(yIndices.size());
+                while (yIndices.get(randomYIndex) == height/2) {
+                    randomYIndex = random.nextInt(yIndices.size());
+                }
                 double x = xIndices.remove(randomXIndex);
                 double y = yIndices.remove(randomYIndex);
                 coordinates.add(x);
