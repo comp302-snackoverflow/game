@@ -30,10 +30,13 @@ public class LevelPanel extends JPanel {
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
-        lanceView.getLance().setLength(LanceOfDestiny.getScreenWidth() / 10.);
+        lanceView.getLance().adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
+                (int) size.getWidth(), (int) size.getHeight());
+        lanceView.setLanceImage();      // reset image to its original sizes
         lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),
                 (int) lanceView.getLance().getLength(),
-                (int) lanceView.getLance().getThickness())) ;
+                (int) lanceView.getLance().getThickness()));
+        // TODO: Add other entities
     }
 
     public Level getLevel() {

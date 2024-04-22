@@ -13,7 +13,7 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(levelPanel);
         setLocationRelativeTo(null);
-        setResizable(false);
+        // setResizable(false);
         levelPanel.setPanelSize(new Dimension(1280, 800));
         pack();
         levelPanel.repaint();
@@ -21,4 +21,6 @@ public class MainFrame extends JFrame {
         levelPanel.requestFocusInWindow();
         setVisible(true);
     }
+
+
 }

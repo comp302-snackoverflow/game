@@ -6,6 +6,8 @@ import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
+import java.awt.*;
+
 
 public class LanceOfDestiny implements Runnable {
     private MainFrame mainFrame;
@@ -69,10 +71,22 @@ public class LanceOfDestiny implements Runnable {
             deltaUpdate--;
         }
         while (deltaFrame >= 1){
+            render();
             levelPanel.repaint();
             frames++;
             deltaFrame--;
         }
+    }
+
+    private void render(){
+        int width = (int) levelPanel.getSize().getWidth();
+        int height = (int) levelPanel.getSize().getHeight();
+        if (screenWidth != width || screenHeight != height){
+            levelPanel.setPanelSize(new Dimension(width, height));
+            screenWidth = width;
+            screenHeight = height;
+        }
+        System.out.println(levelPanel.getLanceView().getLance().getLength() + ", " + levelPanel.getSize());
     }
 
     private void handleGameLogic(long currentTime){
