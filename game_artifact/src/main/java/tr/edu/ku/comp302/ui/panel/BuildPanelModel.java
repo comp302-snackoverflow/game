@@ -152,7 +152,7 @@ public class BuildPanelModel {
     }
 
     public boolean barrierConditionsSatisfied(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
-        return simpleBarrierCount >= 75 && firmBarrierCount >= 10 && explosiveBarrierCount >= 5 && giftBarrierCount >= 5;
+        return simpleBarrierCount >= 75 && firmBarrierCount >= 10 && explosiveBarrierCount >= 5 && giftBarrierCount >= 10;
     }
 
     }
