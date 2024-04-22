@@ -26,14 +26,12 @@ import tr.edu.ku.comp302.ui.view.BarrierView;
 public class BuildPanel extends JPanel {
     double height;
     double width;
-    Graphics g;
     ArrayList<Double> x_indexes = new ArrayList<>();
     ArrayList<Double> y_indexes = new ArrayList<>();
    String displayImagePath = "/assets/barrier_image.png";
 
    BuildPanelModel viewModel;
 
-   private List<BarrierView> barriers = new ArrayList<>();
    HashMap<List<Double>, BarrierView> putBarriersView = new HashMap<>();
 
     public BuildPanel(double height, double width) {
@@ -251,7 +249,13 @@ public class BuildPanel extends JPanel {
                 int explosiveCount = Integer.parseInt(explosiveBarrierCountField.getText());
                 int firmCount = Integer.parseInt(firmBarrierCountField.getText());
                 int giftCount = Integer.parseInt(giftBarrierCountField.getText());
-                putBarriersView = viewModel.generateRandomMap(x_indexes, y_indexes, simpleCount, explosiveCount, giftCount, firmCount);
+                if (viewModel.barrierConditionsSatisfied(simpleCount, explosiveCount, firmCount, giftCount)) {
+                    putBarriersView = viewModel.generateRandomMap(x_indexes, y_indexes, simpleCount, explosiveCount, giftCount, firmCount);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "Invalid number of barriers! To start a game, you must have" +
+                            " at least 75 simple barriers, 10 firm barriers, 5 explosive barriers, and 5 gift barriers.");
+                }
             }
         });
     }

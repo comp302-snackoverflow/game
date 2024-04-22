@@ -102,7 +102,11 @@ public class BuildPanelModel {
                 Random random = new Random();
                 int randomXIndex = random.nextInt(xIndices.size());
                 int randomYIndex = random.nextInt(yIndices.size());
-                while (yIndices.get(randomYIndex) == height/2) {
+
+                // if the coordinate was already generated, generate again. Might change this part later
+                // because it looks very inefficient.
+                while (barrierMap.containsKey(new ArrayList<Double>(Arrays.asList(xIndices.get(randomXIndex), yIndices.get(randomYIndex))))) {
+                    randomXIndex = random.nextInt(xIndices.size());
                     randomYIndex = random.nextInt(yIndices.size());
                 }
                 double x = xIndices.remove(randomXIndex);
@@ -138,13 +142,17 @@ public class BuildPanelModel {
             }
         }
 
-    void scaleBarrierImages(BarrierView barrierView){
+    public void scaleBarrierImages(BarrierView barrierView){
         barrierView.getBarrier().setL(width / 10.0);
         barrierView.setBarrierImage(ImageHandler.resizeImage(
                 barrierView.getBarrierImage(),
                 (int) barrierView.getBarrier().getLength(),
                 (int) barrierView.getBarrier().getThickness()
         ));
+    }
+
+    public boolean barrierConditionsSatisfied(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
+        return simpleBarrierCount >= 75 && firmBarrierCount >= 10 && explosiveBarrierCount >= 5 && giftBarrierCount >= 5;
     }
 
     }
