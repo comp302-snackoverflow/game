@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.view.LanceView;
 
@@ -24,11 +25,12 @@ public class LevelPanel extends JPanel {
         super.paintComponent(g);
         lanceView.render(g);
     }
+    // TODO: Handle this method later.
     public void setPanelSize(Dimension size){
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
-        lanceView.getLance().setL(size.getWidth() / 10.0);
+        lanceView.getLance().setLength(LanceOfDestiny.getScreenWidth() / 10.);
         lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),
                 (int) lanceView.getLance().getLength(),
                 (int) lanceView.getLance().getThickness())) ;

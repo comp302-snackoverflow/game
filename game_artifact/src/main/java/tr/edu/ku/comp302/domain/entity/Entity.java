@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.domain.entity;
 
+
 public abstract class Entity {
     protected double xPosition;
     protected double yPosition;
@@ -7,6 +8,11 @@ public abstract class Entity {
     public Entity(double xPosition, double yPosition){
         this.xPosition = xPosition;
         this.yPosition = yPosition;
+    }
+
+    public void updatePositionRelativeToScreen(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+        xPosition = xPosition * newWidth / oldWidth;
+        yPosition = yPosition * newHeight / oldHeight;
     }
 
     public double getXPosition() {

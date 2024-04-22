@@ -12,6 +12,8 @@ public class LanceOfDestiny implements Runnable {
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
+    private static int screenWidth;
+    private static int screenHeight;
     private double deltaUpdate = 0.0;
     private double deltaFrame = 0.0;
     private long updates = 0L;
@@ -196,5 +198,21 @@ public class LanceOfDestiny implements Runnable {
     private void startGameLoop() {
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    public static int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public static void setScreenWidth(int screenWidth) {
+        LanceOfDestiny.screenWidth = screenWidth;
+    }
+
+    public static int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public static void setScreenHeight(int screenHeight) {
+        LanceOfDestiny.screenHeight = screenHeight;
     }
 }
