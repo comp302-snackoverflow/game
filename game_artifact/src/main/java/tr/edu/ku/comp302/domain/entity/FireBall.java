@@ -1,6 +1,8 @@
 package tr.edu.ku.comp302.domain.entity;
 
 
+import tr.edu.ku.comp302.domain.handler.collision.Collision;
+
 import javax.swing.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -33,6 +35,8 @@ public class FireBall extends Entity {
         //dx = new SecureRandom().nextInt(-3, 4);
     }
 
+    // for handling reflections with steady surfaces
+    // need to pass the surface angle
     public void handleReflection(double surfaceAngleDegrees) {
         double surfaceAngle = Math.toRadians(surfaceAngleDegrees);
         double totalSpeedAngle = Math.atan2(dy, dx);
@@ -43,12 +47,14 @@ public class FireBall extends Entity {
         dx = totalSpeed * Math.cos(newAngle);
         dy = totalSpeed * Math.sin(newAngle);
     }
-
-    public void handleReflection(double surfaceAngleDegrees, double lanceSpeedX) {
+    // for handling reflections with moving surfaces
+    // need to pass the surface angle and the surface speed
+    // works for steady surfaces as well
+    public void handleReflection(double surfaceAngleDegrees, double surfaceXSpeed) {
         double surfaceAngleRadians = Math.toRadians(surfaceAngleDegrees);
         double totalSpeedAngle = Math.atan2(dy, dx); //FireBall speed angle
-        if (lanceSpeedX != 0) { // if the lance is moving
-            if (Math.signum(lanceSpeedX) == Math.signum(dx)) { // in the same direction
+        if (surfaceXSpeed != 0) { // if the lance is moving
+            if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
                 double currentSpeed = Math.sqrt(dx * dx + dy * dy);
                 double newSpeed = currentSpeed + 5; // increase total speed by 5
                 dx = newSpeed * Math.cos(totalSpeedAngle);
@@ -64,6 +70,23 @@ public class FireBall extends Entity {
             double newSpeed = Math.sqrt(dx * dx + dy * dy);
             dx = newSpeed * Math.cos(newAngle);
             dy = newSpeed * Math.sin(newAngle);
+        }
+    }
+
+    // for handling reflections at a surface's corner
+    // need to pass which corner the collision happened
+    public void handleCornerReflection(double surfaceAngleDegrees, double surfaceXSpeed, Collision corner) {
+        switch (corner) {
+            case TOP_RIGHT:
+            case BOTTOM_LEFT:
+                handleReflection(surfaceAngleDegrees - 45, surfaceXSpeed);
+                break;
+            case TOP_LEFT:
+            case BOTTOM_RIGHT:
+                handleReflection(surfaceAngleDegrees + 45, surfaceXSpeed);
+                break;
+            default:
+                handleReflection(surfaceAngleDegrees, surfaceXSpeed);
         }
     }
 
