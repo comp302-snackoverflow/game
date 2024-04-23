@@ -29,6 +29,7 @@ public class BuildPanel extends JPanel {
     ArrayList<Double> x_indexes = new ArrayList<>();
     ArrayList<Double> y_indexes = new ArrayList<>();
    String displayImagePath = "/assets/barrier_image.png";
+   boolean gridPrinted= false;
 
    BuildPanelModel viewModel;
 
@@ -46,60 +47,68 @@ public class BuildPanel extends JPanel {
 
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        displayGridLines(g, width, height);
+        //while(!gridPrinted){
+            displayGridLines(g, width, height);
+        //    gridPrinted = true;
+        //}
+        
         ArrayList<ArrayList<Double>> gridCoordinateList = new ArrayList<>();
         gridCoordinateList.add( x_indexes);
         gridCoordinateList.add( y_indexes);
-        double currentBarrierX = returnStart(gridCoordinateList)[0];
-        double currentBarrierY = returnStart(gridCoordinateList)[1];
-        ArrayList<Double> coordinateList = new ArrayList<>();
-        coordinateList.add(currentBarrierX);
-        coordinateList.add(currentBarrierY);
-
-        if (!putBarriersView.containsKey(coordinateList)){
-            g.drawImage(ImageHandler.createCustomImage(displayImagePath, (int)width/50, 20)
-                    , (int) (currentBarrierX + width/104)
-                    , (int) (currentBarrierY + ((height / 2) - 80) / 10)
-                    , null);
-            
-        }
         
-        
-        if (MouseHandler.mouseClicked) {
-            
-
-
-            switch (displayImagePath) {
-                case "/assets/barrier_image.png":
-                    SimpleBarrier simpleBarrier = new SimpleBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
-                    BarrierView simpleView = new BarrierView(simpleBarrier);
-                    viewModel.scaleBarrierImages(simpleView);
-                    putBarriersView.put(coordinateList, simpleView);
-                    break;
-                case "/assets/explosive_barrier.png":
-                    Barrier explosiveBarrier = new ExplosiveBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
-                    BarrierView explosiveView = new BarrierView(explosiveBarrier);
-                    viewModel.scaleBarrierImages(explosiveView);
-                    putBarriersView.put(coordinateList, explosiveView);
-                    break;
-                case "/assets/firm_barrier.png":
-                    Barrier firmBarrier = new FirmBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
-                    BarrierView firmView = new BarrierView(firmBarrier);
-                    viewModel.scaleBarrierImages(firmView);
-                    putBarriersView.put(coordinateList, firmView);
-                    break;
-
-                case "/assets/bin.png":
-                    BarrierView deletedView = putBarriersView.remove(coordinateList);
-                    break;
-
+        if(!((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocationOnScreen().getY() > height/2)
+            || MouseInfo.getPointerInfo().getLocation().getY() - this.getLocationOnScreen().getY() < 0)){
+            double currentBarrierX = returnStart(gridCoordinateList)[0];
+            double currentBarrierY = returnStart(gridCoordinateList)[1];
+            ArrayList<Double> coordinateList = new ArrayList<>();
+            coordinateList.add(currentBarrierX);
+            coordinateList.add(currentBarrierY);
+    
+            if (!putBarriersView.containsKey(coordinateList)){
+                g.drawImage(ImageHandler.createCustomImage(displayImagePath, (int)width/50, 20)
+                        , (int) (currentBarrierX + width/104)
+                        , (int) (currentBarrierY + ((height / 2) - 80) / 10)
+                        , null);
+                
             }
-            viewModel.countBarriers(putBarriersView);
-
-            //TODO: Add a gift barrier.
-
+            
+            
+            if (MouseHandler.mouseClicked) {
+                
+    
+    
+                switch (displayImagePath) {
+                    case "/assets/barrier_image.png":
+                        SimpleBarrier simpleBarrier = new SimpleBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
+                        BarrierView simpleView = new BarrierView(simpleBarrier);
+                        viewModel.scaleBarrierImages(simpleView);
+                        putBarriersView.put(coordinateList, simpleView);
+                        break;
+                    case "/assets/explosive_barrier.png":
+                        Barrier explosiveBarrier = new ExplosiveBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
+                        BarrierView explosiveView = new BarrierView(explosiveBarrier);
+                        viewModel.scaleBarrierImages(explosiveView);
+                        putBarriersView.put(coordinateList, explosiveView);
+                        break;
+                    case "/assets/firm_barrier.png":
+                        Barrier firmBarrier = new FirmBarrier(currentBarrierX + width/104, currentBarrierY + ((height / 2) - 80) / 10, width, height);
+                        BarrierView firmView = new BarrierView(firmBarrier);
+                        viewModel.scaleBarrierImages(firmView);
+                        putBarriersView.put(coordinateList, firmView);
+                        break;
+    
+                    case "/assets/bin.png":
+                        BarrierView deletedView = putBarriersView.remove(coordinateList);
+                        break;
+    
+                }
+                viewModel.countBarriers(putBarriersView);
+    
+                //TODO: Add a gift barrier.
+    
+            }
         }
-
+        
         putBarriersView.values().forEach(barriersView -> barriersView.render(g));
 
         //lanceView.render(g);
@@ -122,11 +131,15 @@ public class BuildPanel extends JPanel {
         }
 
 
-        for (double y = y_interval; y <= height / 2; y += 20 + y_interval) {
+        for (double y = 0; y <= height / 2; y += 20 + y_interval) {
             g.drawLine((int)(x_interval-x_interval/2),(int) y, (int)final_vertical, (int)y); 
             y_indexes.add(y);
 
         }
+
+        x_indexes.removeLast();
+        
+
     
         
     }
@@ -254,8 +267,9 @@ public class BuildPanel extends JPanel {
                 }
                 else {
                     JOptionPane.showMessageDialog(null, "Invalid number of barriers! To start a game, you must have" +
-                            " at least 75 simple barriers, 10 firm barriers, 5 explosive barriers, and 5 gift barriers.");
+                            " at least 75 simple barriers, 10 firm barriers, 5 explosive barriers, and 10 gift barriers.");
                 }
+                
             }
         });
     }

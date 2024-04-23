@@ -13,6 +13,7 @@ public class BuildModeTestApp {
         
         while(true) {
             buildPanel.repaint();
+            
             buildPanel.revalidate();
         }
     }

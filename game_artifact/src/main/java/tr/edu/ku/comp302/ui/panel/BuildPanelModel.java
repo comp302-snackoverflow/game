@@ -97,6 +97,7 @@ public class BuildPanelModel {
         //TODO: ADD logic for the gift barrier later!!!!!
         public void generateRandomBarrierType (HashMap<List<Double>, BarrierView> barrierMap, ArrayList<Double> xIndices, ArrayList<Double> yIndices, int barrierNum, String barrierType) {
 
+            
             for (int i = 1; i <= barrierNum; i++) {
                 ArrayList<Double> coordinates = new ArrayList<>();
                 Random random = new Random();
@@ -118,7 +119,7 @@ public class BuildPanelModel {
 
                 switch (barrierType) {
                     case "simple":
-                        barrier = new SimpleBarrier(x + width/104, y + ((height / 2) - 80) / 10, width, height);
+                        barrier = new SimpleBarrier(x + width/104, y +((height / 2) - 80) / 10, width, height);
                         view = new BarrierView(barrier);
                         scaleBarrierImages(view);
                         barrierMap.put(coordinates, view);
