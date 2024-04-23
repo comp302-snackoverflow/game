@@ -26,7 +26,7 @@ public class Barrier extends Entity {
         thickness = DEFAULT_THICKNESS;
         speed = DEFAULT_SPEED;
         health = DEFAULT_HEALTH;
-        boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
+        boundingBox = new Rectangle2D.Double(xPosition, yPosition, thickness, length);
         actualShape = boundingBox;
         length = screenWidth / 50;
 
@@ -96,5 +96,5 @@ public class Barrier extends Entity {
         MovementStrategy = movementStrategy;
     }
 
-    
+
 }

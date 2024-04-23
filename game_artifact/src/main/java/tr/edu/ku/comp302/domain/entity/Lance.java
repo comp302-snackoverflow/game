@@ -24,7 +24,6 @@ public class Lance extends Entity{
         super(xPosition, yPosition, screenWidth, screenHeight);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
         actualShape = boundingBox;
-        System.out.println(xPosition);
     }
 
     public void incrementRotationAngle(double degrees){
@@ -58,7 +57,6 @@ public class Lance extends Entity{
 
     public void updateXPosition(int updateVal){
         xPosition += updateVal;
-        System.out.println(xPosition);
     }
 
     public void updateYPosition(int updateVal){

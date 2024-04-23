@@ -78,7 +78,7 @@ public class LanceOfDestiny implements Runnable{
                     try {
                         if (CollisionHandler.testFireballBarrierOverlap(levelPanel.getFireBallView().getFireBall(),levelPanel.getBarrierViews().get(i).getBarrier()) != null){
                             levelPanel.getFireBallView().getFireBall().handleReflection(0);
-                            levelPanel.getBarrierViews().get(i).getBarrier().handleCollision(false);
+                            levelPanel.getBarrierViews().get(i).getBarrier().setHealth(levelPanel.getBarrierViews().get(i).getBarrier().getHealth()-1);
                         }
                     } catch (CollisionError e) {
                         throw new RuntimeException(e);

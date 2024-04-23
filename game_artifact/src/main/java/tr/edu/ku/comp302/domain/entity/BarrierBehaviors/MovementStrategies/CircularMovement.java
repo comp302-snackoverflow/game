@@ -50,6 +50,7 @@ public class CircularMovement implements IMovementStrategy {
 
             Barrier.setXPosition(newX);
             Barrier.setYPosition(newY);
+            Barrier.getBoundingBox().setRect(newX, newY, Barrier.getThickness(), Barrier.getLength());
 
             this.angle += Math.toRadians(0.5);
             if (angle >= 2 * Math.PI) {
@@ -219,7 +220,6 @@ public class CircularMovement implements IMovementStrategy {
         
         if (verticalCornerPointY >= screenHeight || verticalCornerPointY <= 0){
             verticalCollision = true;
-            System.out.println("boundary collision error");
         }
         
         boolean[] output = {verticalCollision, horizontalCollision};
