@@ -1,11 +1,11 @@
 package tr.edu.ku.comp302.domain.handler.collision;
 
-import tr.edu.ku.comp302.domain.entity.Barrier;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
+import tr.edu.ku.comp302.domain.entity.Barriers.*;
 
 import java.awt.*;
 import java.util.List;
@@ -84,8 +84,10 @@ public class CollisionHandler {
             case 0b0110 -> Collision.BOTTOM_RIGHT;
             case 0b1100 -> Collision.BOTTOM_LEFT;
             case 0b1001 -> Collision.TOP_LEFT;
-            default -> // top and bottom; left and right; all 4 sides; no sides => should never happen
-                    throw new CollisionError("How did we get here?");
+            default -> Collision.RIGHT;
+            // top and bottom; left and right; all 4 sides; no sides => should never happen
+                    // throw new CollisionError("How did we get here?");
+
         };
     }
 

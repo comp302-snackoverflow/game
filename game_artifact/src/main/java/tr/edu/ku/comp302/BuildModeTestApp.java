@@ -8,13 +8,12 @@ public class BuildModeTestApp {
     {
         double w = 1280,
                h = 800;
-        BuildPanel buildPanel = new BuildPanel(h,w);
-        MainFrame mainFrame = new MainFrame(buildPanel);
-        
-        while(true) {
-            buildPanel.repaint();
-            
-            buildPanel.revalidate();
+        MainFrame frame = MainFrame.createMainFrame();
+        frame.showBuildPanel();
+        frame.setVisible(true);
+        while (true) {
+            frame.getBuildPanel().repaint();
         }
+        //TODO: find a way to repaint the build panel somehow...
     }
 }

@@ -1,13 +1,11 @@
 package tr.edu.ku.comp302.ui.frame;
 
+import tr.edu.ku.comp302.App;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
-import tr.edu.ku.comp302.ui.panel.LevelPanel;
-import tr.edu.ku.comp302.ui.panel.LoginPanel;
-import tr.edu.ku.comp302.ui.panel.MainMenuPanel;
-import tr.edu.ku.comp302.ui.panel.RegisterPanel;
+import tr.edu.ku.comp302.ui.panel.*;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
@@ -23,17 +21,21 @@ public class MainFrame extends JFrame {
     private static final String MAINMENU = "mainmenu";
     private static final String LEVEL = "level";
 
+    private static final String BUILD = "build";
+
     private JPanel cards;
     private LoginPanel loginPanel;
     private JPanel registerPanel;
     private JPanel mainMenuPanel;
     private JPanel levelPanel;
+
+    private JPanel buildPanel;
     private final CardLayout layout;
 
     private static final int frameWidth = 1280;
     private static final int frameHeight = 720;
 
-    private MainFrame() {
+    public MainFrame() {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -76,11 +78,19 @@ public class MainFrame extends JFrame {
         // TODO: FIX THIS AS WELL
         levelPanel = new LevelPanel(level, lv,
                 new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)),
-                new ArrayList<>());
+                App.generateBarriers(frameWidth, frameHeight)); //I called the generate barrier function for now
+        // to demonstrate how the game works.
         ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
         levelPanel.repaint();
         levelPanel.setFocusable(true);
         levelPanel.requestFocusInWindow();
+    }
+
+    private void prepareBuildPanel() {
+        buildPanel = new BuildPanel(frameHeight, frameWidth);
+        buildPanel.repaint();
+        buildPanel.setLayout(null);
+        buildPanel.requestFocusInWindow();
     }
 
     public static MainFrame createMainFrame() {
@@ -89,10 +99,12 @@ public class MainFrame extends JFrame {
         self.prepareRegisterPanel();
         self.prepareMainMenu();
         self.prepareLevelPanel();
+        self.prepareBuildPanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
         self.cards.add(self.levelPanel, LEVEL);
+        self.cards.add(self.buildPanel, BUILD);
         return self;
     }
 
@@ -120,6 +132,11 @@ public class MainFrame extends JFrame {
         new LanceOfDestiny((LevelPanel) levelPanel);
     }
 
+    public void showBuildPanel() {
+        layout.show(cards, BUILD);
+        refresh();
+    }
+
     private void refresh() {
         revalidate();
         repaint();
@@ -131,6 +148,10 @@ public class MainFrame extends JFrame {
 
     public int getFrameHeight() {
         return frameHeight;
+    }
+
+    public JPanel getBuildPanel() {
+        return buildPanel;
     }
 }
 

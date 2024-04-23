@@ -7,6 +7,7 @@ import tr.edu.ku.comp302.domain.entity.Barriers.*;
 import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;

@@ -1,12 +1,10 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
-import tr.edu.ku.comp302.domain.entity.FireBall;
-import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
 import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.Remains;
-import tr.edu.ku.comp302.domain.handler.CollisionHandler;
 
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
+import tr.edu.ku.comp302.domain.handler.collision.CollisionError;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
@@ -76,6 +74,16 @@ public class LanceOfDestiny implements Runnable{
                 levelPanel.getFireBallView().getFireBall().move();
                 CollisionHandler.checkCollisions(levelPanel.getFireBallView(), levelPanel.getLanceView());
                 CollisionHandler.checkFireBallBorderCollisions(levelPanel.getFireBallView(), mainFrame.getFrameWidth(), mainFrame.getFrameHeight());
+                for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
+                    try {
+                        if (CollisionHandler.testFireballBarrierOverlap(levelPanel.getFireBallView().getFireBall(),levelPanel.getBarrierViews().get(i).getBarrier()) != null){
+                            levelPanel.getFireBallView().getFireBall().handleReflection(0);
+                            levelPanel.getBarrierViews().get(i).getBarrier().handleCollision(false);
+                        }
+                    } catch (CollisionError e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 //check if barrier is broken or not
                 for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
                     if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
