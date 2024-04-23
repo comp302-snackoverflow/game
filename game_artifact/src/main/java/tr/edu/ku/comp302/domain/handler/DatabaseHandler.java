@@ -1,5 +1,8 @@
 package tr.edu.ku.comp302.domain.handler;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -15,13 +18,16 @@ public class DatabaseHandler {
     private final String DATABASE_URL;
     private final String USER;
     private final String PASSWORD;
+
+    private static final Logger logger = LogManager.getLogger();
+
     private DatabaseHandler() {
         Properties prop = new Properties();
 
         try (FileInputStream fis = new FileInputStream("./game_artifact/src/main/resources/database.config")) {
             prop.load(fis);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         DATABASE_URL = prop.getProperty("url");
@@ -40,7 +46,7 @@ public class DatabaseHandler {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return null;
         }
     }
@@ -59,7 +65,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return null;
     }
@@ -78,7 +84,7 @@ public class DatabaseHandler {
 
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return false;
     }
@@ -97,7 +103,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return true;
     }
@@ -117,7 +123,7 @@ public class DatabaseHandler {
                 return ps.executeUpdate() > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         return false;
@@ -125,3 +131,4 @@ public class DatabaseHandler {
 
 
 }
+

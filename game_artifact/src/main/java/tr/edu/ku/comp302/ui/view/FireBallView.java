@@ -18,6 +18,8 @@ public class FireBallView {
 
     public void render(Graphics g) {
         g.drawImage(fireBallImage, (int) fireBall.getXPosition(), (int) fireBall.getYPosition(), null);
+        // uncomment the below line to see FireBall hit box
+        //g.drawRect((int) fireBall.getXPosition(), (int) fireBall.getYPosition(), fireBall.getSize(), fireBall.getSize());
     }
 
     public void setFireBallImage() {
@@ -40,4 +42,5 @@ public class FireBallView {
         return fireBallImage;
     }
 }
+
 

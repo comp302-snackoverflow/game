@@ -5,6 +5,7 @@ import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class LanceView {
@@ -15,16 +16,19 @@ public class LanceView {
         setLanceImage();    // May change
     }
     public void render(Graphics g){
-        g.drawImage(lanceImage, (int) lance.getXPosition(), (int) lance.getYPosition(), null);
+        Graphics2D g2d = (Graphics2D) g;
+        double rotationAngle = Math.toRadians(getLance().getRotationAngle());
+        AffineTransform oldTransform = g2d.getTransform();
+        g2d.rotate(rotationAngle, lance.getXPosition() + lance.getLength() / 2.0, lance.getYPosition() + lance.getThickness() / 2.0);
+        g2d.drawImage(lanceImage, (int) lance.getXPosition(), (int) lance.getYPosition(), null);
+        g2d.setTransform(oldTransform);    // Reset transformation to prevent unintended rotations.
+        // uncomment the below two lines to see Lance Hit Box and Lance Bounding Box
+        //g2d.drawPolygon(lance.getActualHitbox());
+        //((Graphics2D) g).draw(lance.getLanceBounds());
     }
 
-    public void moveLance(int px){
-        if (KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed){
-            lance.updateXPosition(-px);
-        }else if (!KeyboardHandler.leftArrowPressed && KeyboardHandler.rightArrowPressed){
-            lance.updateXPosition(px);
-        }
-        // TODO: Add left or right arrow tap case in here.
+    public void rotateLance(double degrees){
+        lance.incrementRotationAngle(degrees);
     }
 
     public Lance getLance() {
@@ -46,5 +50,5 @@ public class LanceView {
         this.lanceImage = lanceImage;
     }
 
-
 }
+

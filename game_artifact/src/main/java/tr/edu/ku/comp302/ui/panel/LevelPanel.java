@@ -97,3 +97,5 @@ public class LevelPanel extends JPanel {
         this.remains = remains;
     }
 }
+
+
