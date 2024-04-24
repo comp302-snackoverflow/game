@@ -90,20 +90,25 @@ public class App
         for (double r = x_interval; r < w ; r += x_interval + w/50) { // x position
             x_intervals.add(r);
         }
-        for (double c = ( (h / 2)-80)/5; c < h/2; c += 20+ ((h / 2)-80)/5)  {//y position
+        for (double c = 0; c < h/2; c += 20+ ((h / 2)-80)/5)  {//y position
             y_intervals.add(c);
         } // TODO: space between the barriers depend on the screen size.
-        //x_intervals.removeLast();
+        x_intervals.removeLast();
 
-        newMap = randomModel.generateRandomMap(x_intervals, y_intervals, 75,10,5 ,10);
+        //this map takes 125 barriers fix this issue it is not compatible with the preivous game logic 
+
+        newMap = randomModel.generateRandomMap(x_intervals, y_intervals, 85,15,0 ,25); 
+        //the number of gift barriers at the start were chosen to be 0 for now since they were not implemented 
         //Numbers will be changed 
-
+        int barrierCount= 0;
         for (Map.Entry<List<Double>, BarrierView> entry : newMap.entrySet()) {
             barriers.add(entry.getValue());
+            barrierCount++;
         }
-        for(BarrierView bar : barriers){
-            System.out.println(bar);
-        }
+        System.out.println(x_intervals);
+        System.out.println("//////////");
+        System.out.println(y_intervals);
+        System.out.println(barrierCount);
         return barriers;
     }
 
