@@ -7,7 +7,7 @@ import tr.edu.ku.comp302.domain.entity.Entity;
 import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.IMovementStrategy;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
-public class Barrier extends Entity {
+public abstract class Barrier extends Entity {
     protected static final double DEFAULT_THICKNESS = 20;
     protected static final int DEFAULT_HEALTH = 1;
     protected static final double DEFAULT_SPEED = 0;
@@ -29,8 +29,6 @@ public class Barrier extends Entity {
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, thickness, length);
         actualShape = boundingBox;
         length = screenWidth / 50;
-
-       
     }
 
     public void setL(double l) {
@@ -95,6 +93,4 @@ public class Barrier extends Entity {
     public void setMovementStrategy(IMovementStrategy movementStrategy) {
         MovementStrategy = movementStrategy;
     }
-
-
 }
