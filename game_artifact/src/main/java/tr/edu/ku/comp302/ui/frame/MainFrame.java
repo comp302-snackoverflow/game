@@ -76,9 +76,12 @@ public class MainFrame extends JFrame {
         // levelPanel = new LevelPanel(level, lv,
         // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)));
         // TODO: FIX THIS AS WELL
+
+        BuildPanelModel randomModel = new BuildPanelModel((double)frameWidth, (double)frameHeight);
+        
         levelPanel = new LevelPanel(level, lv,
                 new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)),
-                App.generateBarriers(frameWidth, frameHeight)); //I called the generate barrier function for now
+                App.generateBarriers((double)frameWidth, (double)frameHeight, randomModel)); //I called the generate barrier function for now
         // to demonstrate how the game works.
         ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
         levelPanel.repaint();

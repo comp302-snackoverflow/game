@@ -8,19 +8,24 @@ import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
+import tr.edu.ku.comp302.ui.panel.BuildPanelModel;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Hello world!
  */
 public class App 
 {
+  
     public static void main(String[] args)
     {
         /*
@@ -38,9 +43,13 @@ public class App
         MainFrame frame = MainFrame.createMainFrame();
         frame.showLevelPanel();
         frame.setVisible(true);
+
+        
     }
 
-    public static List<BarrierView> generateBarriers(double w, double h) {
+   
+    /* 
+        public static List<BarrierView> generateBarriers(double w, double h) {
         // TODO: in MainFrame class, prepareLevelPanel method,
         //  the constructor of levelPanel needs List<BarrierView>
         List<BarrierView> barriers = new ArrayList<>();
@@ -62,6 +71,38 @@ public class App
                     queue = 0;
                 }
             } // TODO: space between the barriers depend on the screen size.
+        }
+        for(BarrierView bar: barriers){
+            System.out.println(bar);
+        }
+        return barriers;
+    }*/
+
+    public static List<BarrierView> generateBarriers(double w, double h, BuildPanelModel randomModel ) {
+        // TODO: in MainFrame class, prepareLevelPanel method,
+        //  the constructor of levelPanel needs List<BarrierView>
+        List<BarrierView> barriers = new ArrayList<>();
+        int x_interval = (int) w/52; // interval between the barriers
+        ArrayList<Double> x_intervals = new ArrayList<>();
+        ArrayList<Double> y_intervals = new ArrayList<>();
+        HashMap<List<Double>, BarrierView> newMap = new HashMap<>();
+
+        for (double r = x_interval; r < w ; r += x_interval + w/50) { // x position
+            x_intervals.add(r);
+        }
+        for (double c = ( (h / 2)-80)/5; c < h/2; c += 20+ ((h / 2)-80)/5)  {//y position
+            y_intervals.add(c);
+        } // TODO: space between the barriers depend on the screen size.
+        //x_intervals.removeLast();
+
+        newMap = randomModel.generateRandomMap(x_intervals, y_intervals, 75,10,5 ,10);
+        //Numbers will be changed 
+
+        for (Map.Entry<List<Double>, BarrierView> entry : newMap.entrySet()) {
+            barriers.add(entry.getValue());
+        }
+        for(BarrierView bar : barriers){
+            System.out.println(bar);
         }
         return barriers;
     }

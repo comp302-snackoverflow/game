@@ -110,8 +110,8 @@ public class BuildPanelModel {
                     randomXIndex = random.nextInt(xIndices.size());
                     randomYIndex = random.nextInt(yIndices.size());
                 }
-                double x = xIndices.remove(randomXIndex);
-                double y = yIndices.remove(randomYIndex);
+                double x = xIndices.get(randomXIndex);
+                double y = yIndices.get(randomYIndex);
                 coordinates.add(x);
                 coordinates.add(y);
                 Barrier barrier;
