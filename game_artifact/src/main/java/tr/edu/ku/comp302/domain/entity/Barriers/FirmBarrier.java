@@ -3,10 +3,8 @@ import java.util.Random;
 
 import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.HorizontalMovement;
 
-public class FirmBarrier extends Barrier{
-    
-
-
+public class FirmBarrier extends Barrier {
+    public static final String TYPE = "Firm";
 
     public FirmBarrier(double xPosition, double yPosition, double screenWidth, double screenHeight) {
         super(xPosition, yPosition, screenWidth, screenHeight);

@@ -6,10 +6,8 @@ import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.Horiz
  * This is the simple barrier with one hit and no exceptional property
  * 
  */
-public class SimpleBarrier extends Barrier{
-
-
-
+public class SimpleBarrier extends Barrier {
+    public static final String TYPE = "Simple";
     public SimpleBarrier(double xPosition, double yPosition, double screenWidth, double screenHeight) {
         super(xPosition, yPosition, screenWidth, screenHeight);
         //TODO Auto-generated constructor stub
@@ -17,5 +15,4 @@ public class SimpleBarrier extends Barrier{
         health = 1;
         this.MovementStrategy = new HorizontalMovement(screenWidth, screenHeight, this);
     }
-    
 }
