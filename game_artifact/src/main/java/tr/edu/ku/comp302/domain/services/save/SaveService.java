@@ -1,5 +1,7 @@
 package tr.edu.ku.comp302.domain.services.save;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
 import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.Barriers.FirmBarrier;
@@ -11,6 +13,7 @@ import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import java.util.List;
 
 public class SaveService {
+    private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
     public SaveService() {
@@ -19,7 +22,7 @@ public class SaveService {
 
     // TODO Save with the actual username and game score
     public boolean saveGame(FireBall fireball, Lance lance,
-                                   List<Barrier> barriers, double windowWidth, double windowHeight) {
+                            List<Barrier> barriers, double windowWidth, double windowHeight) {
         FireballData fireballData = getFireballData(fireball, windowWidth, windowHeight);
         LanceData lanceData = getLanceData(lance, windowWidth, windowHeight);
         List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, windowWidth, windowHeight)).toList();
@@ -55,7 +58,10 @@ public class SaveService {
             case SimpleBarrier ignored -> SimpleBarrier.TYPE;
             case FirmBarrier ignored -> FirmBarrier.TYPE;
             case ExplosiveBarrier ignored -> ExplosiveBarrier.TYPE;
-            default -> SimpleBarrier.TYPE; // Barriers of unknown type will be saved as simple barriers
+            default -> {
+                logger.warn("Unknown barrier type: " + barrier.getClass().getName() + ". Saving as simple barrier.");
+                yield SimpleBarrier.TYPE; // Barriers of unknown type will be saved as simple barriers
+            }
         };
         int barrierID = dbHandler.getBarrierFromName(type);
         return new BarrierData(x, y, health, barrierID);
