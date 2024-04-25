@@ -197,4 +197,9 @@ public class LanceOfDestiny implements Runnable {
         gameThread = new Thread(this);
         gameThread.start();
     }
+
+    public static void setCurrentGameState(GameState gameState) {
+        GameState.state = gameState;
+    }
+
 }
