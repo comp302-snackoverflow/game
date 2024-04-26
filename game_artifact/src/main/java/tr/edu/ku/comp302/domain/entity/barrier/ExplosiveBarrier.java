@@ -1,8 +1,7 @@
-package tr.edu.ku.comp302.domain.entity.Barriers;
+package tr.edu.ku.comp302.domain.entity.barrier;
 
 import tr.edu.ku.comp302.domain.entity.Remains;
-import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.CircularMovement;
-import tr.edu.ku.comp302.ui.view.RemainsView;
+import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.CircularMovement;
 
 
 public class ExplosiveBarrier extends Barrier {

@@ -10,15 +10,14 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.IntStream;
 
 
 import javax.swing.*;
 
-import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
+import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.MouseHandler;
 import tr.edu.ku.comp302.ui.view.BarrierView;
@@ -173,8 +172,6 @@ public class BuildPanel extends JPanel {
     * It creates a custom image for the barrier, positions a button with the barrier image,
     * and adds it to the panel.
     *
-    * @param height The height of the panel.
-    * @param width The width of the panel.
     */
     public void displayBarrierSelections() {
        

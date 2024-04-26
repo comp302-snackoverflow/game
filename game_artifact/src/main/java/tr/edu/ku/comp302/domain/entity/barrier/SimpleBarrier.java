@@ -1,6 +1,6 @@
-package tr.edu.ku.comp302.domain.entity.Barriers;
+package tr.edu.ku.comp302.domain.entity.barrier;
 
-import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.HorizontalMovement;
+import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.HorizontalMovement;
 
 /**
  * This is the simple barrier with one hit and no exceptional property

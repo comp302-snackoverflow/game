@@ -5,7 +5,7 @@ import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
-import tr.edu.ku.comp302.domain.entity.Barriers.*;
+import tr.edu.ku.comp302.domain.entity.barrier.*;
 
 import java.awt.*;
 import java.util.List;

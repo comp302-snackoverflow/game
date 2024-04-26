@@ -1,10 +1,10 @@
-package tr.edu.ku.comp302.domain.entity.Barriers;
+package tr.edu.ku.comp302.domain.entity.barrier;
 
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import tr.edu.ku.comp302.domain.entity.Entity;
-import tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies.IMovementStrategy;
+import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.IMovementStrategy;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
 public class Barrier extends Entity {

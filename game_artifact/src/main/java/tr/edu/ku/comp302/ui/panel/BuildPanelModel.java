@@ -1,9 +1,9 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
+import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 

@@ -1,21 +1,11 @@
 package tr.edu.ku.comp302;
 
 
-import tr.edu.ku.comp302.domain.entity.FireBall;
-import tr.edu.ku.comp302.domain.entity.Lance;
-import tr.edu.ku.comp302.domain.entity.Barriers.*;
-import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
-import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.BuildPanelModel;
-import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.BarrierView;
-import tr.edu.ku.comp302.ui.view.FireBallView;
-import tr.edu.ku.comp302.ui.view.LanceView;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

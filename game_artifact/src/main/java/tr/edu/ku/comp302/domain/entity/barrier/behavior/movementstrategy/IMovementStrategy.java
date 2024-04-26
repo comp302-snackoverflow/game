@@ -1,4 +1,4 @@
-package tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies;
+package tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy;
 
 import java.util.List;
 

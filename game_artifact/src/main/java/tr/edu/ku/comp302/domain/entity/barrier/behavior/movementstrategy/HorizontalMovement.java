@@ -1,8 +1,8 @@
-package tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies;
+package tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy;
 
 import java.util.List;
 
-import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
 
@@ -154,7 +154,7 @@ public class HorizontalMovement implements IMovementStrategy{
      * @param barrierViews the list of barrierViews to check if the current barrier is colliding with another barrier
      */
     @Override
-    public void checkCollision(List<BarrierView> BarrierViews) {
+    public void checkCollision(List<BarrierView> barrierViews) {
         // TODO Auto-generated method stub
         double xPosition = Barrier.getXPosition();
         double yPosition = Barrier.getYPosition();
@@ -177,8 +177,8 @@ public class HorizontalMovement implements IMovementStrategy{
 
         //TODO Avoid collision of barrier with itself!!!
         int i = 0;
-        while (i < BarrierViews.size()) {
-            Barrier b = BarrierViews.get(i).getBarrier();
+        while (i < barrierViews.size()) {
+            Barrier b = barrierViews.get(i).getBarrier();
 
             int j = 0;
             while (j < WestCorners.length && !IsWestCollision) {

@@ -1,8 +1,5 @@
 package tr.edu.ku.comp302.domain.entity;
 
-import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
-
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 public class Remains extends Entity{

@@ -1,6 +1,6 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
-import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.Remains;
 
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;

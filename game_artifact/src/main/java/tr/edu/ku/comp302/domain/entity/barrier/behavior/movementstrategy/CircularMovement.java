@@ -1,8 +1,8 @@
-package tr.edu.ku.comp302.domain.entity.BarrierBehaviors.MovementStrategies;
+package tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy;
 
 import java.util.List;
 
-import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
 public class CircularMovement implements IMovementStrategy {
