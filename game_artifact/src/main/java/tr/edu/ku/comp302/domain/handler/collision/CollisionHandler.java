@@ -22,7 +22,7 @@ public class CollisionHandler {
      * Finally, another step is made to determine the exact side of the collision
      *
      * @param fireBall the fireball object
-     * @param barrier the barrier object
+     * @param barrier  the barrier object
      * @return the side of the collision, or null if there is no collision
      * @throws CollisionError we're damned if we see this
      */
@@ -128,17 +128,37 @@ public class CollisionHandler {
         return minDistance <= size;
     }
 
+    private static boolean fireballIntersectsLine(FireBall fireball, Point p1, Point p2) {
+        double x = fireball.getXPosition();
+        double y = fireball.getYPosition();
+        double radius = (double) fireball.getSize() / 2;
+
+        double centerX = x + radius;
+        double centerY = y + radius;
+
+        double minDistance = 2 * CollisionMath.triangleArea(p1.x, p1.y, p2.x, p2.y, centerX, centerY) / CollisionMath.lineLength(p1.x, p1.y, p2.x, p2.y);
+        return minDistance <= radius;
+    }
+
     public static void checkCollisions(FireBallView fireBallView, LanceView lanceView) {
         FireBall fireBall = fireBallView.getFireBall();
         Lance lance = lanceView.getLance();
-        Rectangle fireBallBounds = new Rectangle((int) fireBall.getXPosition(), (int) fireBall.getYPosition(), fireBall.getSize(), fireBall.getSize());
-        //Rectangle lanceBounds = new Rectangle((int) lance.getXPosition(), (int) lance.getYPosition(), (int) lance.getLength(), (int) lance.getThickness());
+        Rectangle2D fireBallBounds = fireBall.getBoundingBox();
         Rectangle lanceBounds = lance.getLanceBounds();
 
         if (fireBallBounds.intersects(lanceBounds)) { // fireball is intersecting the bounding box of the lance
-            if (lance.getActualHitbox().intersects(fireBallBounds)) { // fireball is intersecting the actual hit box
-                fireBall.handleReflection(lance.getRotationAngle());
-            }
+                try {
+                    Collision side = findCollisionSide(fireBall, lance.getActualHitbox());
+                    if (side == null) {
+                        return;
+                    }
+                    System.out.println(side);
+                    switch (side) {
+                        case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle());
+                        case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
+                                fireBall.handleCornerReflection(lance.getRotationAngle(), side);
+                    }
+                } catch (CollisionError ignored) {}
         }
     }
 
@@ -148,10 +168,54 @@ public class CollisionHandler {
                 fireBallView.getFireBall().getXPosition() + fireBallView.getFireBall().getSize() >= frameWidth) {
             fireBallView.getFireBall().bounceOffVerticalSurface();
         }
-        if (fireBallView.getFireBall().getYPosition()<=0 ||
+        if (fireBallView.getFireBall().getYPosition() <= 0 ||
                 fireBallView.getFireBall().getYPosition() + fireBallView.getFireBall().getSize() >= frameHeight) {
             fireBallView.getFireBall().bounceOffHorizontalSurface();
         }
+    }
+
+    public static Collision findCollisionSide(FireBall fireBall, Polygon hitBox) throws CollisionError {
+        int[] xPoints = hitBox.xpoints;
+        int[] yPoints = hitBox.ypoints;
+        Point[] points = new Point[4];
+        for (int i = 0; i < xPoints.length; i++) {
+            points[i] = new Point(xPoints[i], yPoints[i]);
+        }
+
+        int collision = 0;
+        if (fireballIntersectsLine(fireBall, points[0], points[1])) {
+            collision |= 0b0001;  // top segment
+        }
+        if (fireballIntersectsLine(fireBall, points[1], points[2])) {
+            collision |= 0b0010;  // right segment
+        }
+        if (fireballIntersectsLine(fireBall, points[2], points[3])) {
+            collision |= 0b0100; // bottom segment
+        }
+        if (fireballIntersectsLine(fireBall, points[3], points[0])) {
+            collision |= 0b1000;  // left segment
+        }
+
+
+        return switch (collision) {
+            case 0b0000 -> // no collision
+                    null;
+            case 0b0001, 0b1011 -> // 1011 => top, left, right. Reduced to top case.
+                    Collision.TOP;
+            case 0b0010, 0b0111 -> // 0111 => top, right, bottom. Reduced to right case.
+                    Collision.RIGHT;
+            case 0b0100, 0b1110 -> // 1110 => left, right, bottom. Reduced to bottom case.
+                    Collision.BOTTOM;
+            case 0b1000, 0b1101 -> // 1101 => top, left, bottom. Reduced to left case.
+                    Collision.LEFT;
+            case 0b0011 -> Collision.TOP_RIGHT;
+            case 0b0110 -> Collision.BOTTOM_RIGHT;
+            case 0b1100 -> Collision.BOTTOM_LEFT;
+            case 0b1001 -> Collision.TOP_LEFT;
+            default -> // top and bottom; left and right; all 4 sides => should never happen
+                    throw new CollisionError("How did we get here?");
+        };
+
     }
 
 
