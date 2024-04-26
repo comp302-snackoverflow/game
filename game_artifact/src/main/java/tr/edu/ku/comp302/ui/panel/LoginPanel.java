@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.ui.panel;
 
 import tr.edu.ku.comp302.domain.handler.LoginHandler;
+import tr.edu.ku.comp302.ui.frame.LoginRegisterFrame;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
@@ -10,13 +11,12 @@ import java.awt.event.ActionEvent;
 
 public class LoginPanel extends JPanel {
 
-    private final MainFrame mainFrame;
+    private LoginRegisterFrame loginRegisterFrame;
     protected JPasswordField pwdField;
     protected JTextField usernameTextField;
     protected JTextArea errorTextArea;
 
-    public LoginPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    public LoginPanel() {
         setLayout(null);
 
         errorTextArea = new JTextArea();
@@ -33,7 +33,8 @@ public class LoginPanel extends JPanel {
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 clearInputs();
-                mainFrame.showRegisterPanel();
+                setVisible(false);
+                loginRegisterFrame.getRegisterPanel().setVisible(true);
 
             }
         });
@@ -54,10 +55,10 @@ public class LoginPanel extends JPanel {
             int response = LoginHandler.getInstance().login(username, password);
             switch(response) {
                 case LoginHandler.SUCCESS:
-                    JOptionPane.showMessageDialog(null, "Successfully logged in.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    clearInputs();
-                    mainFrame.showMainMenuPanel();
+                    // new MainFrame();
                     // TODO: Create user instance and open his game frame.
+                    JOptionPane.showMessageDialog(null, "Success", "Successfully logged in.", JOptionPane.INFORMATION_MESSAGE);
+                    clearInputs();
                     break;
                 case LoginHandler.USERNAME_EMPTY:
                     errorTextArea.setText("You must enter a username!");
@@ -102,8 +103,14 @@ public class LoginPanel extends JPanel {
 
     }
 
-    // Are getters necessary?
-    // Also, I think Swing elements should be final in UI classes.
+    public void setLoginRegisterFrame(LoginRegisterFrame loginRegisterFrame) {
+        this.loginRegisterFrame = loginRegisterFrame;
+    }
+
+    public LoginRegisterFrame getLoginRegisterFrame() {
+        return loginRegisterFrame;
+    }
+
     public JPasswordField getPwdField() {
         return pwdField;
     }

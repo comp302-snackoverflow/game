@@ -1,16 +1,10 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
-import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.Remains;
 
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
-import tr.edu.ku.comp302.domain.handler.collision.CollisionError;
-import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
-import tr.edu.ku.comp302.ui.view.BarrierView;
-import tr.edu.ku.comp302.ui.view.RemainsView;
 
 
 public class LanceOfDestiny implements Runnable {
@@ -35,7 +29,7 @@ public class LanceOfDestiny implements Runnable {
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
         lance = levelPanel.getLanceView().getLance();
-        mainFrame = MainFrame.createMainFrame();
+        mainFrame = new MainFrame(levelPanel);
         levelPanel.requestFocusInWindow();
         currentGameState = GameState.PLAYING;   // for testing purposes.
         lastMoving = null;
@@ -207,4 +201,5 @@ public class LanceOfDestiny implements Runnable {
     public static void setCurrentGameState(GameState gameState) {
         GameState.state = gameState;
     }
+
 }

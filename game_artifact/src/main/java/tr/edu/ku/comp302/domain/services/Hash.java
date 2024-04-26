@@ -1,8 +1,5 @@
 package tr.edu.ku.comp302.domain.services;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
@@ -12,8 +9,6 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 
 public class Hash {
-
-    private static final Logger logger = LogManager.getLogger();
 
     public static String generateSalt() {
         SecureRandom random = new SecureRandom();
@@ -29,9 +24,7 @@ public class Hash {
             byte[] hash = factory.generateSecret(spec).getEncoded();
             return Base64.getEncoder().encodeToString(hash);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            logger.error(e.getMessage());
             return null;
         }
     }
 }
-

@@ -2,27 +2,35 @@ package tr.edu.ku.comp302.ui.panel;
 
 
 import tr.edu.ku.comp302.domain.handler.RegisterHandler;
+import tr.edu.ku.comp302.ui.frame.LoginRegisterFrame;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
 import java.awt.Font;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.JButton;
+import javax.swing.JPasswordField;
 import java.awt.Component;
 
+import javax.swing.Box;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import java.awt.Color;
 
 public class RegisterPanel extends JPanel {
 
-    private final MainFrame mainFrame;
-    private JLabel confirmPwdLabel;
     protected JTextField usernameTextField;
+    private JLabel confirmPwdLabel;
     protected JPasswordField pwdField;
     protected JPasswordField confirmPwdField;
+    private LoginRegisterFrame loginRegisterFrame;
     protected JTextArea errorTextArea;
 
-    public RegisterPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    public RegisterPanel() {
         setLayout(null);
 
         JLabel usernameLabel = new JLabel("Username:");
@@ -82,10 +90,9 @@ public class RegisterPanel extends JPanel {
 
             switch(response) {
                 case RegisterHandler.SUCCESS:
+                    // new MainFrame();
                     // TODO: Create user object
-                    JOptionPane.showMessageDialog(null, "Account created", "Success", JOptionPane.INFORMATION_MESSAGE);
                     clearInputs();
-                    mainFrame.showLoginPanel();
                     break;
                 case RegisterHandler.USERNAME_TOO_SHORT:
                     errorTextArea.setText("Number of characters in username must be greater than 2");
@@ -131,9 +138,17 @@ public class RegisterPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 clearInputs();
                 setVisible(false);
-                mainFrame.showLoginPanel();
+                getLoginRegisterFrame().getLoginPanel().setVisible(true);
             }
         });
+    }
+
+    public void setLoginRegisterFrame(LoginRegisterFrame loginRegisterFrame) {
+        this.loginRegisterFrame = loginRegisterFrame;
+    }
+
+    public LoginRegisterFrame getLoginRegisterFrame() {
+        return loginRegisterFrame;
     }
 
     public JTextField getUsernameTextField() {
@@ -175,4 +190,3 @@ public class RegisterPanel extends JPanel {
         errorTextArea.setText("");
     }
 }
-
