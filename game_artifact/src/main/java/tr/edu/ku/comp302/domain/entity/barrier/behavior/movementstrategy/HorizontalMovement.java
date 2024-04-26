@@ -69,12 +69,12 @@ public class HorizontalMovement implements IMovementStrategy{
     
                 if (direction == RIGHT_DIRECTION) {
                     Barrier.setXPosition(Barrier.getXPosition() + Barrier.getSpeed());
-                    Barrier.getBoundingBox().setRect(Barrier.getXPosition() + Barrier.getSpeed(), Barrier.getYPosition(), Barrier.getThickness(), Barrier.getLength());
+                    Barrier.getBoundingBox().setRect(Barrier.getXPosition() + Barrier.getSpeed(), Barrier.getYPosition(), Barrier.getLength(), Barrier.getThickness());
                 }
     
                 else {
                     Barrier.setXPosition(Barrier.getXPosition() - Barrier.getSpeed());
-                    Barrier.getBoundingBox().setRect(Barrier.getXPosition() - Barrier.getSpeed(), Barrier.getYPosition(), Barrier.getThickness(), Barrier.getLength());
+                    Barrier.getBoundingBox().setRect(Barrier.getXPosition() - Barrier.getSpeed(), Barrier.getYPosition(), Barrier.getLength(), Barrier.getThickness());
                 }
     
             }

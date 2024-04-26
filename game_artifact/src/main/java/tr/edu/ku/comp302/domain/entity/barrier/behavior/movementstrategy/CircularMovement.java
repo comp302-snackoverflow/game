@@ -50,7 +50,7 @@ public class CircularMovement implements IMovementStrategy {
 
             Barrier.setXPosition(newX);
             Barrier.setYPosition(newY);
-            Barrier.getBoundingBox().setRect(newX, newY, Barrier.getThickness(), Barrier.getLength());
+            Barrier.getBoundingBox().setRect(newX, newY, Barrier.getLength(), Barrier.getThickness());
 
             this.angle += Math.toRadians(0.5);
             if (angle >= 2 * Math.PI) {
@@ -65,6 +65,7 @@ public class CircularMovement implements IMovementStrategy {
     @Override
     public void checkCollision(List<BarrierView> BarrierViews) {
         // TODO Auto-generated method stub
+
         double xPosition = Barrier.getXPosition();
         double yPosition = Barrier.getYPosition();
 
@@ -89,14 +90,19 @@ public class CircularMovement implements IMovementStrategy {
         while (i < BarrierViews.size()) {
             Barrier b = BarrierViews.get(i).getBarrier();
             boolean[] output;
+
+            if (!Barrier.equals(b) && Barrier.getBoundingBox().intersects(b.getBoundingBox())) {
+                stiffness = true;
+                return;
+            }
             
             if (!IsNorthCollision && !IsWestCollision) {
                 
                 
                 output = calculateInterception(NorthWestCorner, b, NORTH_WEST_CORNER);
-                
-                if (!IsNorthCollision) IsNorthCollision = output[0];
-                if (!IsWestCollision) IsWestCollision = output[1];
+
+                IsNorthCollision = output[0];
+                IsWestCollision = output[1];
 
             }
 
@@ -104,9 +110,9 @@ public class CircularMovement implements IMovementStrategy {
                 
                 
                 output = calculateInterception(NorthEastCorner, b, NORTH_EAST_CORNER);
-                
-                if (!IsNorthCollision) IsNorthCollision = output[0];
-                if (!IsEastCollision) IsEastCollision = output[1];
+
+                IsNorthCollision = output[0];
+                IsEastCollision = output[1];
 
             }
 
@@ -114,9 +120,9 @@ public class CircularMovement implements IMovementStrategy {
                 
                 
                 output = calculateInterception(SouthWestCorner, b, SOUTH_WEST_CORNER);
-                
-                if (!IsSouthCollision) IsSouthCollision = output[0];
-                if (!IsWestCollision) IsWestCollision = output[1];
+
+                IsSouthCollision = output[0];
+                IsWestCollision = output[1];
 
             }
 
@@ -124,9 +130,9 @@ public class CircularMovement implements IMovementStrategy {
                 
                 
                 output = calculateInterception(SouthEastCorner, b, SOUTH_EAST_CORNER);
-                
-                if (!IsSouthCollision) IsSouthCollision = output[0];
-                if (!IsEastCollision) IsEastCollision = output[1];
+
+                IsSouthCollision = output[0];
+                IsEastCollision = output[1];
 
             }
 
@@ -139,7 +145,7 @@ public class CircularMovement implements IMovementStrategy {
         if(IsEastCollision && IsWestCollision){
             stiffness = true;
         }
-        else if(IsEastCollision || IsWestCollision){
+        if(IsEastCollision || IsWestCollision){
             stiffness = true;
 
             //changeDirection(IsWestCollision);
@@ -151,7 +157,7 @@ public class CircularMovement implements IMovementStrategy {
         if(IsSouthCollision && IsNorthCollision){
             stiffness = true;
         }
-        else if(IsSouthCollision || IsNorthCollision){
+        if(IsSouthCollision || IsNorthCollision){
             stiffness = false;
 
             //changeDirection(IsWestCollision);
@@ -162,9 +168,10 @@ public class CircularMovement implements IMovementStrategy {
         //If there is one collision only on single side
         
         //if no collision at all
-        if (!(IsWestCollision||IsEastCollision||IsEastCollision||IsNorthCollision)){
+        else if (!(IsWestCollision||IsEastCollision||IsSouthCollision||IsNorthCollision)){
             stiffness = false;
         }
+
     }
 
     //OLD VERSION
