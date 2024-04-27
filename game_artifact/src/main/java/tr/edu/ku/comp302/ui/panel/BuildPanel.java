@@ -119,7 +119,7 @@ public class BuildPanel extends JPanel {
  
     public void displayGridLines(Graphics g, double width, double height) {
         double x_interval = width / 52;
-        double y_interval = ((height / 2) - 80) / 5 ;
+        double y_interval = (height / 2) / 6;
         double final_vertical = 0;
     
         for (double x = x_interval- x_interval/2; x < width; x += x_interval + x_interval/2 + width / 50) {
@@ -130,13 +130,14 @@ public class BuildPanel extends JPanel {
         }
 
 
-        for (double y = 0; y <= height / 2; y += 20 + y_interval) {
+        for (double y = 0; y <= height / 2; y += y_interval) {
             g.drawLine((int)(x_interval-x_interval/2),(int) y, (int)final_vertical, (int)y); 
             y_indexes.add(y);
 
         }
 
         x_indexes.removeLast();
+        y_indexes.removeLast();
         
 
     
@@ -192,7 +193,7 @@ public class BuildPanel extends JPanel {
     }
 
 
-    public JButton createButton(int xPoisition, int yPosition, String path){
+    public JButton createButton(int xPosition, int yPosition, String path){
             // button spacing, and dimensions.
         BufferedImage ImageBuffer = ImageHandler.createCustomImage(
             path,
@@ -211,7 +212,7 @@ public class BuildPanel extends JPanel {
 
     // Create a JButton object with the barrier image and set its position on the panel.
     JButton BarrierButton = new JButton(BarrierIcon);
-    BarrierButton.setBounds(xPoisition, yPosition, buttonWidth, buttonHeight);
+    BarrierButton.setBounds(xPosition, yPosition, buttonWidth, buttonHeight);
 
     BarrierButton.addActionListener(new ActionListener() {
         @Override
@@ -259,7 +260,7 @@ public class BuildPanel extends JPanel {
                 int explosiveCount = Integer.parseInt(explosiveBarrierCountField.getText());
                 int firmCount = Integer.parseInt(firmBarrierCountField.getText());
                 int giftCount = Integer.parseInt(giftBarrierCountField.getText());
-                if (viewModel.barrierConditionsSatisfied(simpleCount, explosiveCount, firmCount, giftCount)) {
+                if (viewModel.barrierConditionsSatisfied(simpleCount, firmCount, explosiveCount, giftCount)) {
                     putBarriersView = viewModel.generateRandomMap(x_indexes, y_indexes, simpleCount, explosiveCount, giftCount, firmCount);
                 }
                 else {
