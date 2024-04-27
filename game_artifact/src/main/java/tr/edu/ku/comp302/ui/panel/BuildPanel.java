@@ -118,7 +118,7 @@ public class BuildPanel extends JPanel {
     }
  
     public void displayGridLines(Graphics g, double width, double height) {
-        double x_interval = width / 52;
+        double x_interval = width / 100;
         double y_interval = (height / 2) / 6;
         double final_vertical = 0;
     
@@ -136,6 +136,7 @@ public class BuildPanel extends JPanel {
 
         }
 
+        // removed the last indices so that the generated barriers do not go out of bounds.
         x_indexes.removeLast();
         y_indexes.removeLast();
         
