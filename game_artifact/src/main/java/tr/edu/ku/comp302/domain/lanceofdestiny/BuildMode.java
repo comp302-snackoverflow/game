@@ -3,6 +3,10 @@ package tr.edu.ku.comp302.domain.lanceofdestiny;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.BuildPanel;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
+import tr.edu.ku.comp302.ui.view.BarrierView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BuildMode {
     private MainFrame mainFrame;
@@ -16,6 +20,10 @@ public class BuildMode {
         this.mainFrame = mainFrame;
         buildPanel.requestFocusInWindow();
         
+    }
+
+    public List<BarrierView> accessBarrierViews() {
+        return new ArrayList<>(buildPanel.getPutBarriersView().values());
     }
 
     

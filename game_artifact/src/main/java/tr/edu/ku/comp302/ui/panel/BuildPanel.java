@@ -273,4 +273,7 @@ public class BuildPanel extends JPanel {
         });
     }
 
+    public HashMap<List<Double>, BarrierView> getPutBarriersView() {
+        return putBarriersView;
+    }
 }
