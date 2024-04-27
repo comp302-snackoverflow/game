@@ -14,8 +14,8 @@ public class FireBall extends Entity {
     private double speed = 2; // Might change the speed later.
     //TODO: Add the player!
 
-    public FireBall(double xPosition, double yPosition, double screenWidth, double screenHeight) {
-        super(xPosition, yPosition, screenWidth, screenHeight);
+    public FireBall(double xPosition, double yPosition) {
+        super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
         actualShape = new Ellipse2D.Double(xPosition, yPosition, size, size);
 
@@ -38,6 +38,7 @@ public class FireBall extends Entity {
         boundingBox.setRect(xPosition, yPosition, size, size);
         actualShape.setFrame(xPosition, yPosition, size, size);
     }
+
     public void launchFireball() {
         this.dy = speed;
     }

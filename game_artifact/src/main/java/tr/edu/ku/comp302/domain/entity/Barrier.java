@@ -12,8 +12,8 @@ public class Barrier extends Entity {
     private double speed;
     private double L;
 
-    public Barrier(double xPosition, double yPosition, double screenWidth, double screenHeight) {
-        super(xPosition, yPosition, screenWidth, screenHeight);
+    public Barrier(double xPosition, double yPosition) {
+        super(xPosition, yPosition);
         thickness = DEFAULT_THICKNESS;
         speed = DEFAULT_SPEED;
         health = DEFAULT_HEALTH;

@@ -119,7 +119,7 @@ public class LanceOfDestiny implements Runnable {
         handleSteadyStateLogic(!rotateCCW && !rotateCW, Lance.horizontalRecoverySpeed);
 
         handleFireballLogic();
-        handleCollisonLogic();
+        handleCollisionLogic();
     }
 
     // Warning: DO NOT try to make this method clean. You will most likely fail.
@@ -215,7 +215,7 @@ public class LanceOfDestiny implements Runnable {
         levelPanel.getFireBallView().getFireBall().move();
     }
 
-    private void handleCollisonLogic() {
+    private void handleCollisionLogic() {
         CollisionHandler.checkCollisions(levelPanel.getFireBallView(), levelPanel.getLanceView());
         CollisionHandler.checkFireBallBorderCollisions(levelPanel.getFireBallView(), mainFrame.getFrameWidth(), mainFrame.getFrameHeight());
     }

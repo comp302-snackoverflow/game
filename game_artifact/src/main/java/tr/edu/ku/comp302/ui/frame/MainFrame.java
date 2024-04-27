@@ -66,7 +66,7 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareLevelPanel() {
-        Lance lance = new Lance(576, 600, frameWidth, frameHeight);
+        Lance lance = new Lance(576, 600);
         LanceView lv = new LanceView(lance);
         Level level = new Level();
         // levelPanel = new LevelPanel(level, lv); TODO: FIX THIS
@@ -74,7 +74,7 @@ public class MainFrame extends JFrame {
         // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)));
         // TODO: FIX THIS AS WELL
         levelPanel = new LevelPanel(level, lv,
-                new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)),
+                new FireBallView(new FireBall(600, 560)),
                 new ArrayList<>());
         ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
         levelPanel.repaint();

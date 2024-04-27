@@ -59,7 +59,11 @@ public class Lance extends Entity {
     }
 
     public void updateXPosition(int dx) {
-        xPosition += dx * direction;
+        double newPos = xPosition + dx * direction;
+        if (newPos < 0 || newPos + length > LanceOfDestiny.getScreenWidth()) {
+            return;
+        }
+        xPosition = newPos;
     }
 
     @Deprecated(forRemoval = true) // Lance doesn't move vertically, right?
@@ -75,7 +79,8 @@ public class Lance extends Entity {
         this.length = length;
         speedWithHold = length * 2;
         speedWithTap = length;
-        // TODO: update bounding box and actual hitbox here
+        boundingBox.setRect(xPosition, yPosition, length, thickness);
+        actualShape = boundingBox;
     }
 
     public double getThickness() {
