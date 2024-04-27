@@ -2,7 +2,7 @@ package tr.edu.ku.comp302.domain.entity;
 
 import java.awt.geom.Rectangle2D;
 
-public class Lance extends Entity{
+public class Lance extends Entity {
 
     private double length;
     private double L;
@@ -11,6 +11,7 @@ public class Lance extends Entity{
 
     private double speedWithHold;
     private double speedWithTap;
+    private short direction;
 
     private double rotationAngle;
     public static final double rotationSpeed = 20.0;
@@ -20,44 +21,44 @@ public class Lance extends Entity{
         super(xPosition, yPosition, screenWidth, screenHeight);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
         actualShape = boundingBox;
-        System.out.println(xPosition);
+        direction = 0;
     }
 
-    public void incrementRotationAngle(double degrees){
-        if (canRotateClockwise(degrees) && canRotateCounterClockwise(degrees)){
+    public void incrementRotationAngle(double degrees) {
+        if (canRotateClockwise(degrees) && canRotateCounterClockwise(degrees)) {
             rotationAngle += degrees;
-        }else if (rotationAngle + degrees < -45){
+        } else if (rotationAngle + degrees < -45) {
             rotationAngle = -45;
-        }else if (rotationAngle + degrees > 45){
+        } else if (rotationAngle + degrees > 45) {
             rotationAngle = 45;
         }
     }
 
-    public void stayInSteadyState(double degrees){
+    public void returnToHorizontalState(double degrees) {
         if (degrees >= Math.abs(rotationAngle)) {
             rotationAngle = 0;
-        } else if (rotationAngle > 0) {       // can also use incrementRotationAngle(Math.signum(rotationAngle) * -degrees);
-            incrementRotationAngle(-degrees); // instead of another branch; however, this is probably more readable
+        } else if (rotationAngle > 0) {
+            incrementRotationAngle(-degrees);
         } else if (rotationAngle < 0) {
             incrementRotationAngle(degrees);
         }
-
     }
-    public boolean canRotateCounterClockwise(double degrees){
+
+    public boolean canRotateCounterClockwise(double degrees) {
         return rotationAngle + degrees >= -45;
     }
-    public boolean canRotateClockwise(double degrees){
+
+    public boolean canRotateClockwise(double degrees) {
         return rotationAngle + degrees <= 45;
     }
 
 
-
-    public void updateXPosition(int updateVal){
-        xPosition += updateVal;
-        System.out.println(xPosition);
+    public void updateXPosition(int dx) {
+        xPosition += dx * direction;
     }
 
-    public void updateYPosition(int updateVal){
+    @Deprecated(forRemoval = true) // Lance doesn't move vertically, right?
+    public void updateYPosition(int updateVal) {
         yPosition += updateVal;
     }
 
@@ -78,7 +79,8 @@ public class Lance extends Entity{
         updateRelativeToL();
     }
 
-    private void updateRelativeToL(){
+    // I think this should be moved inside setL
+    private void updateRelativeToL() {
         setLength(L);
         setThickness(20);
         boundingBox.setRect(xPosition, yPosition, length, thickness);
@@ -121,5 +123,12 @@ public class Lance extends Entity{
     // TODO: Implement collision for Lance
     public void handleCollision(boolean isWall) {
         // nothing happens
+    }
+
+    public void setDirection(int direction) {
+        if (direction > 1 || direction < -1) {
+            throw new IllegalArgumentException("Direction can be -1 for left, 0 for no movement, 1 for right");
+        }
+        this.direction = (short) direction;
     }
 }
