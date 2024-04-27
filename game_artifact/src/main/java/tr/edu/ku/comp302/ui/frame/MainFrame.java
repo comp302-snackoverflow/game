@@ -15,7 +15,6 @@ import tr.edu.ku.comp302.ui.view.LanceView;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainFrame extends JFrame {
     private static final String LOGIN = "login";
@@ -37,7 +36,7 @@ public class MainFrame extends JFrame {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
+        // setResizable(false);
         pack();
         setSize(frameWidth, frameHeight);
         setLocationRelativeTo(null);
@@ -133,4 +132,3 @@ public class MainFrame extends JFrame {
         return frameHeight;
     }
 }
-

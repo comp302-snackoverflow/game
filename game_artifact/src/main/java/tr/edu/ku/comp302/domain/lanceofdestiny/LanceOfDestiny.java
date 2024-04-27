@@ -7,22 +7,27 @@ import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 public class LanceOfDestiny implements Runnable {
     private MainFrame mainFrame;
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
+    private static int screenWidth = 1280;
+    private static int screenHeight = 800;
     private double deltaUpdate = 0.0;
     private double deltaFrame = 0.0;
     private long updates = 0L;
     private long frames = 0L;
+    private GameState currentGameState;
     private Thread gameThread;
     private Character lastMoving;
     private long lastMovingTime;
     private long previousTime;
     private long[] arrowKeyPressTimes = new long[2];    // [rightArrowKeyPressTime, leftArrowKeyPressTime]
-    private double[] lanceMovementRemainder = new double[2];   // [totalRightArrowKey, totalLeftArrowKey]
+    private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private final Lance lance;  // TODO: Later change this.
 
@@ -31,11 +36,30 @@ public class LanceOfDestiny implements Runnable {
         lance = levelPanel.getLanceView().getLance();
         mainFrame = MainFrame.createMainFrame();
         levelPanel.requestFocusInWindow();
+        currentGameState = GameState.PLAYING;   // for testing purposes.
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
+        levelPanel.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateScreenSize();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {}
+
+            @Override
+            public void componentShown(ComponentEvent e) {}
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                // TODO: Should this set game state into pause?
+            }
+        });
         startGameLoop();
     }
+
 
     @Override
     public void run() {
@@ -44,11 +68,19 @@ public class LanceOfDestiny implements Runnable {
         previousTime = System.nanoTime();
         // TODO: Change while loop condition
         while (true) {
-            long currentTime = System.nanoTime();
-            deltaUpdate += (currentTime - previousTime) / timePerUpdate;
-            deltaFrame += (currentTime - previousTime) / timePerFrame;
-            update(currentTime);
-            previousTime = currentTime;
+            if (currentGameState.isPlaying()){
+                long currentTime = System.nanoTime();
+                deltaUpdate += (currentTime - previousTime) / timePerUpdate;
+                deltaFrame += (currentTime - previousTime) / timePerFrame;
+                update(currentTime);
+                previousTime = currentTime;
+            }else{  // TODO: Change this else statement whenever implemented other game states.
+                try{
+                    Thread.sleep(1000 / UPS_SET);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
     private void update(long currentTime){
@@ -62,6 +94,14 @@ public class LanceOfDestiny implements Runnable {
             frames++;
             deltaFrame--;
         }
+    }
+
+    private void updateScreenSize(){
+        levelPanel.setPanelSize(levelPanel.getSize());
+        screenWidth = levelPanel.getWidth();
+        screenHeight = levelPanel.getHeight();
+
+        System.out.println(levelPanel.getLanceView().getLance().getLength() + ", " + levelPanel.getSize());
     }
 
     private void handleGameLogic(long currentTime){
@@ -207,5 +247,21 @@ public class LanceOfDestiny implements Runnable {
     private void startGameLoop() {
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    public static int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public static void setScreenWidth(int screenWidth) {
+        LanceOfDestiny.screenWidth = screenWidth;
+    }
+
+    public static int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public static void setScreenHeight(int screenHeight) {
+        LanceOfDestiny.screenHeight = screenHeight;
     }
 }

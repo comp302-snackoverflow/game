@@ -1,27 +1,28 @@
 package tr.edu.ku.comp302.domain.entity;
 
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+
 import java.awt.geom.Rectangle2D;
 
 public class Lance extends Entity {
-
     private double length;
-    private double L;
-
-    private double thickness = 20;
-
     private double speedWithHold;
     private double speedWithTap;
+    private double thickness;
     private short direction;
-
     private double rotationAngle;
     public static final double rotationSpeed = 20.0;
     public static final double horizontalRecoverySpeed = 45.0;
 
-    public Lance(double xPosition, double yPosition, double screenWidth, double screenHeight) {
-        super(xPosition, yPosition, screenWidth, screenHeight);
+    public Lance(double xPosition, double yPosition) {
+        super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
         actualShape = boundingBox;
         direction = 0;
+        length = LanceOfDestiny.getScreenWidth() / 10.;
+        speedWithHold = 2 * length;
+        speedWithTap = length;
+        thickness = 20;
     }
 
     public void incrementRotationAngle(double degrees) {
@@ -43,6 +44,11 @@ public class Lance extends Entity {
             incrementRotationAngle(degrees);
         }
     }
+    // TODO: set bounding box in these methods
+    public void adjustPositionAndSize(int oldWidth, int oldHeight, int newWidth, int newHeight){
+        updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
+        setLength(newWidth / 10.);      // changes other size-relative instances too.
+    }
 
     public boolean canRotateCounterClockwise(double degrees) {
         return rotationAngle + degrees >= -45;
@@ -51,7 +57,6 @@ public class Lance extends Entity {
     public boolean canRotateClockwise(double degrees) {
         return rotationAngle + degrees <= 45;
     }
-
 
     public void updateXPosition(int dx) {
         xPosition += dx * direction;
@@ -68,24 +73,9 @@ public class Lance extends Entity {
 
     public void setLength(double length) {
         this.length = length;
-    }
-
-    public double getL() {
-        return L;
-    }
-
-    public void setL(double l) {
-        L = l;
-        updateRelativeToL();
-    }
-
-    // I think this should be moved inside setL
-    private void updateRelativeToL() {
-        setLength(L);
-        setThickness(20);
-        boundingBox.setRect(xPosition, yPosition, length, thickness);
-        setSpeedWithTap(L);
-        setSpeedWithHold(2 * L);
+        speedWithHold = length * 2;
+        speedWithTap = length;
+        // TODO: update bounding box and actual hitbox here
     }
 
     public double getThickness() {
