@@ -7,8 +7,7 @@ import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.*;
 
 public class LanceOfDestiny implements Runnable {
     private MainFrame mainFrame;
@@ -40,23 +39,6 @@ public class LanceOfDestiny implements Runnable {
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
-        levelPanel.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                updateScreenSize();
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {}
-
-            @Override
-            public void componentShown(ComponentEvent e) {}
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-                // TODO: Should this set game state into pause?
-            }
-        });
         startGameLoop();
     }
 
@@ -83,6 +65,7 @@ public class LanceOfDestiny implements Runnable {
             }
         }
     }
+
     private void update(long currentTime){
         while (deltaUpdate >= 1){
             handleGameLogic(currentTime);
@@ -90,18 +73,11 @@ public class LanceOfDestiny implements Runnable {
             deltaUpdate--;
         }
         while (deltaFrame >= 1){
+            render();
             levelPanel.repaint();
             frames++;
             deltaFrame--;
         }
-    }
-
-    private void updateScreenSize(){
-        levelPanel.setPanelSize(levelPanel.getSize());
-        screenWidth = levelPanel.getWidth();
-        screenHeight = levelPanel.getHeight();
-
-        System.out.println(levelPanel.getLanceView().getLance().getLength() + ", " + levelPanel.getSize());
     }
 
     private void handleGameLogic(long currentTime){
@@ -120,6 +96,17 @@ public class LanceOfDestiny implements Runnable {
 
         handleFireballLogic();
         handleCollisionLogic();
+    }
+
+    private void render(){
+        int width = (int) levelPanel.getSize().getWidth();
+        int height = (int) levelPanel.getSize().getHeight();
+        if (screenWidth != width || screenHeight != height){
+            levelPanel.setPanelSize(new Dimension(width, height));
+            screenWidth = width;
+            screenHeight = height;
+        }
+        System.out.println(levelPanel.getLanceView().getLance().getLength() + ", " + levelPanel.getSize());
     }
 
     // Warning: DO NOT try to make this method clean. You will most likely fail.
