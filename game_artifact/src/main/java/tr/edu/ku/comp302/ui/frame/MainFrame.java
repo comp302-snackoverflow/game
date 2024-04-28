@@ -20,6 +20,7 @@ public class MainFrame extends JFrame {
     private static final String MAINMENU = "mainmenu";
     private static final String LEVEL = "level";
     private static final String BUILD = "build";
+    private static final String PAUSE = "pause";
 
     private JPanel cards;
     private LoginPanel loginPanel;
@@ -27,6 +28,7 @@ public class MainFrame extends JFrame {
     private JPanel mainMenuPanel;
     private JPanel levelPanel;
     private JPanel buildPanel;
+    private JPanel pausePanel;
     private final CardLayout layout;
 
     private static final int frameWidth = 1280;
@@ -77,7 +79,7 @@ public class MainFrame extends JFrame {
 
         levelPanel = new LevelPanel(level, lv,
                 new FireBallView(new FireBall(632, 560)),
-                App.generateBarriers((double)LanceOfDestiny.getScreenWidth(), (double)LanceOfDestiny.getScreenHeight(), randomModel)); //I called the generate barrier function for now
+                App.generateBarriers((double)LanceOfDestiny.getScreenWidth(), (double)LanceOfDestiny.getScreenHeight(), randomModel), this); //I called the generate barrier function for now
         // to demonstrate how the game works.
         ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
         levelPanel.repaint();
@@ -92,6 +94,12 @@ public class MainFrame extends JFrame {
         buildPanel.requestFocusInWindow();
     }
 
+    private void preparePausePanel() {
+        pausePanel = new PauseMenuPanel(this);
+        pausePanel.setBounds(0, 11, 804, 781);
+        pausePanel.requestFocusInWindow();
+    }
+
     public static MainFrame createMainFrame() {
         MainFrame self = new MainFrame();
         self.prepareLoginPanel();
@@ -99,11 +107,13 @@ public class MainFrame extends JFrame {
         self.prepareMainMenu();
         self.prepareBuildPanel();
         self.prepareLevelPanel();
+        self.preparePausePanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
         self.cards.add(self.levelPanel, LEVEL);
         self.cards.add(self.buildPanel, BUILD);
+        self.cards.add(self.pausePanel, PAUSE);
         return self;
     }
 
@@ -133,6 +143,11 @@ public class MainFrame extends JFrame {
 
     public void showBuildPanel() {
         layout.show(cards, BUILD);
+        refresh();
+    }
+
+    public void showPausePanel() {
+        layout.show(cards, PAUSE);
         refresh();
     }
 

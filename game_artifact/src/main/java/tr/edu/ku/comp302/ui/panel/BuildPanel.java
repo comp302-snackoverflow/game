@@ -347,7 +347,7 @@ public class BuildPanel extends JPanel {
                     ArrayList<BarrierView> barriersList = new ArrayList<>(putBarriersView.values());
                     // note to meriç: you can call the get barrier function here to get the barriers if you need them, but I think
                     // this list is enough to generate a new level.
-                    LevelPanel levelPanel = new LevelPanel(new Level(), new LanceView(new Lance(576,600)), new FireBallView(new FireBall(632,560)), barriersList);
+                    LevelPanel levelPanel = new LevelPanel(new Level(), new LanceView(new Lance(576,600)), new FireBallView(new FireBall(632,560)), barriersList, mainFrame);
                     levelPanel.setPanelSize(new Dimension(1280, 800));
                     levelPanel.repaint();
                     levelPanel.setFocusable(true);

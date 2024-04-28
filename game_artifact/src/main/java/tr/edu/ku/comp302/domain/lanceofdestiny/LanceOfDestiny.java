@@ -59,7 +59,7 @@ public class LanceOfDestiny implements Runnable {
         previousTime = System.nanoTime();
         // TODO: Change while loop condition
         while (true) {
-            if (currentGameState.isPlaying()){
+            if (currentGameState.isPlaying()){ // TODO: LoD game state should be used instead of this static variable.
                 long currentTime = System.nanoTime();
                 deltaUpdate += (currentTime - previousTime) / timePerUpdate;
                 deltaFrame += (currentTime - previousTime) / timePerFrame;
@@ -314,5 +314,6 @@ public class LanceOfDestiny implements Runnable {
     public static void setCurrentGameState(GameState gameState) {
         GameState.state = gameState;
     }
+
 
 }
