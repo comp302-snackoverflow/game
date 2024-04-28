@@ -138,7 +138,7 @@ public class HorizontalMovement implements IMovementStrategy{
 
     /**
      * This function checks if the current barrier collides with any other barrier
-     * If so, cahnges the direction or keep the stiffness
+     * If so, changes the direction or keep the stiffness
      * Otherwise, start the movement
      *
      * @param barrierViews the list of barrierViews to check if the current barrier is colliding with another barrier
