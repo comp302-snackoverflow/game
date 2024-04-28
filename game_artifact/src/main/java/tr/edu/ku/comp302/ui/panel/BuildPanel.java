@@ -1,8 +1,7 @@
 package tr.edu.ku.comp302.ui.panel;
 
 
-import java.awt.Graphics;
-import java.awt.MouseInfo;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -14,14 +13,19 @@ import java.util.List;
 
 import javax.swing.*;
 
+import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.MouseHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.view.BarrierView;
+import tr.edu.ku.comp302.ui.view.FireBallView;
+import tr.edu.ku.comp302.ui.view.LanceView;
 
 public class BuildPanel extends JPanel {
     double height;
@@ -281,7 +285,14 @@ public class BuildPanel extends JPanel {
                 if (viewModel.barrierConditionsSatisfied(viewModel.getSimpleBarrierCount(), viewModel.getFirmBarrierCount(), viewModel.getExplosiveBarrierCount(), 10)) {
                     ArrayList<BarrierView> barriersList = new ArrayList<>(putBarriersView.values());
                     // note to meriç: you can call the get barrier function here to get the barriers if you need them, but I think
-                    // this list is enough to generate a new level. 
+                    // this list is enough to generate a new level.
+                    LevelPanel levelPanel = new LevelPanel(new Level(), new LanceView(new Lance(576,600)), new FireBallView(new FireBall(632,560)), barriersList);
+                    levelPanel.setPanelSize(new Dimension(1280, 800));
+                    levelPanel.repaint();
+                    levelPanel.setFocusable(true);
+                    levelPanel.requestFocusInWindow();
+                    mainFrame.setLevelPanel(levelPanel);
+                    mainFrame.showLevelPanel();
 
                     //TODO: Create a level here and open the running mode.
 
@@ -305,7 +316,7 @@ public class BuildPanel extends JPanel {
                     //TODO: Connect with the save logic 
 
                 } else {
-                    JOptionPane.showMessageDialog(null, "Invalid number of barriers! To start a game, you must have" +
+                    JOptionPane.showMessageDialog(null, "Invalid number of barriers! To save a game, you must have" +
                             " at least 75 simple barriers, 10 firm barriers, 5 explosive barriers, and 10 gift barriers.");
                 }
             }

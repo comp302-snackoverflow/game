@@ -97,8 +97,8 @@ public class MainFrame extends JFrame {
         self.prepareLoginPanel();
         self.prepareRegisterPanel();
         self.prepareMainMenu();
-        self.prepareLevelPanel();
         self.prepareBuildPanel();
+        self.prepareLevelPanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
@@ -151,6 +151,14 @@ public class MainFrame extends JFrame {
 
     public JPanel getBuildPanel() {
         return buildPanel;
+    }
+
+    public void setLevelPanel(JPanel levelPanel) {
+        cards.remove(this.levelPanel);
+        this.levelPanel = levelPanel;
+        cards.add(this.levelPanel, LEVEL);
+        refresh();
+
     }
 }
 
