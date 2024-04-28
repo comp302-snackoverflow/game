@@ -117,19 +117,19 @@ public class BuildPanelModel {
 
                 switch (barrierType) {
                     case "simple":
-                        barrier = new SimpleBarrier(x + width/104, y +((height / 2) - 80) / 10);
+                        barrier = new SimpleBarrier(x + width/104, y + (((height/2)-120)/7)/2);
                         view = new BarrierView(barrier);
                         scaleBarrierImages(view);
                         barrierMap.put(coordinates, view);
                         break;
                     case "explosive":
-                        barrier = new ExplosiveBarrier(x + width/104,y +((height / 2) - 80) / 10);
+                        barrier = new ExplosiveBarrier(x + width/104, y +(((height/2)-120)/7)/2);
                         view = new BarrierView(barrier);
                         scaleBarrierImages(view);
                         barrierMap.put(coordinates, view);
                         break;
                     case "firm":
-                        barrier = new FirmBarrier(x + width/104, y + ((height / 2) - 80) / 10);
+                        barrier = new FirmBarrier(x + width/104, y + (((height/2)-120)/7)/2);
                         view = new BarrierView(barrier);
                         scaleBarrierImages(view);
                         barrierMap.put(coordinates, view);

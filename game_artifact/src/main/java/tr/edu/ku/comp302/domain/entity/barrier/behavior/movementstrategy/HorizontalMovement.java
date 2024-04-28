@@ -81,7 +81,6 @@ public class HorizontalMovement implements IMovementStrategy{
      *  */
     boolean calculateInterception(double[] cornerPoint, Barrier barrier, boolean isWest ){
         double screenWidth = LanceOfDestiny.getScreenWidth();
-
         double xBarrier = barrier.getXPosition();
         double yBarrier = barrier.getYPosition();
         double lengthBarrier = screenWidth/50;//barrier.getLength();
@@ -98,7 +97,10 @@ public class HorizontalMovement implements IMovementStrategy{
             insideboundary = cornerPointX >= 0;
         }
         else{
-            insideboundary = cornerPointX <= screenWidth;
+
+            // a temporary solution for the glitch like appeareance of the barriers at the initial game 
+            // may be changed in the following stages 
+            insideboundary = cornerPointX <= screenWidth-screenWidth/52;
         }
 
        // boolean insideBoundary = cornerPointX >= 0 && cornerPointX <= screenWidth;
