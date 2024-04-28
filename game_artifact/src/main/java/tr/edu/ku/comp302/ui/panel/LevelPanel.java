@@ -3,8 +3,10 @@ package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
@@ -22,14 +24,26 @@ public class LevelPanel extends JPanel {
     private FireBallView fireBallView;
     private List<BarrierView> barriers;
 
+    private MainFrame mainFrame;
+    private JButton pauseButton;
+
     private List <RemainsView> remains = new ArrayList<>();
 
-    public LevelPanel(Level level, LanceView lanceView, FireBallView fireBallView, List<BarrierView> barriers) {
+    public LevelPanel(Level level, LanceView lanceView, FireBallView fireBallView, List<BarrierView> barriers, MainFrame mainFrame) {
         this.level = level;
         this.lanceView = lanceView;
         this.fireBallView = fireBallView;
         this.barriers = barriers;
+        this.mainFrame = mainFrame;
         addKeyListener(new KeyboardHandler());
+        setFocusable(true);
+        pauseButton = new JButton("PAUSE");
+        pauseButton.addActionListener(e -> {
+                LanceOfDestiny.setCurrentGameState(GameState.PAUSE_MENU);
+                mainFrame.showPausePanel();
+        });
+        pauseButton.setBounds(0,0, 10, 20);
+        this.add(pauseButton);
     }
 
     public void paintComponent(Graphics g){
