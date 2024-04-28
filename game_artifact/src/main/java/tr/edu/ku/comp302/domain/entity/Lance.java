@@ -26,7 +26,7 @@ public class Lance extends Entity {
         length = LanceOfDestiny.getScreenWidth() / 10.;
         speedWithHold = 2 * length;
         speedWithTap = length;
-        thickness = 100;
+        thickness = 20;
         lastCollisionTimeInMillis = null;
     }
 
