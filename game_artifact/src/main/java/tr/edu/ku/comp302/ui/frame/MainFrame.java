@@ -61,8 +61,7 @@ public class MainFrame extends JFrame {
 
     private void prepareMainMenu() {
         mainMenuPanel = new MainMenuPanel(this);
-        mainMenuPanel.setBounds(0, 11, 804, 781); // I don't know what these numbers do
-        mainMenuPanel.setLayout(null);            // Just copied from login and register frames
+        mainMenuPanel.setBounds(0, 11, 804, 781);
     }
 
     private void prepareLevelPanel() {

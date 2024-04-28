@@ -43,7 +43,6 @@ public class LanceOfDestiny implements Runnable {
         startGameLoop();
     }
 
-
     @Override
     public void run() {
         double timePerFrame = 1_000_000_000.0 / FPS_SET;
@@ -257,4 +256,9 @@ public class LanceOfDestiny implements Runnable {
     public static void setScreenHeight(int screenHeight) {
         LanceOfDestiny.screenHeight = screenHeight;
     }
+
+    public static void setCurrentGameState(GameState gameState) {
+        GameState.state = gameState;
+    }
+
 }
