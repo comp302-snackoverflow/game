@@ -243,6 +243,13 @@ public class BuildPanel extends JPanel {
         playButton.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
         add(playButton);
 
+        JButton saveButton = new JButton("Save");
+        int saveButtonX = (int) (width / 2 - buttonWidth / 2);
+        int saveButtonY = (int) (height*0.6 + 60); 
+        saveButton.setBounds(saveButtonX, saveButtonY, buttonWidth, buttonHeight);
+        add(saveButton);
+
+
         generateMapButton.addActionListener(new ActionListener() {
             @Override
             // Note that this action CURRENTLY empties the whole map. So when the user decides to randomize
@@ -276,7 +283,26 @@ public class BuildPanel extends JPanel {
                     // note to meriç: you can call the get barrier function here to get the barriers if you need them, but I think
                     // this list is enough to generate a new level. 
 
-                    //TODO: Create a level here and open the running mode. 
+                    //TODO: Create a level here and open the running mode.
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid number of barriers! To start a game, you must have" +
+                            " at least 75 simple barriers, 10 firm barriers, 5 explosive barriers, and 10 gift barriers.");
+                }
+            }
+        });
+
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewModel.countBarriers(putBarriersView);
+                // giftBarrierCount is given 10 for now since they don't exist!
+                if (viewModel.barrierConditionsSatisfied(viewModel.getSimpleBarrierCount(), viewModel.getFirmBarrierCount(), viewModel.getExplosiveBarrierCount(), 10)) {
+                    ArrayList<BarrierView> barriersList = new ArrayList<>(putBarriersView.values());
+                    // note to Mert: you can call the get barrier function here to get the barriers if you need them, but I think
+                    // this list is enough to generate a new level. 
+
+                    //TODO: Connect with the save logic 
 
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid number of barriers! To start a game, you must have" +
