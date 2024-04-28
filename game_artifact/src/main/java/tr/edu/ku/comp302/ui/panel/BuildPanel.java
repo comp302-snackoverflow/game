@@ -20,6 +20,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.MouseHandler;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
 public class BuildPanel extends JPanel {
@@ -29,15 +30,17 @@ public class BuildPanel extends JPanel {
     ArrayList<Double> y_indexes = new ArrayList<>();
     String displayImagePath = "/assets/barrier_image.png";
     boolean gridPrinted = false;
+    MainFrame mainFrame;
 
     BuildPanelModel viewModel;
 
     HashMap<List<Double>, BarrierView> putBarriersView = new HashMap<>();
 
 
-    public BuildPanel(double height, double width) {
+    public BuildPanel(double height, double width, MainFrame mainFrame) {
         this.height = height;
         this.width = width;
+        this.mainFrame = mainFrame;
         this.setLayout(null);
         displayBarrierSelections();
         setUpUserInputs();
@@ -216,7 +219,6 @@ public class BuildPanel extends JPanel {
         JTextField explosiveBarrierCountField = new JTextField("0");
         JTextField firmBarrierCountField = new JTextField("0");
         JTextField giftBarrierCountField = new JTextField("0");
-
         JButton generateMapButton = new JButton("Generate Map");
 
         int verticalSpacing = 30;
@@ -232,6 +234,14 @@ public class BuildPanel extends JPanel {
         add(firmBarrierCountField);
         add(giftBarrierCountField);
         add(generateMapButton);
+
+        JButton playButton = new JButton("Play");
+        int buttonWidth = 100; 
+        int buttonHeight = 50; 
+        int buttonX = (int) (width / 2 - buttonWidth / 2);
+        int buttonY = (int) (height*0.6 + 120); 
+        playButton.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        add(playButton);
 
         generateMapButton.addActionListener(new ActionListener() {
             @Override
@@ -255,7 +265,28 @@ public class BuildPanel extends JPanel {
 
             }
         });
+
+        playButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewModel.countBarriers(putBarriersView);
+                // giftBarrierCount is given 10 for now since they don't exist!
+                if (viewModel.barrierConditionsSatisfied(viewModel.getSimpleBarrierCount(), viewModel.getFirmBarrierCount(), viewModel.getExplosiveBarrierCount(), 10)) {
+                    ArrayList<BarrierView> barriersList = new ArrayList<>(putBarriersView.values());
+                    // note to meriç: you can call the get barrier function here to get the barriers if you need them, but I think
+                    // this list is enough to generate a new level. 
+
+                    //TODO: Create a level here and open the running mode. 
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid number of barriers! To start a game, you must have" +
+                            " at least 75 simple barriers, 10 firm barriers, 5 explosive barriers, and 10 gift barriers.");
+                }
+            }
+        });
+        
     }
+
 
     public HashMap<List<Double>, BarrierView> getPutBarriersView() {
         return putBarriersView;

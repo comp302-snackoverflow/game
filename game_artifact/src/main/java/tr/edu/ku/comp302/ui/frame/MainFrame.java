@@ -86,7 +86,7 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareBuildPanel() {
-        buildPanel = new BuildPanel(LanceOfDestiny.getScreenHeight(), LanceOfDestiny.getScreenWidth());
+        buildPanel = new BuildPanel(LanceOfDestiny.getScreenHeight(), LanceOfDestiny.getScreenWidth(), this);
         buildPanel.repaint();
         buildPanel.setLayout(null);
         buildPanel.requestFocusInWindow();
