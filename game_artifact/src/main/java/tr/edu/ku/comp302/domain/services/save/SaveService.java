@@ -13,11 +13,19 @@ import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import java.util.List;
 
 public class SaveService {
+    private SaveService instance;
     private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
-    public SaveService() {
+    private SaveService() {
         dbHandler = DatabaseHandler.getInstance();
+    }
+
+    public SaveService getInstance() {
+        if (instance == null) {
+            instance = new SaveService();
+        }
+        return instance;
     }
 
     // TODO Save with the actual username and game score
@@ -26,12 +34,16 @@ public class SaveService {
         FireballData fireballData = getFireballData(fireball, windowWidth, windowHeight);
         LanceData lanceData = getLanceData(lance, windowWidth, windowHeight);
         List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, windowWidth, windowHeight)).toList();
-        return dbHandler.saveGame("test", fireballData, lanceData, barrierData, 0);
+        GameData data = new GameData(fireballData, lanceData, barrierData, 0.0);
+
+        return dbHandler.saveGame("test", data);
     }
 
     // TODO Save with the actual username
     private boolean saveMap(List<Barrier> barriers, double windowWidth, double windowHeight) {
-        List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, windowWidth, windowHeight)).toList();
+        List<BarrierData> barrierData = barriers.stream().map(
+                barrier -> getBarrierData(barrier, windowWidth, windowHeight)
+        ).toList();
         return dbHandler.saveMap("test", barrierData);
     }
 

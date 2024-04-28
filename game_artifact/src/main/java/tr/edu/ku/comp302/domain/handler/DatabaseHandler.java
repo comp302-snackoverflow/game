@@ -2,8 +2,10 @@ package tr.edu.ku.comp302.domain.handler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.services.save.BarrierData;
 import tr.edu.ku.comp302.domain.services.save.FireballData;
+import tr.edu.ku.comp302.domain.services.save.GameData;
 import tr.edu.ku.comp302.domain.services.save.LanceData;
 
 import java.io.FileInputStream;
@@ -13,6 +15,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -95,7 +98,6 @@ public class DatabaseHandler {
 
 
     public boolean isUsernameUnique(String username) {
-        boolean usernameIsUnique = true;
         final String query = "SELECT * FROM Player WHERE username = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -135,7 +137,7 @@ public class DatabaseHandler {
 
     public boolean saveMap(String username, List<BarrierData> barriers) {
         final String saveMap = "INSERT INTO Map (owner) VALUES (?);";
-        int uid = getUIDFromUsername(username);
+        int uid = getUidFromUsername(username);
         if (uid == -1) {
             return false;
         }
@@ -160,13 +162,58 @@ public class DatabaseHandler {
         return false;
     }
 
-    public boolean saveGame(String username, FireballData fireball, LanceData lance,
-                            List<BarrierData> barriers, double score) {
+    /**
+     * Load barriers from the database from a save or a map
+     * @param id save_ref or map_ref
+     * @param type "save" or "map" depending on what you want to load
+     * @return A list containing the barriers in the save or map
+     */
+    public List<BarrierData> loadBarriers(int id, String type) {
+
+        final String query = switch (type) {
+            case "save" -> "SELECT * FROM Barrier WHERE save_ref = ? AND map_ref IS NULL";
+            case "map" -> "SELECT * FROM Barrier WHERE map_ref = ? AND save_ref IS NULL";
+            default -> null;
+        };
+
+        if (query == null) {
+            throw new IllegalArgumentException("Invalid type: " + type + ". Type must be one of \"save\" or \"map\"");
+        }
+
+        List<BarrierData> barriers = new ArrayList<>();
+
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        double x = rs.getDouble("x");
+                        double y = rs.getDouble("y");
+                        int health = rs.getInt("health");
+                        int barrierType = rs.getInt("type");
+                        barriers.add(new BarrierData(x, y, health, barrierType));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+        return barriers;
+    }
+
+    public boolean saveGame(String username, GameData data) {
+        FireballData fireball = data.fireballData();
+        LanceData lance = data.lanceData();
+        List<BarrierData> barriers = data.barriersData();
+        double score = data.score();
+
         final String saveGame = "INSERT INTO Save " +
                 "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " +
                 "lance_x, lance_y, lance_angle, score) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        int uid = getUIDFromUsername(username);
+        int uid = getUidFromUsername(username);
         if (uid == -1) {
             return false;
         }
@@ -198,6 +245,38 @@ public class DatabaseHandler {
         return false;
     }
 
+    public GameData loadGame(int saveId) {
+        String query = "SELECT * FROM Save WHERE id = ?";
+        FireballData fireball = null;
+        LanceData lance = null;
+        double score = 0.0;
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, saveId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        fireball = new FireballData(rs.getDouble("fireball_x"),
+                                rs.getDouble("fireball_y"),
+                                rs.getDouble("fireball_dx"),
+                                rs.getDouble("fireball_dy"));
+                        lance = new LanceData(rs.getDouble("lance_x"),
+                                rs.getDouble("lance_y"),
+                                rs.getDouble("lance_angle"));
+                        score = rs.getDouble("score");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+
+        List<BarrierData> barriers = loadBarriers(saveId, "save");
+        return new GameData(fireball, lance, barriers, score);
+
+    }
+
     private boolean saveBarriers(List<BarrierData> barriers, int id, String to) {
         String saveBarrier = "INSERT INTO Barrier (x, y, health, type, save_ref, map_ref) VALUES (?, ?, ?, ?, ?, ?)";
         Integer saveRef = to.equals("save") ? id : null;
@@ -213,8 +292,8 @@ public class DatabaseHandler {
                     if (saveRef == null && mapRef != null) {
                         ps.setNull(5, java.sql.Types.INTEGER);
                         ps.setInt(6, mapRef);
-                    } else if (saveRef != null && mapRef == null) {
-                        ps.setInt(5, saveRef);
+                    } else if (saveRef != null && mapRef == null) {  // I know mapRef check is redundant
+                        ps.setInt(5, saveRef);          // but it is for clarity
                         ps.setNull(6, java.sql.Types.INTEGER);
                     }
                     ps.executeUpdate();
@@ -228,7 +307,7 @@ public class DatabaseHandler {
 
     }
 
-    public int getUIDFromUsername(String username) {
+    public int getUidFromUsername(String username) {
         final String query = "SELECT uid FROM Player WHERE username = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -264,6 +343,25 @@ public class DatabaseHandler {
             logger.error(e.getMessage());
         }
         return 1; // default to simple barrier
+    }
+
+    public String getBarrierTypeFromId(int id) {
+        final String query = "SELECT name FROM BarrierType WHERE id = ?";
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, id);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("name");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+        return SimpleBarrier.TYPE; // default to simple barrier
     }
 }
 
