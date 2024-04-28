@@ -34,6 +34,7 @@ public class BuildPanel extends JPanel {
 
     HashMap<List<Double>, BarrierView> putBarriersView = new HashMap<>();
 
+
     public BuildPanel(double height, double width) {
         this.height = height;
         this.width = width;
@@ -56,7 +57,7 @@ public class BuildPanel extends JPanel {
         gridCoordinateList.add(y_indexes);
 
         if (!((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocationOnScreen().getY() > height / 2)
-                || MouseInfo.getPointerInfo().getLocation().getY() - this.getLocationOnScreen().getY() < 0)) {
+                || MouseInfo.getPointerInfo().getLocation().getY() - this.getLocationOnScreen().getY() < (((height/2)-120)/7)/2)) {
             double currentBarrierX = returnStart(gridCoordinateList)[0];
             double currentBarrierY = returnStart(gridCoordinateList)[1];
             ArrayList<Double> coordinateList = new ArrayList<>();
@@ -66,7 +67,7 @@ public class BuildPanel extends JPanel {
             if (!putBarriersView.containsKey(coordinateList)) {
                 g.drawImage(ImageHandler.createCustomImage(displayImagePath, (int) width / 50, 20)
                         , (int) (currentBarrierX + width / 104)
-                        , (int) (currentBarrierY + ((height / 2) - 80) / 10)
+                        , (int) (currentBarrierY + (((height/2)-120)/7)/2)
                         , null);
 
             }
@@ -74,19 +75,19 @@ public class BuildPanel extends JPanel {
             if (MouseHandler.mouseClicked) {
                 switch (displayImagePath) {
                     case "/assets/barrier_image.png":
-                        SimpleBarrier simpleBarrier = new SimpleBarrier(currentBarrierX + width / 104, currentBarrierY + ((height / 2) - 80) / 10);
+                        SimpleBarrier simpleBarrier = new SimpleBarrier(currentBarrierX + width / 104, currentBarrierY + (((height/2)-120)/7)/2);
                         BarrierView simpleView = new BarrierView(simpleBarrier);
                         viewModel.scaleBarrierImages(simpleView);
                         putBarriersView.put(coordinateList, simpleView);
                         break;
                     case "/assets/explosive_barrier.png":
-                        Barrier explosiveBarrier = new ExplosiveBarrier(currentBarrierX + width / 104, currentBarrierY + ((height / 2) - 80) / 10);
+                        Barrier explosiveBarrier = new ExplosiveBarrier(currentBarrierX + width / 104, currentBarrierY + (((height/2)-120)/7)/2);
                         BarrierView explosiveView = new BarrierView(explosiveBarrier);
                         viewModel.scaleBarrierImages(explosiveView);
                         putBarriersView.put(coordinateList, explosiveView);
                         break;
                     case "/assets/firm_barrier.png":
-                        Barrier firmBarrier = new FirmBarrier(currentBarrierX + width / 104, currentBarrierY + ((height / 2) - 80) / 10);
+                        Barrier firmBarrier = new FirmBarrier(currentBarrierX + width / 104, currentBarrierY + (((height/2)-120)/7)/2);
                         BarrierView firmView = new BarrierView(firmBarrier);
                         viewModel.scaleBarrierImages(firmView);
                         putBarriersView.put(coordinateList, firmView);
@@ -114,28 +115,21 @@ public class BuildPanel extends JPanel {
     }
 
     public void displayGridLines(Graphics g, double width, double height) {
-        double x_interval = width / 100;
-        double y_interval = (height / 2) / 6;
-        double final_vertical = 0;
+        double x_start= width/52;
+        double y_start = ((height/2)-120)/7;
 
-        for (double x = x_interval - x_interval / 2; x < width; x += x_interval + x_interval / 2 + width / 50) {
-            g.drawLine((int) x, 0, (int) x, (int) height / 2);
+        for (double x= x_start/2; x <= width-(x_start/2) +1 ; x += width/50 + x_start ){
+            g.drawLine((int) x, (int) y_start/2, (int) x, (int) ((height/2)- y_start/2));
             x_indexes.add(x);
-            final_vertical = x;
-
         }
 
-
-        for (double y = 0; y <= height / 2; y += y_interval) {
-            g.drawLine((int) (x_interval - x_interval / 2), (int) y, (int) final_vertical, (int) y);
+        for(double y = y_start/2; y <= (height/2)- y_start/2; y += 20+y_start){
+            g.drawLine((int)(x_start / 2), (int)y, (int) (width-(x_start/2)), (int) y);
             y_indexes.add(y);
-
         }
-
         // removed the last indices so that the generated barriers do not go out of bounds.
         x_indexes.removeLast();
         y_indexes.removeLast();
-
 
     }
 
@@ -157,10 +151,8 @@ public class BuildPanel extends JPanel {
                 previousY = list.get(1).get(j);
             }
         }
-
         double[] output = {previousX, previousY};
         return output;
-
     }
 
     /**
