@@ -156,9 +156,9 @@ public class CollisionHandler {
                     }
                     System.out.println(side);
                     switch (side) {
-                        case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle());
+                        case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle(), lance.getDirection());
                         case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                                fireBall.handleCornerReflection(lance.getRotationAngle(), side);
+                                fireBall.handleCornerReflection(lance.getRotationAngle(), lance.getDirection(), side);
                     }
                 } catch (CollisionError ignored) {}
         }

@@ -129,6 +129,10 @@ public class Lance extends Entity {
         this.direction = (short) direction;
     }
 
+    public short getDirection() {
+        return direction;
+    }
+
     // TODO: FINISH THIS METHOD
     public Polygon getActualHitbox() {
         double B = Math.toRadians(rotationAngle);

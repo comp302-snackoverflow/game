@@ -55,11 +55,17 @@ public class FireBall extends Entity {
         double surfaceAngleRadians = Math.toRadians(surfaceAngleDegrees);
         double totalSpeedAngle = Math.atan2(dy, dx); //FireBall speed angle
         if (surfaceXSpeed != 0) { // if the lance is moving
-            if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
+            if (dx == 0 && surfaceAngleDegrees == 0) { // perpendicular collision
+                double dir = Math.signum(surfaceXSpeed);
+                dx = dir * dy / Math.sqrt(2);
+                dy = -dy * Math.sqrt(2);
+            }
+            else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
                 double currentSpeed = Math.sqrt(dx * dx + dy * dy);
-                double newSpeed = currentSpeed + 5; // increase total speed by 5
+                //double newSpeed = currentSpeed + 5; // increase total speed by 5
+                double newSpeed = currentSpeed; // because permanent +5 speed boost looks bad
                 dx = newSpeed * Math.cos(totalSpeedAngle);
-                dy = newSpeed * Math.sin(totalSpeedAngle);
+                dy = -newSpeed * Math.sin(totalSpeedAngle);
             } else { // in the opposite direction
                 // mirror the movement of the FireBall
                 dx = -dx;
