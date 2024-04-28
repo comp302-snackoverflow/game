@@ -74,7 +74,7 @@ public class MainFrame extends JFrame {
         // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)));
         // TODO: FIX THIS AS WELL
         levelPanel = new LevelPanel(level, lv,
-                new FireBallView(new FireBall(600, 560)),
+                new FireBallView(new FireBall(632, 560)),
                 new ArrayList<>());
         ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
         levelPanel.repaint();
