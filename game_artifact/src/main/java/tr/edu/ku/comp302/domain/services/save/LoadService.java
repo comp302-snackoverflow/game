@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.services.save;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tr.edu.ku.comp302.App;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
@@ -9,6 +10,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.FireBallView;
@@ -18,7 +20,7 @@ import tr.edu.ku.comp302.ui.view.BarrierView;
 import java.util.List;
 
 public class LoadService {
-    private LoadService instance;
+    private static LoadService instance;
     private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
@@ -26,7 +28,7 @@ public class LoadService {
         dbHandler = DatabaseHandler.getInstance();
     }
 
-    public LoadService getInstance() {
+    public static LoadService getInstance() {
         if (instance == null) {
             instance = new LoadService();
         }
@@ -51,7 +53,60 @@ public class LoadService {
         //  find a way to do it because its stupid to statically set it
         return new LevelPanel(new Level(), lv, fbv, barrierViews);
     }
+    public LevelPanel loadMap(int mapId) {
+        /*
+         * FIXME: this works but has at least two issues:
+         *  - barrier sizes are not consistent with the window size
+         *  - the lance and fireball are positioned absolutely
+         *  but at least it works so yay
+         */
+        List<BarrierData> barriers = dbHandler.loadBarriers(mapId, "map");
+        if (barriers == null) {
+            return null;
+        }
 
+        double windowWidth = LanceOfDestiny.getScreenWidth();
+        double windowHeight = LanceOfDestiny.getScreenHeight();
+        Lance lance = new Lance(576, 600);
+        LanceView lv = new LanceView(lance);
+        Level level = new Level();
+        FireBallView fbv = new FireBallView(new FireBall(632, 560));
+        List<BarrierView> barrierViews =
+            barriers.stream()
+                    .map(b -> createBarrierView(b, windowWidth, windowHeight))
+                    .toList();
+        return new LevelPanel(level, lv, fbv, barrierViews);
+    }
+
+    private BarrierView createBarrierView(BarrierData bd, double width, double height) {
+        double xPos = bd.x() * width;
+        double yPos = bd.y() * height;
+        int health = bd.health();
+        String type = dbHandler.getBarrierTypeFromId(bd.type());
+        return switch (type) {
+            case SimpleBarrier.TYPE -> {
+                Barrier b = new SimpleBarrier(xPos, yPos);
+                b.setHealth(health);
+                yield new BarrierView(b);
+            }
+            case FirmBarrier.TYPE -> {
+                Barrier b = new FirmBarrier(xPos, yPos);
+                b.setHealth(health);
+                yield new BarrierView(b);
+            }
+            case ExplosiveBarrier.TYPE -> {
+                Barrier b = new ExplosiveBarrier(xPos, yPos);
+                b.setHealth(health);
+                yield new BarrierView(b);
+            }
+            default -> {
+                Barrier b = new SimpleBarrier(xPos, yPos);
+                b.setHealth(health);
+                yield new BarrierView(b);
+            }
+        };
+    }
+    
     private Lance loadLance(LanceData ld, double windowWidth, double windowHeight) {
         double x = ld.x() * windowWidth;
         double y = ld.y() * windowHeight;
