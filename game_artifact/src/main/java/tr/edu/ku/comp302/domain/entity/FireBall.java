@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.entity;
 
 
 import tr.edu.ku.comp302.domain.handler.collision.Collision;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import javax.swing.*;
 import java.awt.geom.Ellipse2D;
@@ -14,7 +15,7 @@ public class FireBall extends Entity {
     private int size = 16;
     private double dx = 0;
     private double dy = 0;
-    private double speed = 2; // Might change the speed later.
+    private double speed = 0.2 * LanceOfDestiny.getScreenWidth(); // in px/s
     //TODO: Add the player!
     private boolean moving;
 
@@ -26,14 +27,8 @@ public class FireBall extends Entity {
     }
 
     @Override
+    @Deprecated(forRemoval = true) // handleReflection is used
     public void handleCollision(boolean isWall) {
-        if (isWall) {
-            dx = -dx;
-            return;
-        }
-        dy = -dy; // TODO calculate new speed here;
-        dx = -dx;
-        //dx = new SecureRandom().nextInt(-3, 4);
     }
 
     // for handling reflections with steady surfaces
@@ -62,8 +57,8 @@ public class FireBall extends Entity {
             }
             else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
                 double currentSpeed = Math.sqrt(dx * dx + dy * dy);
-                //double newSpeed = currentSpeed + 5; // increase total speed by 5
-                double newSpeed = currentSpeed; // because permanent +5 speed boost looks bad
+                double newSpeed = currentSpeed + 5; // increase total speed by 5
+//                double newSpeed = currentSpeed; // because permanent +5 speed boost looks bad
                 dx = newSpeed * Math.cos(totalSpeedAngle);
                 dy = -newSpeed * Math.sin(totalSpeedAngle);
             } else { // in the opposite direction
@@ -110,7 +105,7 @@ public class FireBall extends Entity {
         }
     }
 
-    public void move() {
+    public void move(double dx, double dy) {
         xPosition += dx;
         yPosition += dy;
         boundingBox.setRect(xPosition, yPosition, size, size);

@@ -213,8 +213,8 @@ public class LanceOfDestiny implements Runnable {
                 fb.stickToLance(lance);
             }
         }
-
-        fb.move();
+        // FIXME assumes this is called UPS_SET times per second
+        fb.move(fb.getDx() / UPS_SET, fb.getDy() / UPS_SET);
     }
 
     private void handleCollisionLogic(double currentTime) {
