@@ -2,8 +2,7 @@ package tr.edu.ku.comp302.ui.panel;
 
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -21,6 +20,8 @@ import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.MouseHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.domain.services.save.SaveService;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.view.BarrierView;
@@ -28,8 +29,6 @@ import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
 
 public class BuildPanel extends JPanel {
-    double height;
-    double width;
     ArrayList<Double> x_indexes = new ArrayList<>();
     ArrayList<Double> y_indexes = new ArrayList<>();
     String displayImagePath = "/assets/barrier_image.png";
@@ -41,18 +40,73 @@ public class BuildPanel extends JPanel {
     HashMap<List<Double>, BarrierView> putBarriersView = new HashMap<>();
 
 
-    public BuildPanel(double height, double width, MainFrame mainFrame) {
-        this.height = height;
-        this.width = width;
+    public BuildPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         this.setLayout(null);
         displayBarrierSelections();
         setUpUserInputs();
         addMouseListener(new MouseHandler());
         this.viewModel = new BuildPanelModel();
+
+        this.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                refresh();
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                refresh();
+            }
+        });
+
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                refresh();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                refresh();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                refresh();
+            }
+        });
+
+
+        /* (new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                refresh();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                refresh();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                refresh();
+            }
+        }); */
+
+
     }
 
     public void paintComponent(Graphics g) {
+        double width = LanceOfDestiny.getScreenWidth();
+        double height = LanceOfDestiny.getScreenHeight();
         super.paintComponent(g);
         //while(!gridPrinted){
         displayGridLines(g, width, height);
@@ -101,6 +155,7 @@ public class BuildPanel extends JPanel {
                         break;
 
                     case "/assets/bin.png":
+                        // TODO: remove this?
                         BarrierView deletedView = putBarriersView.remove(coordinateList);
                         break;
 
@@ -141,6 +196,8 @@ public class BuildPanel extends JPanel {
     }
 
     public double[] returnStart(ArrayList<ArrayList<Double>> list) {
+        double width = LanceOfDestiny.getScreenWidth();
+        double height = LanceOfDestiny.getScreenHeight();
 
         double currentX = MouseInfo.getPointerInfo().getLocation().getX() - this.getLocationOnScreen().getX();
         double previousX = list.get(0).get(0);
@@ -168,10 +225,10 @@ public class BuildPanel extends JPanel {
      * and adds it to the panel.
      */
     public void displayBarrierSelections() {
+        double width = LanceOfDestiny.getScreenWidth();
+        double height = LanceOfDestiny.getScreenHeight();
 
         // This method creates a custom image for the barrier using the provided image path,
-
-
         // Add the barrier button to the panel.
         JButton simpleBarrierButton = createButton(20, (int) (height * 0.6), "/assets/barrier_image.png");
         JButton explosiveBarrierButton = createButton(20, (int) (height * 0.6) + 30, "/assets/explosive_barrier.png");
@@ -187,6 +244,7 @@ public class BuildPanel extends JPanel {
 
 
     public JButton createButton(int xPosition, int yPosition, String path) {
+        double width = LanceOfDestiny.getScreenWidth();
         // button spacing, and dimensions.
         BufferedImage ImageBuffer = ImageHandler.createCustomImage(
                 path,
@@ -218,6 +276,9 @@ public class BuildPanel extends JPanel {
     }
 
     public void setUpUserInputs() {
+        double width = LanceOfDestiny.getScreenWidth();
+        double height = LanceOfDestiny.getScreenHeight();
+
         int baseY = (int) (height * 0.6);
         JTextField simpleBarrierCountField = new JTextField("0");
         JTextField explosiveBarrierCountField = new JTextField("0");
@@ -273,7 +334,7 @@ public class BuildPanel extends JPanel {
                     JOptionPane.showMessageDialog(null, "Invalid number of barriers! To start a game, you must have" +
                             " at least 75 simple barriers, 10 firm barriers, 5 explosive barriers, and 10 gift barriers.");
                 }
-
+                refresh();
             }
         });
 
@@ -306,12 +367,22 @@ public class BuildPanel extends JPanel {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                mainFrame.setResizable(false); // must prevent resizing while saving to avoid issues while resizing during an ongoing save
                 viewModel.countBarriers(putBarriersView);
                 // giftBarrierCount is given 10 for now since they don't exist!
                 if (viewModel.barrierConditionsSatisfied(viewModel.getSimpleBarrierCount(), viewModel.getFirmBarrierCount(), viewModel.getExplosiveBarrierCount(), 10)) {
                     ArrayList<BarrierView> barriersList = new ArrayList<>(putBarriersView.values());
                     // note to Mert: you can call the get barrier function here to get the barriers if you need them, but I think
-                    // this list is enough to generate a new level. 
+                    // this list is enough to generate a new level.
+                    SaveService saveService = SaveService.getInstance();
+                    if (saveService.saveMap(barriersList.stream().map(BarrierView::getBarrier).toList(), width, height)) {
+                        JOptionPane.showMessageDialog(null, "Map saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        putBarriersView.clear();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Map could not be saved!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                    mainFrame.setResizable(true); // after save is complete, the user is free to resize
 
                     //TODO: Connect with the save logic 
 
@@ -327,5 +398,10 @@ public class BuildPanel extends JPanel {
 
     public HashMap<List<Double>, BarrierView> getPutBarriersView() {
         return putBarriersView;
+    }
+
+    private void refresh() {
+        this.revalidate();
+        this.repaint();
     }
 }
