@@ -1,12 +1,17 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
+import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.Remains;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
+import tr.edu.ku.comp302.domain.handler.collision.CollisionError;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
+import tr.edu.ku.comp302.ui.view.BarrierView;
+import tr.edu.ku.comp302.ui.view.RemainsView;
 
 import java.awt.*;
 
@@ -95,6 +100,8 @@ public class LanceOfDestiny implements Runnable {
         handleSteadyStateLogic(!rotateCCW && !rotateCW, Lance.horizontalRecoverySpeed);
 
         handleFireballLogic();
+        handleBarriersMovement();
+
         handleCollisionLogic();
     }
 
@@ -210,10 +217,42 @@ public class LanceOfDestiny implements Runnable {
     private void handleCollisionLogic() {
         CollisionHandler.checkCollisions(levelPanel.getFireBallView(), levelPanel.getLanceView());
         CollisionHandler.checkFireBallBorderCollisions(levelPanel.getFireBallView(), mainFrame.getFrameWidth(), mainFrame.getFrameHeight());
+        for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
+            try {
+                if (CollisionHandler.testFireballBarrierOverlap(levelPanel.getFireBallView().getFireBall(),levelPanel.getBarrierViews().get(i).getBarrier()) != null){
+                    levelPanel.getFireBallView().getFireBall().handleReflection(0);
+                    levelPanel.getBarrierViews().get(i).getBarrier().handleCollision(false);
+                }
+            } catch (CollisionError e) {
+                throw new RuntimeException(e);
+            }
+        }
+        //check if barrier is broken or not
+        for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
+            if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
+                if(levelPanel.getBarrierViews().get(i).getBarrier() instanceof ExplosiveBarrier){
+                    Remains remain = ((ExplosiveBarrier)levelPanel.getBarrierViews().get(i).getBarrier()).dropRemains();
+                    RemainsView remainView = new RemainsView(remain);
+                    levelPanel.getRemainViews().add(remainView);
+                }
+                levelPanel.getBarrierViews().remove(i);
+                break;
+            }
+        }
     }
 
-    private void handleBarriersMovement() throws Exception {
-        throw new Exception("Nuh uh");
+    private void handleBarriersMovement() {
+        for(BarrierView barrierView : levelPanel.getBarrierViews()){
+            if(barrierView.getBarrier().getMovementStrategy()!= null){
+                barrierView.getBarrier().getMovementStrategy().checkCollision(levelPanel.getBarrierViews());
+                barrierView.getBarrier().move();
+            }
+        }
+
+        for (RemainsView remainsView : levelPanel.getRemainViews()) {
+            remainsView.getRemains().move();
+            //TODO: handle collision with lance, and also remove when it goes below the wall.
+        }
     }
 
     private double calculateAngularChangePerUpdate(double angularSpeed) {

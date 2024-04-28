@@ -21,6 +21,9 @@ public class LanceView {
         g2d.rotate(rotationAngle, lance.getXPosition() + lance.getLength() / 2.0, lance.getYPosition() + lance.getThickness() / 2.0);
         g2d.drawImage(lanceImage, (int) lance.getXPosition(), (int) lance.getYPosition(), null);
         g2d.setTransform(oldTransform);    // Reset transformation to prevent unintended rotations.
+        // uncomment the below two lines to see Lance Hit Box and Lance Bounding Box
+        //g2d.drawPolygon(lance.getActualHitbox());
+        //((Graphics2D) g).draw(lance.getLanceBounds());
     }
 
 

@@ -2,7 +2,9 @@ package tr.edu.ku.comp302.domain.entity;
 
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.lang.Math.*;
 
 public class Lance extends Entity {
     private double length;
@@ -125,5 +127,58 @@ public class Lance extends Entity {
             throw new IllegalArgumentException("Direction can be -1 for left, 0 for no movement, 1 for right");
         }
         this.direction = (short) direction;
+    }
+
+    // TODO: FINISH THIS METHOD
+    public Polygon getActualHitbox() {
+        double B = Math.toRadians(rotationAngle);
+        double x = getXPosition();
+        double y = getYPosition() + thickness;
+
+        // m is the length of the bounding box
+        // n is the width of the bounding box
+        double m = length * Math.cos(B) + thickness * Math.abs(Math.sin(B));
+        double n = length * Math.abs(Math.sin(B)) + thickness * Math.cos(B);
+
+        // top left corner point of the bounding box
+        double boundingX = x - ((m - length) / 2);
+        double boundingY = y - ((n + thickness) / 2);
+        double L = 0; // TODO: rename and delete
+        double W = 0;
+        // x1,y1 top left
+        // x2,y2 top right
+        // x3,y3 bottom right
+        // x4, y4 bottom left
+        double x1, y1, x2, y2, x3, y3, x4, y4;
+
+        if (Math.sin(B) < 0) {
+            x1 = boundingX;
+            y1 = boundingY + L * Math.abs(Math.sin(B));
+            x2 = boundingX + L * Math.cos(B);
+            y2 = boundingY;
+            x3 = boundingX + m;
+            y3 = boundingY + W * Math.cos(B);
+            x4 = boundingX + W * Math.abs(Math.sin(B));
+            y4 = boundingY + n;
+        }
+        else {
+            x1 = boundingX + W * Math.abs(Math.sin(B));
+            y1 = boundingY;
+            x2 = boundingX + m;
+            y2 = boundingY + L * Math.abs(Math.sin(B));
+            x3 = boundingX + L * Math.cos(B);
+            y3 = boundingY + n;
+            x4 = boundingX;
+            y4 = boundingY + W * Math.cos(B);
+        }
+
+        int[] xPoints = {(int) x1, (int) x2, (int) x3, (int) x4};
+        int[] yPoints = {(int) y1, (int) y2, (int) y3, (int) y4};
+
+        return new Polygon(xPoints, yPoints, 4);
+    }
+
+    public Rectangle getLanceBounds() {
+        return getActualHitbox().getBounds();
     }
 }
