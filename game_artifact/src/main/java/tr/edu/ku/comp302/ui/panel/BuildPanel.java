@@ -20,6 +20,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.MouseHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.services.save.SaveService;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
@@ -352,6 +353,7 @@ public class BuildPanel extends JPanel {
                     levelPanel.repaint();
                     levelPanel.setFocusable(true);
                     levelPanel.requestFocusInWindow();
+                    LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
                     mainFrame.setLevelPanel(levelPanel);
                     mainFrame.showLevelPanel();
 
