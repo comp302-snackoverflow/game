@@ -59,7 +59,7 @@ public class LanceOfDestiny implements Runnable {
         previousTime = System.nanoTime();
         // TODO: Change while loop condition
         while (true) {
-            if (currentGameState.isPlaying()){ // TODO: LoD game state should be used instead of this static variable.
+            if (GameState.state.isPlaying()){ // TODO: LoD game state should be used instead of this static variable.
                 long currentTime = System.nanoTime();
                 deltaUpdate += (currentTime - previousTime) / timePerUpdate;
                 deltaFrame += (currentTime - previousTime) / timePerFrame;
@@ -68,7 +68,8 @@ public class LanceOfDestiny implements Runnable {
             }else{  // TODO: Change this else statement whenever implemented other game states.
                 try{
                     Thread.sleep(1000 / UPS_SET);
-                } catch (InterruptedException e) {
+                    previousTime = System.nanoTime(); // Should not accumulate while waiting
+                } catch (InterruptedException e) {    // however, does not work
                     Thread.currentThread().interrupt();
                 }
             }
@@ -221,12 +222,7 @@ public class LanceOfDestiny implements Runnable {
         FireBallView fbv = levelPanel.getFireBallView();
         if (fbv.getFireBall().isMoving() && lance.canCollide(currentTime)) {
             if (CollisionHandler.checkCollisions(fbv, levelPanel.getLanceView())) {
-                Double collisionTime = lance.getLastCollisionTimeInMillis();
                 lance.setLastCollisionTimeInMillis(currentTime);
-                if (collisionTime != null) {
-                    double timeDiff = currentTime - collisionTime;
-                    System.out.println("timeDiff = " + timeDiff);
-                }
             }
         }
 
