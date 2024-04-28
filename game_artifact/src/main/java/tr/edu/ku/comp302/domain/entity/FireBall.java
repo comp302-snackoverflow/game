@@ -74,20 +74,33 @@ public class FireBall extends Entity {
         }
     }
 
+    public void handleCornerReflection(double surfaceAngleDegrees,  Collision corner) {
+        switch (corner) {
+            case TOP_RIGHT, BOTTOM_LEFT:
+                handleReflection(surfaceAngleDegrees + 45);
+                break;
+            case TOP_LEFT, BOTTOM_RIGHT:
+                handleReflection(surfaceAngleDegrees - 45);
+                break;
+            default:
+                handleReflection(surfaceAngleDegrees);
+                break;
+        }
+    }
+
     // for handling reflections at a surface's corner
     // need to pass which corner the collision happened
     public void handleCornerReflection(double surfaceAngleDegrees, double surfaceXSpeed, Collision corner) {
         switch (corner) {
-            case TOP_RIGHT:
-            case BOTTOM_LEFT:
-                handleReflection(surfaceAngleDegrees - 45, surfaceXSpeed);
-                break;
-            case TOP_LEFT:
-            case BOTTOM_RIGHT:
+            case TOP_RIGHT, BOTTOM_LEFT:
                 handleReflection(surfaceAngleDegrees + 45, surfaceXSpeed);
+                break;
+            case TOP_LEFT, BOTTOM_RIGHT:
+                handleReflection(surfaceAngleDegrees - 45, surfaceXSpeed);
                 break;
             default:
                 handleReflection(surfaceAngleDegrees, surfaceXSpeed);
+                break;
         }
     }
 
