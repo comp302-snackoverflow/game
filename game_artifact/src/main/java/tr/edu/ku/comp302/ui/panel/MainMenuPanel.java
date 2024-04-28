@@ -34,7 +34,7 @@ public class MainMenuPanel extends JPanel {
         });
         loadGameButton.addActionListener(e -> {
 
-            LevelPanel lp = LoadService.getInstance().loadMap(9);
+            LevelPanel lp = LoadService.getInstance().loadMap(9, mainFrame);
             mainFrame.setLevelPanel(lp);
             mainFrame.showLevelPanel();
             LanceOfDestiny.setCurrentGameState(GameState.LOAD_GAME);

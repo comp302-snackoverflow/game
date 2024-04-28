@@ -12,6 +12,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
@@ -34,8 +35,8 @@ public class LoadService {
         }
         return instance;
     }
-
-    public LevelPanel loadGame(int saveId) {
+      // FIXME LevelPanel needs MainFrame. Return a GameData instead
+    public LevelPanel loadGame(int saveId, MainFrame mainFrame) {
         GameData data = dbHandler.loadGame(saveId);
         if (data == null) {
             return null;
@@ -51,13 +52,14 @@ public class LoadService {
         List<BarrierView> barrierViews = barriers.stream().map(BarrierView::new).toList();
         // TODO: score must be loaded into LanceOfDestiny (probably),
         //  find a way to do it because its stupid to statically set it
-        return new LevelPanel(new Level(), lv, fbv, barrierViews);
+        return new LevelPanel(new Level(), lv, fbv, barrierViews, mainFrame);
     }
-    public LevelPanel loadMap(int mapId) {
+    public LevelPanel loadMap(int mapId, MainFrame mainFrame) {
         /*
          * FIXME: this works but has at least two issues:
          *  - barrier sizes are not consistent with the window size
          *  - the lance and fireball are positioned absolutely
+         *  - just for the demo adding MainFrame to parameters
          *  but at least it works so yay
          */
         List<BarrierData> barriers = dbHandler.loadBarriers(mapId, "map");
@@ -75,7 +77,7 @@ public class LoadService {
             barriers.stream()
                     .map(b -> createBarrierView(b, windowWidth, windowHeight))
                     .toList();
-        return new LevelPanel(level, lv, fbv, barrierViews);
+        return new LevelPanel(level, lv, fbv, barrierViews, mainFrame);
     }
 
     private BarrierView createBarrierView(BarrierData bd, double width, double height) {
