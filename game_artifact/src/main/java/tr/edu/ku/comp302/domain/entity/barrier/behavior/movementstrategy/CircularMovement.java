@@ -3,10 +3,10 @@ package tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy;
 import java.util.List;
 
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
 public class CircularMovement implements IMovementStrategy {
-
     private Barrier Barrier;
     private double radius;
     private double centerX;
@@ -16,28 +16,23 @@ public class CircularMovement implements IMovementStrategy {
     double BarrierThickness;
     double BarrierLength;
 
-
-    private double screenHeight;
-    private double screenWidth;
     static final short CLOCKWISE = 1;
     static final short COUNTER_CLOCKWISE= 0;
     short direction = CLOCKWISE;
-
 
     static private final short NORTH_WEST_CORNER= 0;
     static private final short NORTH_EAST_CORNER= 1;
     static private final short SOUTH_WEST_CORNER= 2;
     static private final short SOUTH_EAST_CORNER= 3;
 
-    public CircularMovement(double screenWidth, double screenHeight, Barrier barrier) {
+    public CircularMovement(Barrier barrier) {
         this.Barrier = barrier;
         this.radius = 1.5 * barrier.getLength();
         this.centerX = barrier.getXPosition() + barrier.getLength() / 2;
-        this.centerY = barrier.getYPosition() + 1.5 * screenWidth / 10;
+        this.centerY = barrier.getYPosition() + 1.5 * LanceOfDestiny.getScreenWidth() / 10;
         this.angle = 0; 
         this.stiffness = false; 
-        this.screenWidth =  screenWidth;
-        this.screenHeight = screenHeight;
+
         BarrierLength = barrier.getLength();
         BarrierThickness = barrier.getThickness();
     }
@@ -46,7 +41,7 @@ public class CircularMovement implements IMovementStrategy {
     public void move() {
         if (!stiffness) {
             double newX = centerX + radius * Math.cos(angle) - Barrier.getLength() / 2;
-            double newY = centerY + radius * Math.sin(angle) - 1.5 * screenWidth / 10;
+            double newY = centerY + radius * Math.sin(angle) - 1.5 * LanceOfDestiny.getScreenWidth() / 10;
 
             Barrier.setXPosition(newX);
             Barrier.setYPosition(newY);
@@ -183,6 +178,8 @@ public class CircularMovement implements IMovementStrategy {
      * @return
      */
     boolean[] calculateInterception(double[] cornerPoint, Barrier barrier, short CornerNumber ){
+        double screenWidth = LanceOfDestiny.getScreenWidth();
+        double screenHeight = LanceOfDestiny.getScreenHeight();
 
         boolean horizontalCollision = false;
         boolean verticalCollision = false;
@@ -228,14 +225,8 @@ public class CircularMovement implements IMovementStrategy {
         if (verticalCornerPointY >= screenHeight || verticalCornerPointY <= 0){
             verticalCollision = true;
         }
-        
-        boolean[] output = {verticalCollision, horizontalCollision};
 
-        return output;
-
+        return new boolean[]{verticalCollision, horizontalCollision};
     }
-
-    //CHANGE DIRECTION TO BE ADDED(?)
-
-
+    // TODO: CHANGE DIRECTION TO BE ADDED(?)
 }

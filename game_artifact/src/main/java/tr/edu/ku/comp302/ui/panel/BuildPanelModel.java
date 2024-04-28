@@ -1,10 +1,12 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
 import java.util.*;
@@ -14,12 +16,8 @@ public class BuildPanelModel {
     int firmBarrierCount = 0;
     int explosiveBarrierCount = 0;
     int giftBarrierCount = 0;
+    public BuildPanelModel() {
 
-    double width;
-    double height;
-    public BuildPanelModel(double width, double height) {
-        this.width = width;
-        this.height = height;
     }
 
     public int getFirmBarrierCount() {
@@ -58,20 +56,17 @@ public class BuildPanelModel {
         int firmCount = 0;
         int simpleCount = 0;
         int explosiveCount = 0;
-        int giftCount = 0;
+//        int giftCount = 0;
 
         //TODO: add the gift barrier once you have it !
         for (Map.Entry <List<Double>, BarrierView> e : barriers.entrySet()) {
             switch (e.getValue().getBarrier()) {
-                case FirmBarrier f -> firmCount++;
-                case ExplosiveBarrier ex -> explosiveCount++;
-                case SimpleBarrier s -> simpleCount++;
-                default -> {
-                    break;
-                }
+                case FirmBarrier ignored -> firmCount++;
+                case ExplosiveBarrier ignored -> explosiveCount++;
+                case SimpleBarrier ignored -> simpleCount++;
+                default -> {}
             }
-
-            }
+        }
 
         this.simpleBarrierCount = simpleCount;
         this.firmBarrierCount = firmCount;
@@ -117,21 +112,24 @@ public class BuildPanelModel {
                 Barrier barrier;
                 BarrierView view;
 
+                double width = LanceOfDestiny.getScreenWidth();
+                double height = LanceOfDestiny.getScreenHeight();
+
                 switch (barrierType) {
                     case "simple":
-                        barrier = new SimpleBarrier(x + width/104, y +((height / 2) - 80) / 10, width, height);
+                        barrier = new SimpleBarrier(x + width/104, y +((height / 2) - 80) / 10);
                         view = new BarrierView(barrier);
                         scaleBarrierImages(view);
                         barrierMap.put(coordinates, view);
                         break;
                     case "explosive":
-                        barrier = new ExplosiveBarrier(x + width/104,y +((height / 2) - 80) / 10, width, height);
+                        barrier = new ExplosiveBarrier(x + width/104,y +((height / 2) - 80) / 10);
                         view = new BarrierView(barrier);
                         scaleBarrierImages(view);
                         barrierMap.put(coordinates, view);
                         break;
                     case "firm":
-                        barrier = new FirmBarrier(x + width/104, y + ((height / 2) - 80) / 10, width, height);
+                        barrier = new FirmBarrier(x + width/104, y + ((height / 2) - 80) / 10);
                         view = new BarrierView(barrier);
                         scaleBarrierImages(view);
                         barrierMap.put(coordinates, view);
@@ -144,7 +142,7 @@ public class BuildPanelModel {
         }
 
     public void scaleBarrierImages(BarrierView barrierView){
-        barrierView.getBarrier().setL(width / 10.0);
+        barrierView.getBarrier().setL(LanceOfDestiny.getScreenWidth() / 10.0); // TODO: setL here
         barrierView.setBarrierImage(ImageHandler.resizeImage(
                 barrierView.getBarrierImage(),
                 (int) barrierView.getBarrier().getLength(),
@@ -155,7 +153,4 @@ public class BuildPanelModel {
     public boolean barrierConditionsSatisfied(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
         return simpleBarrierCount >= 75 && firmBarrierCount >= 10 && explosiveBarrierCount >= 5 && giftBarrierCount >= 10;
     }
-
-    }
-
-
+}

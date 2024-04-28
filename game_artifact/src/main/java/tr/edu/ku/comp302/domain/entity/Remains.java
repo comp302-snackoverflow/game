@@ -8,10 +8,10 @@ public class Remains extends Entity{
     private int size = 50;
 
 
-    public Remains(double xPosition, double yPosition, double screenWidth, double screenHeight) {
-        super(xPosition, yPosition, screenWidth, screenHeight);
+    public Remains(double xPosition, double yPosition) {
+        super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
-        actualShape = new Rectangle2D.Double(xPosition, yPosition, size, size);
+    actualShape = boundingBox;
     }
 
     public double getSpeed() {
@@ -26,12 +26,14 @@ public class Remains extends Entity{
 
     @Override
     public void handleCollision(boolean isWall) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCollision'");
+        System.out.println("Remains collided with lance");
+//        throw new UnsupportedOperationException("Unimplemented method 'handleCollision'");
     }
 
     public void move() {
         yPosition += speed;
+        boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
+        actualShape = boundingBox;
     }
 
     public int getSize() {

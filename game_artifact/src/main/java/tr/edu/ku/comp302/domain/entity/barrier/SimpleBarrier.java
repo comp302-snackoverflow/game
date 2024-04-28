@@ -7,15 +7,12 @@ import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.Horizon
  * 
  */
 public class SimpleBarrier extends Barrier{
-
-
-
-    public SimpleBarrier(double xPosition, double yPosition, double screenWidth, double screenHeight) {
-        super(xPosition, yPosition, screenWidth, screenHeight);
+    public SimpleBarrier(double xPosition, double yPosition) {
+        super(xPosition, yPosition);
         //TODO Auto-generated constructor stub
         ImagePath = "/assets/barrier_image.png";
         health = 1;
-        this.MovementStrategy = new HorizontalMovement(screenWidth, screenHeight, this);
+        this.MovementStrategy = new HorizontalMovement(this);
     }
     
 }
