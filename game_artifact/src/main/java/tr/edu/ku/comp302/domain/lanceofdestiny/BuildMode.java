@@ -8,6 +8,7 @@ import tr.edu.ku.comp302.ui.view.BarrierView;
 import java.util.ArrayList;
 import java.util.List;
 
+// WE DO NOT USE THIS CLASS FOR NOW
 public class BuildMode {
     private MainFrame mainFrame;
     private BuildPanel buildPanel;  // TODO: change this when we implement more than one level
