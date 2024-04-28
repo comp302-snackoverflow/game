@@ -48,6 +48,12 @@ public class LevelPanel extends JPanel {
                 (int) lanceView.getLance().getLength(),
                 (int) lanceView.getLance().getThickness()));
         // TODO: Add other entities
+        fireBallView.getFireBall().updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
+                (int) size.getWidth(), (int) size.getHeight());
+        fireBallView.setFireBallImage();
+        fireBallView.setFireBallImage(ImageHandler.resizeImage(fireBallView.getFireBallImage(),
+                fireBallView.getFireBall().getSize(),
+                fireBallView.getFireBall().getSize()));
     }
 
     public Level getLevel() {
