@@ -77,7 +77,7 @@ public class MainFrame extends JFrame {
 
         levelPanel = new LevelPanel(level, lv,
                 new FireBallView(new FireBall(632, 560)),
-                App.generateBarriers((double)frameWidth, (double)frameHeight, randomModel)); //I called the generate barrier function for now
+                App.generateBarriers((double)LanceOfDestiny.getScreenWidth(), (double)LanceOfDestiny.getScreenHeight(), randomModel)); //I called the generate barrier function for now
         // to demonstrate how the game works.
         ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
         levelPanel.repaint();
@@ -86,7 +86,7 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareBuildPanel() {
-        buildPanel = new BuildPanel(frameHeight, frameWidth);
+        buildPanel = new BuildPanel(LanceOfDestiny.getScreenHeight(), LanceOfDestiny.getScreenWidth());
         buildPanel.repaint();
         buildPanel.setLayout(null);
         buildPanel.requestFocusInWindow();
