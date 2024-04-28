@@ -143,8 +143,7 @@ public class Lance extends Entity {
         // top left corner point of the bounding box
         double boundingX = x - ((m - length) / 2);
         double boundingY = y - ((n + thickness) / 2);
-        double L = 0; // TODO: rename and delete
-        double W = 0;
+
         // x1,y1 top left
         // x2,y2 top right
         // x3,y3 bottom right
@@ -153,23 +152,23 @@ public class Lance extends Entity {
 
         if (Math.sin(B) < 0) {
             x1 = boundingX;
-            y1 = boundingY + L * Math.abs(Math.sin(B));
-            x2 = boundingX + L * Math.cos(B);
+            y1 = boundingY + length * Math.abs(Math.sin(B));
+            x2 = boundingX + length * Math.cos(B);
             y2 = boundingY;
             x3 = boundingX + m;
-            y3 = boundingY + W * Math.cos(B);
-            x4 = boundingX + W * Math.abs(Math.sin(B));
+            y3 = boundingY + thickness * Math.cos(B);
+            x4 = boundingX + thickness * Math.abs(Math.sin(B));
             y4 = boundingY + n;
         }
         else {
-            x1 = boundingX + W * Math.abs(Math.sin(B));
+            x1 = boundingX + thickness * Math.abs(Math.sin(B));
             y1 = boundingY;
             x2 = boundingX + m;
-            y2 = boundingY + L * Math.abs(Math.sin(B));
-            x3 = boundingX + L * Math.cos(B);
+            y2 = boundingY + length * Math.abs(Math.sin(B));
+            x3 = boundingX + length * Math.cos(B);
             y3 = boundingY + n;
             x4 = boundingX;
-            y4 = boundingY + W * Math.cos(B);
+            y4 = boundingY + thickness * Math.cos(B);
         }
 
         int[] xPoints = {(int) x1, (int) x2, (int) x3, (int) x4};
