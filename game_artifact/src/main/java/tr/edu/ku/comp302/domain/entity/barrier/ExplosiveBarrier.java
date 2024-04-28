@@ -5,6 +5,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.Circula
 
 
 public class ExplosiveBarrier extends Barrier {
+    public static final String TYPE = "Explosive";
     public Remains remain;
 
     public ExplosiveBarrier(double xPosition, double yPosition) {

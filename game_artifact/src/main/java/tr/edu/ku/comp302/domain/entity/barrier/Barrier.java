@@ -8,7 +8,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.IMoveme
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
-public class Barrier extends Entity {
+public abstract class Barrier extends Entity {
     protected static final double DEFAULT_THICKNESS = 20;
     protected static final int DEFAULT_HEALTH = 1;
     protected static final double DEFAULT_SPEED = 0;
@@ -105,6 +105,4 @@ public class Barrier extends Entity {
     public void setMovementStrategy(IMovementStrategy movementStrategy) {
         MovementStrategy = movementStrategy;
     }
-
-
 }
