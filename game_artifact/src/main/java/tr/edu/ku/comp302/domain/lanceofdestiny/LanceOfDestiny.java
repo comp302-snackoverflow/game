@@ -1,5 +1,7 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.Remains;
 
@@ -11,11 +13,13 @@ import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.BarrierView;
+import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.RemainsView;
 
 import java.awt.*;
 
 public class LanceOfDestiny implements Runnable {
+    private Logger logger = LogManager.getLogger();
     private MainFrame mainFrame;
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
@@ -102,7 +106,7 @@ public class LanceOfDestiny implements Runnable {
         handleFireballLogic();
         handleBarriersMovement();
 
-        handleCollisionLogic();
+        handleCollisionLogic(currentTime / 1_000_000.0);
     }
 
     private void render(){
@@ -113,7 +117,6 @@ public class LanceOfDestiny implements Runnable {
             screenWidth = width;
             screenHeight = height;
         }
-        System.out.println(levelPanel.getLanceView().getLance().getLength() + ", " + levelPanel.getSize());
     }
 
     // Warning: DO NOT try to make this method clean. You will most likely fail.
@@ -214,13 +217,24 @@ public class LanceOfDestiny implements Runnable {
         fb.move();
     }
 
-    private void handleCollisionLogic() {
-        CollisionHandler.checkCollisions(levelPanel.getFireBallView(), levelPanel.getLanceView());
-        CollisionHandler.checkFireBallBorderCollisions(levelPanel.getFireBallView(), mainFrame.getFrameWidth(), mainFrame.getFrameHeight());
+    private void handleCollisionLogic(double currentTime) {
+        FireBallView fbv = levelPanel.getFireBallView();
+        if (fbv.getFireBall().isMoving() && lance.canCollide(currentTime)) {
+            if (CollisionHandler.checkCollisions(fbv, levelPanel.getLanceView())) {
+                Double collisionTime = lance.getLastCollisionTimeInMillis();
+                lance.setLastCollisionTimeInMillis(currentTime);
+                if (collisionTime != null) {
+                    double timeDiff = currentTime - collisionTime;
+                    System.out.println("timeDiff = " + timeDiff);
+                }
+            }
+        }
+
+        CollisionHandler.checkFireBallBorderCollisions(fbv, mainFrame.getFrameWidth(), mainFrame.getFrameHeight());
         for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
             try {
-                if (CollisionHandler.testFireballBarrierOverlap(levelPanel.getFireBallView().getFireBall(),levelPanel.getBarrierViews().get(i).getBarrier()) != null){
-                    levelPanel.getFireBallView().getFireBall().handleReflection(0);
+                if (CollisionHandler.testFireballBarrierOverlap(fbv.getFireBall(), levelPanel.getBarrierViews().get(i).getBarrier()) != null){
+                    fbv.getFireBall().handleReflection(0);
                     levelPanel.getBarrierViews().get(i).getBarrier().handleCollision(false);
                 }
             } catch (CollisionError e) {
@@ -228,6 +242,7 @@ public class LanceOfDestiny implements Runnable {
             }
         }
         //check if barrier is broken or not
+        // TODO: Can be moved inside the previous loop
         for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
             if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
                 if(levelPanel.getBarrierViews().get(i).getBarrier() instanceof ExplosiveBarrier){
