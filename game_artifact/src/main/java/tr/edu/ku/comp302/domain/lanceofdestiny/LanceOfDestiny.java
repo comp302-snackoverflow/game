@@ -26,7 +26,7 @@ public class LanceOfDestiny implements Runnable {
     private double deltaFrame = 0.0;
     private long updates = 0L;
     private long frames = 0L;
-    private static GameState currentGameState;
+    private GameState currentGameState;
     private Thread gameThread;
     private Character lastMoving;
     private long lastMovingTime;
