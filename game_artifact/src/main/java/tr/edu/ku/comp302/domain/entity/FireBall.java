@@ -8,17 +8,18 @@ import java.security.SecureRandom;
 
 public class FireBall extends Entity {
     private boolean isOverwhelmed = false;
-    private int size = 32;
+    private int size = 16;
     private double dx = 0;
     private double dy = 0;
     private double speed = 2; // Might change the speed later.
     //TODO: Add the player!
+    private boolean moving;
 
     public FireBall(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
         actualShape = new Ellipse2D.Double(xPosition, yPosition, size, size);
-
+        moving = false;
     }
 
     @Override
@@ -39,7 +40,15 @@ public class FireBall extends Entity {
         actualShape.setFrame(xPosition, yPosition, size, size);
     }
 
+    public void stickToLance(Lance lance) {
+        this.xPosition = lance.getXPosition() + lance.getLength() / 2 - (int) (size / 2.0);
+        this.yPosition = lance.getYPosition() - size;
+        this.boundingBox.setRect(xPosition, yPosition, size, size);
+        this.actualShape.setFrame(xPosition, yPosition, size, size);
+    }
+
     public void launchFireball() {
+        moving = true;
         this.dy = speed;
     }
 
@@ -99,6 +108,8 @@ public class FireBall extends Entity {
     public double getSpeed() {
         return speed;
     }
+
+    public boolean isMoving() {
+        return moving;
+    }
 }
-
-

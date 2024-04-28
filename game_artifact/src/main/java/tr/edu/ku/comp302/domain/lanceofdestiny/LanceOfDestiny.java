@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 
+import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
@@ -195,11 +196,16 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleFireballLogic() {
-        if (KeyboardHandler.buttonWPressed && levelPanel.getFireBallView().getFireBall().getDy() == 0) {
-            levelPanel.getFireBallView().getFireBall().launchFireball();
+        FireBall fb = levelPanel.getFireBallView().getFireBall();
+        if (!fb.isMoving()) {
+            if (KeyboardHandler.buttonWPressed) {
+                fb.launchFireball();
+            } else {
+                fb.stickToLance(lance);
+            }
         }
 
-        levelPanel.getFireBallView().getFireBall().move();
+        fb.move();
     }
 
     private void handleCollisionLogic() {
