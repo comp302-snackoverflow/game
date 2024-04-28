@@ -3,7 +3,9 @@ import java.util.Random;
 
 import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.HorizontalMovement;
 
-public class FirmBarrier extends Barrier{
+public class FirmBarrier extends Barrier {
+    public static final String TYPE = "Firm";
+
     public FirmBarrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         //TODO Auto-generated constructor stub

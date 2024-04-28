@@ -2,10 +2,10 @@ package tr.edu.ku.comp302.domain.services.save;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tr.edu.ku.comp302.domain.entity.Barriers.Barrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.Barriers.SimpleBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
+import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
