@@ -142,26 +142,28 @@ public class CollisionHandler {
         return minDistance <= radius;
     }
 
-    public static void checkCollisions(FireBallView fireBallView, LanceView lanceView) {
+    public static boolean checkCollisions(FireBallView fireBallView, LanceView lanceView) {
         FireBall fireBall = fireBallView.getFireBall();
         Lance lance = lanceView.getLance();
         Rectangle2D fireBallBounds = fireBall.getBoundingBox();
         Rectangle lanceBounds = lance.getLanceBounds();
 
         if (fireBallBounds.intersects(lanceBounds)) { // fireball is intersecting the bounding box of the lance
-                try {
-                    Collision side = findCollisionSide(fireBall, lance.getActualHitbox());
-                    if (side == null) {
-                        return;
-                    }
-                    System.out.println(side);
-                    switch (side) {
-                        case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle());
-                        case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                                fireBall.handleCornerReflection(lance.getRotationAngle(), side);
-                    }
-                } catch (CollisionError ignored) {}
+            try {
+                Collision side = findCollisionSide(fireBall, lance.getActualHitbox());
+                if (side == null) {
+                    return false;
+                }
+//                logger.debug("Collision side: " + side);
+                switch (side) {
+                    case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle());
+                    case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
+                            fireBall.handleCornerReflection(lance.getRotationAngle(), side);
+                }
+                return true;
+            } catch (CollisionError ignored) {}
         }
+        return false;
     }
 
     public static void checkFireBallBorderCollisions(FireBallView fireBallView, int frameWidth, int frameHeight) {

@@ -7,6 +7,7 @@ import java.awt.geom.Rectangle2D;
 import java.lang.Math.*;
 
 public class Lance extends Entity {
+    private final long collisionCooldownInMillis = 50;
     private double length;
     private double speedWithHold;
     private double speedWithTap;
@@ -15,6 +16,7 @@ public class Lance extends Entity {
     private double rotationAngle;
     public static final double rotationSpeed = 20.0;
     public static final double horizontalRecoverySpeed = 45.0;
+    private Double lastCollisionTimeInMillis;
 
     public Lance(double xPosition, double yPosition) {
         super(xPosition, yPosition);
@@ -24,7 +26,8 @@ public class Lance extends Entity {
         length = LanceOfDestiny.getScreenWidth() / 10.;
         speedWithHold = 2 * length;
         speedWithTap = length;
-        thickness = 20;
+        thickness = 100;
+        lastCollisionTimeInMillis = null;
     }
 
     public void incrementRotationAngle(double degrees) {
@@ -179,5 +182,18 @@ public class Lance extends Entity {
 
     public Rectangle getLanceBounds() {
         return getActualHitbox().getBounds();
+    }
+
+    public boolean canCollide(double timeInMillis) {
+        return lastCollisionTimeInMillis == null
+                || timeInMillis - lastCollisionTimeInMillis >= collisionCooldownInMillis;
+    }
+
+    public void setLastCollisionTimeInMillis(double timeInMillis) {
+        lastCollisionTimeInMillis = timeInMillis;
+    }
+
+    public Double getLastCollisionTimeInMillis() {
+        return lastCollisionTimeInMillis;
     }
 }
