@@ -34,6 +34,7 @@ public class MainMenuPanel extends JPanel {
             LanceOfDestiny.setCurrentGameState(GameState.LOAD_GAME);
         });
         createCustomMapButton.addActionListener(e -> {
+            mainFrame.showBuildPanel();
             LanceOfDestiny.setCurrentGameState(GameState.CREATE_CUSTOM_MAP);
         });
         helpButton.addActionListener(e -> {
