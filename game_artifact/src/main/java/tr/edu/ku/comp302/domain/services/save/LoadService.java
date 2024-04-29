@@ -63,16 +63,13 @@ public class LoadService {
          *  - just for the demo adding MainFrame to parameters
          *  but at least it works so yay
          */
-        long startTime = System.currentTimeMillis();
         List<BarrierData> barriers = dbHandler.loadBarriers(mapId, "map");
         if (barriers == null) {
             return null;
         }
-        logger.debug("Loaded barriers in " + (System.currentTimeMillis() - startTime) + " ms");
 
         double windowWidth = LanceOfDestiny.getScreenWidth();
         double windowHeight = LanceOfDestiny.getScreenHeight();
-        startTime = System.currentTimeMillis();
         Lance lance = new Lance(576, 600);
         LanceView lv = new LanceView(lance);
         Level level = new Level();
@@ -81,7 +78,6 @@ public class LoadService {
             barriers.stream()
                     .map(b -> createBarrierView(b, windowWidth, windowHeight))
                     .collect(Collectors.toCollection(ArrayList::new));
-        logger.debug("Created entities in " + (System.currentTimeMillis() - startTime) + " ms");
         return new LevelPanel(level, lv, fbv, barrierViews, mainFrame);
     }
 
@@ -89,9 +85,7 @@ public class LoadService {
         double xPos = bd.x() * width;
         double yPos = bd.y() * height;
         int health = bd.health();
-        long startTime = System.currentTimeMillis();
         String type = dbHandler.getBarrierTypeFromId(bd.type());
-        logger.debug("Loaded barrier type in " + (System.currentTimeMillis() - startTime) + " ms");
         return switch (type) {
             case SimpleBarrier.TYPE -> {
                 Barrier b = new SimpleBarrier(xPos, yPos);
