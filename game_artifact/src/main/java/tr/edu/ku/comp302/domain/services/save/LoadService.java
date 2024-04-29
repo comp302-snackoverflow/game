@@ -2,7 +2,6 @@ package tr.edu.ku.comp302.domain.services.save;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tr.edu.ku.comp302.App;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
@@ -18,11 +17,13 @@ import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LoadService {
     private static LoadService instance;
-    private static final Logger logger = LogManager.getLogger();
+    private final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
     private LoadService() {
@@ -62,13 +63,16 @@ public class LoadService {
          *  - just for the demo adding MainFrame to parameters
          *  but at least it works so yay
          */
+        long startTime = System.currentTimeMillis();
         List<BarrierData> barriers = dbHandler.loadBarriers(mapId, "map");
         if (barriers == null) {
             return null;
         }
+        logger.debug("Loaded barriers in " + (System.currentTimeMillis() - startTime) + " ms");
 
         double windowWidth = LanceOfDestiny.getScreenWidth();
         double windowHeight = LanceOfDestiny.getScreenHeight();
+        startTime = System.currentTimeMillis();
         Lance lance = new Lance(576, 600);
         LanceView lv = new LanceView(lance);
         Level level = new Level();
@@ -76,7 +80,8 @@ public class LoadService {
         List<BarrierView> barrierViews =
             barriers.stream()
                     .map(b -> createBarrierView(b, windowWidth, windowHeight))
-                    .toList();
+                    .collect(Collectors.toCollection(ArrayList::new));
+        logger.debug("Created entities in " + (System.currentTimeMillis() - startTime) + " ms");
         return new LevelPanel(level, lv, fbv, barrierViews, mainFrame);
     }
 
@@ -84,7 +89,9 @@ public class LoadService {
         double xPos = bd.x() * width;
         double yPos = bd.y() * height;
         int health = bd.health();
+        long startTime = System.currentTimeMillis();
         String type = dbHandler.getBarrierTypeFromId(bd.type());
+        logger.debug("Loaded barrier type in " + (System.currentTimeMillis() - startTime) + " ms");
         return switch (type) {
             case SimpleBarrier.TYPE -> {
                 Barrier b = new SimpleBarrier(xPos, yPos);
