@@ -48,6 +48,7 @@ public class DatabaseHandler {
         }
         return instance;
     }
+
     public Connection getConnection() {
         try {
             return dataSource.getConnection();
@@ -161,7 +162,8 @@ public class DatabaseHandler {
 
     /**
      * Load barriers from the database from a save or a map
-     * @param id save_ref or map_ref
+     *
+     * @param id   save_ref or map_ref
      * @param type "save" or "map" depending on what you want to load
      * @return A list containing the barriers in the save or map
      */
@@ -291,8 +293,17 @@ public class DatabaseHandler {
                         ps.setInt(5, saveRef);          // but it is for clarity
                         ps.setNull(6, java.sql.Types.INTEGER);
                     }
-                    ps.executeUpdate();
+                    ps.addBatch();
                 }
+                int[] numUpdates = ps.executeBatch();
+                for (int i = 0; i < numUpdates.length; i++) {
+                    if (numUpdates[i] == -2) {
+                        logger.debug("Execution {}: unknown number of rows updated", i);
+                    } else {
+                        logger.debug("Execution {} successful: {} rows updated", i, numUpdates[i]);
+                    }
+                }
+
                 return true;
             }
         } catch (SQLException e) {
