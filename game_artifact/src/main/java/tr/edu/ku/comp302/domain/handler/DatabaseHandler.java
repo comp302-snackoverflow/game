@@ -23,20 +23,23 @@ public class DatabaseHandler {
     private static DatabaseHandler instance;
     private final HikariDataSource dataSource;
     private final LoadingCache<Integer, String> barrierTypeCache;
+    private final LoadingCache<String, Integer> barrierIdCache;
     private final Logger logger = LogManager.getLogger(DatabaseHandler.class);
 
     private DatabaseHandler() {
-        Properties prop = new Properties();
+        barrierTypeCache =
+            Caffeine.newBuilder()
+                    .maximumSize(128)
+                    .weakValues()
+                    .build(this::getBarrierType);
+        barrierIdCache =
+            Caffeine.newBuilder()
+                    .maximumSize(128)
+                    .weakValues()
+                    .build(this::getBarrierFromType);
 
-        try (FileInputStream fis = new FileInputStream("./game_artifact/src/main/resources/database.config")) {
-            prop.load(fis);
-        } catch (IOException e) {
-            logger.error(e);
-        }
-
-        DATABASE_URL = prop.getProperty("url");
-        USER = prop.getProperty("username");
-        PASSWORD = prop.getProperty("password");
+        HikariConfig config = new HikariConfig("/hikari.properties");
+        dataSource = new HikariDataSource(config);
     }
 
     public static DatabaseHandler getInstance() {
@@ -317,7 +320,7 @@ public class DatabaseHandler {
         return -1;
     }
 
-    public int getBarrierFromName(String type) {
+    private int getBarrierFromType(String type) {
         final String query = "SELECT id FROM BarrierType WHERE name = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -336,7 +339,7 @@ public class DatabaseHandler {
         return 1; // default to simple barrier
     }
 
-    public String getBarrierTypeFromId(int id) {
+    private String getBarrierType(int id) {
         final String query = "SELECT name FROM BarrierType WHERE id = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -354,4 +357,13 @@ public class DatabaseHandler {
         }
         return SimpleBarrier.TYPE; // default to simple barrier
     }
+
+    public String getBarrierTypeFromId(int id) {
+        return barrierTypeCache.get(id);
+    }
+
+    public int getBarrierIdFromType(String type) {
+        return barrierIdCache.get(type);
+    }
+
 }
