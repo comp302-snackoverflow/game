@@ -50,8 +50,15 @@ public class LevelPanel extends JPanel {
         super.paintComponent(g);
         lanceView.render(g);
         fireBallView.render(g);
-        IntStream.range(0, barriers.size()).forEach(i -> barriers.get(i).render(g)); // Below throws an exception.
-        IntStream.range(0, remains.size()).forEach(i-> remains.get(i).render(g));
+        for (int i = 0 ; i < barriers.size(); i++) {
+            barriers.get(i).render(g);
+        }
+
+        for (int i = 0; i < remains.size(); i++) {
+            remains.get(i).render(g);
+        }
+//        IntStream.range(0, barriers.size()).forEach(i -> barriers.get(i).render(g)); // Below throws an exception.
+//        IntStream.range(0, remains.size()).forEach(i-> remains.get(i).render(g));
         // barriers.forEach(barrier -> barrier.render(g));
     }
 
