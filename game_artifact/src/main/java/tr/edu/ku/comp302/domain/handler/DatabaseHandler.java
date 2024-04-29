@@ -1,5 +1,9 @@
 package tr.edu.ku.comp302.domain.handler;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
@@ -8,24 +12,18 @@ import tr.edu.ku.comp302.domain.services.save.FireballData;
 import tr.edu.ku.comp302.domain.services.save.GameData;
 import tr.edu.ku.comp302.domain.services.save.LanceData;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class DatabaseHandler {
     private static DatabaseHandler instance;
-    private final String DATABASE_URL;
-    private final String USER;
-    private final String PASSWORD;
-
-    private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
+    private final HikariDataSource dataSource;
+    private final LoadingCache<Integer, String> barrierTypeCache;
+    private final Logger logger = LogManager.getLogger(DatabaseHandler.class);
 
     private DatabaseHandler() {
         Properties prop = new Properties();
@@ -49,9 +47,8 @@ public class DatabaseHandler {
     }
     public Connection getConnection() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-        } catch (Exception e) {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
             logger.error(e);
             return null;
         }
