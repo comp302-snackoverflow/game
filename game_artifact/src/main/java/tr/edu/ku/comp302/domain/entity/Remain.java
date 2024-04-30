@@ -2,16 +2,16 @@ package tr.edu.ku.comp302.domain.entity;
 
 import java.awt.geom.Rectangle2D;
 
-public class Remains extends Entity{
+public class Remain extends Entity{
     
-    private double speed = 1.5;
+    private double speed = 1.5;     // TODO: Change speed
     private int size = 50;
 
 
-    public Remains(double xPosition, double yPosition) {
+    public Remain(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
-    actualShape = boundingBox;
+        actualShape = boundingBox;
     }
 
     public double getSpeed() {
@@ -22,7 +22,7 @@ public class Remains extends Entity{
         this.speed = speed;
     }
 
-    //collision with lance to be added
+    // TODO: collision with lance to be added
 
     @Override
     public void handleCollision(boolean isWall) {

@@ -180,4 +180,5 @@ public class Lance extends Entity {
     public Rectangle getLanceBounds() {
         return getActualHitbox().getBounds();
     }
+
 }

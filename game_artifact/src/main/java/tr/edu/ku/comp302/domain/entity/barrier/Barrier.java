@@ -11,16 +11,13 @@ import tr.edu.ku.comp302.ui.view.BarrierView;
 public abstract class Barrier extends Entity {
     protected static final double DEFAULT_THICKNESS = 20;
     protected static final int DEFAULT_HEALTH = 1;
-    protected static final double DEFAULT_SPEED = 0;
+    protected static final double DEFAULT_SPEED = 0;    // TODO: Change this and calculate proper speed.
     protected int health;
     protected double length;
     protected double thickness;
     protected double speed;
     protected double L;
-    String ImagePath;
     IMovementStrategy MovementStrategy;
-
-
 
     public Barrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
@@ -63,14 +60,6 @@ public abstract class Barrier extends Entity {
     }
     public double getThickness() {
         return thickness;
-    }
-
-    public String getImagePath() {
-        return ImagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        ImagePath = imagePath;
     }
 
     public int getHealth() {

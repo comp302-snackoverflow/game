@@ -142,9 +142,7 @@ public class CollisionHandler {
         return minDistance <= radius;
     }
 
-    public static void checkCollisions(FireBallView fireBallView, LanceView lanceView) {
-        FireBall fireBall = fireBallView.getFireBall();
-        Lance lance = lanceView.getLance();
+    public static void checkCollisions(FireBall fireBall, Lance lance) {
         Rectangle2D fireBallBounds = fireBall.getBoundingBox();
         Rectangle lanceBounds = lance.getLanceBounds();
 
@@ -164,15 +162,14 @@ public class CollisionHandler {
         }
     }
 
-    public static void checkFireBallBorderCollisions(FireBallView fireBallView, int frameWidth, int frameHeight) {
-
-        if (fireBallView.getFireBall().getXPosition() <= 0 ||
-                fireBallView.getFireBall().getXPosition() + fireBallView.getFireBall().getSize() >= frameWidth) {
-            fireBallView.getFireBall().bounceOffVerticalSurface();
+    public static void checkFireBallBorderCollisions(FireBall fireBall, int frameWidth, int frameHeight) {
+        if (fireBall.getXPosition() <= 0 ||
+                fireBall.getXPosition() + fireBall.getSize() >= frameWidth) {
+            fireBall.bounceOffVerticalSurface();
         }
-        if (fireBallView.getFireBall().getYPosition() <= 0 ||
-                fireBallView.getFireBall().getYPosition() + fireBallView.getFireBall().getSize() >= frameHeight) {
-            fireBallView.getFireBall().bounceOffHorizontalSurface();
+        if (fireBall.getYPosition() <= 0 ||
+                fireBall.getYPosition() + fireBall.getSize() >= frameHeight) {
+            fireBall.bounceOffHorizontalSurface();
         }
     }
 

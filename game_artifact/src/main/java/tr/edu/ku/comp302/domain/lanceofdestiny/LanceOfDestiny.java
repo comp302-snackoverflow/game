@@ -1,22 +1,23 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.Remains;
+import tr.edu.ku.comp302.domain.entity.Remain;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
+import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionError;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
-import tr.edu.ku.comp302.ui.view.BarrierView;
-import tr.edu.ku.comp302.ui.view.RemainsView;
+import tr.edu.ku.comp302.ui.view.RemainView;
 
 import java.awt.*;
 
 public class LanceOfDestiny implements Runnable {
-    private MainFrame mainFrame;
+    private static MainFrame mainFrame = MainFrame.createMainFrame();
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
@@ -34,11 +35,11 @@ public class LanceOfDestiny implements Runnable {
     private long[] arrowKeyPressTimes = new long[2];    // [rightArrowKeyPressTime, leftArrowKeyPressTime]
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
-    private final Lance lance;  // TODO: Later change this.
+    private LevelHandler levelHandler;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
-        lance = levelPanel.getLanceView().getLance();
+        levelHandler = levelPanel.getLevelHandler();    // TODO: Ğ
         mainFrame = MainFrame.createMainFrame();
         levelPanel.requestFocusInWindow();
         currentGameState = GameState.PLAYING;   // for testing purposes.
@@ -86,6 +87,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleGameLogic(long currentTime){
+        Lance lance = levelPanel.getLevelHandler().getLance();
         boolean moveLeft = KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed;
         boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
         double holdSpeed = lance.getSpeedWithHold();
@@ -113,7 +115,6 @@ public class LanceOfDestiny implements Runnable {
             screenWidth = width;
             screenHeight = height;
         }
-        System.out.println(levelPanel.getLanceView().getLance().getLength() + ", " + levelPanel.getSize());
     }
 
     // Warning: DO NOT try to make this method clean. You will most likely fail.
@@ -123,6 +124,7 @@ public class LanceOfDestiny implements Runnable {
     // Copilot's thoughts about this function: "I'm not sure what you're trying to do here."
     // (It couldn't even suggest any reasonable code for this)
     private void handleLanceMovement(boolean leftPressed, boolean rightPressed, long[] arrowKeyPressTimes, long currentTime, double tapSpeed, double holdSpeed, double[] lanceMovementRemainder) {
+        Lance lance = levelPanel.getLevelHandler().getLance();
         if (leftPressed != rightPressed) {
             int index = leftPressed ? 1 : 0;
             Character oldLastMoving = lastMoving;
@@ -188,6 +190,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleRotationLogic(boolean keyPressed, double angularSpeed) {
+        Lance lance = levelPanel.getLevelHandler().getLance();
         if (keyPressed) {
             double angularChange = calculateAngularChangePerUpdate(angularSpeed);
             lance.incrementRotationAngle(angularChange);
@@ -195,6 +198,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleSteadyStateLogic(boolean keyPressed, double angularSpeed) {
+        Lance lance = levelPanel.getLevelHandler().getLance();
         if (keyPressed) {
             double angularChange = calculateAngularChangePerUpdate(angularSpeed);
             lance.returnToHorizontalState(angularChange);
@@ -202,12 +206,12 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleFireballLogic() {
-        FireBall fb = levelPanel.getFireBallView().getFireBall();
+        FireBall fb = levelPanel.getLevelHandler().getFireBall();
         if (!fb.isMoving()) {
             if (KeyboardHandler.buttonWPressed) {
                 fb.launchFireball();
             } else {
-                fb.stickToLance(lance);
+                fb.stickToLance(levelHandler.getLance());
             }
         }
 
@@ -215,42 +219,42 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleCollisionLogic() {
-        CollisionHandler.checkCollisions(levelPanel.getFireBallView(), levelPanel.getLanceView());
-        CollisionHandler.checkFireBallBorderCollisions(levelPanel.getFireBallView(), mainFrame.getFrameWidth(), mainFrame.getFrameHeight());
-        for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
+        CollisionHandler.checkCollisions(levelHandler.getFireBall(), levelHandler.getLance());
+        CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
+        for (int i = 0; i < levelHandler.getBarriers().size(); i++) {
             try {
-                if (CollisionHandler.testFireballBarrierOverlap(levelPanel.getFireBallView().getFireBall(),levelPanel.getBarrierViews().get(i).getBarrier()) != null){
-                    levelPanel.getFireBallView().getFireBall().handleReflection(0);
-                    levelPanel.getBarrierViews().get(i).getBarrier().handleCollision(false);
+                if (CollisionHandler.testFireballBarrierOverlap(levelHandler.getFireBall(), levelHandler.getBarriers().get(i)) != null){
+                    levelHandler.getFireBall().handleReflection(0);
+                    levelHandler.getBarriers().get(i).handleCollision(false);
                 }
             } catch (CollisionError e) {
                 throw new RuntimeException(e);
             }
         }
         //check if barrier is broken or not
-        for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
-            if (levelPanel.getBarrierViews().get(i).getBarrier().isDead()) {
-                if(levelPanel.getBarrierViews().get(i).getBarrier() instanceof ExplosiveBarrier){
-                    Remains remain = ((ExplosiveBarrier)levelPanel.getBarrierViews().get(i).getBarrier()).dropRemains();
-                    RemainsView remainView = new RemainsView(remain);
-                    levelPanel.getRemainViews().add(remainView);
+        for (int i = 0; i < levelHandler.getBarriers().size(); i++) {
+            if (levelHandler.getBarriers().get(i).isDead()) {
+                if(levelHandler.getBarriers().get(i) instanceof ExplosiveBarrier){
+                    Remain remain = ((ExplosiveBarrier)levelHandler.getBarriers().get(i)).dropRemains();
+                    levelHandler.getRemains().add(remain);
                 }
-                levelPanel.getBarrierViews().remove(i);
+                levelHandler.getBarriers().remove(i);
                 break;
             }
         }
     }
 
     private void handleBarriersMovement() {
-        for(BarrierView barrierView : levelPanel.getBarrierViews()){
-            if(barrierView.getBarrier().getMovementStrategy()!= null){
-                barrierView.getBarrier().getMovementStrategy().checkCollision(levelPanel.getBarrierViews());
-                barrierView.getBarrier().move();
+        // FIXME: @ayazici21 please fix the below errors tysm - Meric
+        for(Barrier barrier : levelHandler.getBarriers()){
+            if(barrier.getMovementStrategy()!= null){
+                barrier.getMovementStrategy().checkCollision(levelHandler.getBarriers());   // TODO: Fix this issue
+                barrier.move();
             }
         }
 
-        for (RemainsView remainsView : levelPanel.getRemainViews()) {
-            remainsView.getRemains().move();
+        for (Remain remain : levelHandler.getRemains()) {
+            remain.move();
             //TODO: handle collision with lance, and also remove when it goes below the wall.
         }
     }

@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 
 import java.util.ArrayList;
@@ -11,16 +12,22 @@ public class Level {
     private Lance lance;
     private FireBall fireBall;
     private List<Barrier> barriers = new ArrayList<>();
+    private List<Remain> remains = new ArrayList<>();
 
-    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers) {
+    private static List<Level> levels = new ArrayList<>();
+
+    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, List<Remain> remains) {
         this.lance = lance;
         this.fireBall = fireBall;
         this.barriers = barriers;
+        this.remains = remains;
+        levels.add(this);
     }
 
     public Level(Lance lance, FireBall fireBall) {
         this.lance = lance;
         this.fireBall = fireBall;
+        levels.add(this);
     }
 
     public Level(){
@@ -29,6 +36,7 @@ public class Level {
         lance = new Lance(xPosLance, yPosLance);
         fireBall = new FireBall(0, 0);
         fireBall.stickToLance(lance);
+        levels.add(this);
     }
 
     public Lance getLance() {
@@ -53,6 +61,22 @@ public class Level {
 
     public void setBarriers(List<Barrier> barriers) {
         this.barriers = barriers;
+    }
+
+    public List<Remain> getRemains() {
+        return remains;
+    }
+
+    public void setRemains(List<Remain> remains) {
+        this.remains = remains;
+    }
+
+    public static List<Level> getLevels() {
+        return levels;
+    }
+
+    public static void setLevels(List<Level> levels) {
+        Level.levels = levels;
     }
 }
 
