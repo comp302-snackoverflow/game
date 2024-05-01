@@ -8,14 +8,18 @@ public abstract class Entity {
     protected double yPosition;
     protected Rectangle2D boundingBox;
     protected RectangularShape actualShape;
-    protected double screenWidth;
-    protected double screenHeight;
 
-    public Entity(double xPosition, double yPosition, double screenWidth, double screenHeight){
+    // TODO: screen size something
+    public Entity(double xPosition, double yPosition){
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
+    }
+
+    public void updatePositionRelativeToScreen(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+        xPosition = xPosition * newWidth / oldWidth;
+        yPosition = yPosition * newHeight / oldHeight;
+        boundingBox.setRect(xPosition, yPosition, boundingBox.getWidth(), boundingBox.getHeight());
+        actualShape.setFrame(xPosition, yPosition, actualShape.getWidth(), actualShape.getHeight());
     }
 
     public double getXPosition() {

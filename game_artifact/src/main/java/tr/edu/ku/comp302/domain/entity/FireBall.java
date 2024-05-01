@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.entity;
 
 
 import tr.edu.ku.comp302.domain.handler.collision.Collision;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import javax.swing.*;
 import java.awt.geom.Ellipse2D;
@@ -11,28 +12,23 @@ import java.lang.Math.*;
 
 public class FireBall extends Entity {
     private boolean isOverwhelmed = false;
-    private int size = 32;
+    private int size = 16;
     private double dx = 0;
     private double dy = 0;
-    private double speed = 2; // Might change the speed later.
+    private double speed = 0.2 * LanceOfDestiny.getScreenWidth(); // in px/s
     //TODO: Add the player!
+    private boolean moving;
 
-    public FireBall(double xPosition, double yPosition, double screenWidth, double screenHeight) {
-        super(xPosition, yPosition, screenWidth, screenHeight);
+    public FireBall(double xPosition, double yPosition) {
+        super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
         actualShape = new Ellipse2D.Double(xPosition, yPosition, size, size);
-
+        moving = false;
     }
 
     @Override
+    @Deprecated(forRemoval = true) // handleReflection is used
     public void handleCollision(boolean isWall) {
-        if (isWall) {
-            dx = -dx;
-            return;
-        }
-        dy = -dy; // TODO calculate new speed here;
-        dx = -dx;
-        //dx = new SecureRandom().nextInt(-3, 4);
     }
 
     // for handling reflections with steady surfaces
@@ -57,11 +53,17 @@ public class FireBall extends Entity {
         double surfaceAngleRadians = Math.toRadians(surfaceAngleDegrees);
         double totalSpeedAngle = Math.atan2(dy, dx); //FireBall speed angle
         if (surfaceXSpeed != 0) { // if the lance is moving
-            if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
+            if (dx == 0 && surfaceAngleDegrees == 0) { // perpendicular collision
+                double dir = Math.signum(surfaceXSpeed);
+                dx = dir * dy / Math.sqrt(2);
+                dy = -dy * Math.sqrt(2);
+            }
+            else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
                 double currentSpeed = Math.sqrt(dx * dx + dy * dy);
                 double newSpeed = currentSpeed + 5; // increase total speed by 5
+//                double newSpeed = currentSpeed; // because permanent +5 speed boost looks bad
                 dx = newSpeed * Math.cos(totalSpeedAngle);
-                dy = newSpeed * Math.sin(totalSpeedAngle);
+                dy = -newSpeed * Math.sin(totalSpeedAngle);
             } else { // in the opposite direction
                 // mirror the movement of the FireBall
                 dx = -dx;
@@ -76,30 +78,52 @@ public class FireBall extends Entity {
         }
     }
 
+    public void handleCornerReflection(double surfaceAngleDegrees,  Collision corner) {
+        switch (corner) {
+            case TOP_RIGHT, BOTTOM_LEFT:
+                handleReflection(surfaceAngleDegrees + 45);
+                break;
+            case TOP_LEFT, BOTTOM_RIGHT:
+                handleReflection(surfaceAngleDegrees - 45);
+                break;
+            default:
+                handleReflection(surfaceAngleDegrees);
+                break;
+        }
+    }
+
     // for handling reflections at a surface's corner
     // need to pass which corner the collision happened
     public void handleCornerReflection(double surfaceAngleDegrees, double surfaceXSpeed, Collision corner) {
         switch (corner) {
-            case TOP_RIGHT:
-            case BOTTOM_LEFT:
-                handleReflection(surfaceAngleDegrees - 45, surfaceXSpeed);
-                break;
-            case TOP_LEFT:
-            case BOTTOM_RIGHT:
+            case TOP_RIGHT, BOTTOM_LEFT:
                 handleReflection(surfaceAngleDegrees + 45, surfaceXSpeed);
+                break;
+            case TOP_LEFT, BOTTOM_RIGHT:
+                handleReflection(surfaceAngleDegrees - 45, surfaceXSpeed);
                 break;
             default:
                 handleReflection(surfaceAngleDegrees, surfaceXSpeed);
+                break;
         }
     }
 
-    public void move() {
+    public void move(double dx, double dy) {
         xPosition += dx;
         yPosition += dy;
         boundingBox.setRect(xPosition, yPosition, size, size);
         actualShape.setFrame(xPosition, yPosition, size, size);
     }
+
+    public void stickToLance(Lance lance) {
+        this.xPosition = lance.getXPosition() + lance.getLength() / 2 - (int) (size / 2.0);
+        this.yPosition = lance.getYPosition() - size;
+        this.boundingBox.setRect(xPosition, yPosition, size, size);
+        this.actualShape.setFrame(xPosition, yPosition, size, size);
+    }
+
     public void launchFireball() {
+        moving = true;
         this.dy = speed;
     }
 
@@ -169,3 +193,8 @@ public class FireBall extends Entity {
 
 
 
+
+    public boolean isMoving() {
+        return moving;
+    }
+}
