@@ -1,6 +1,16 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+
+import java.io.File;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+
+
 import tr.edu.ku.comp302.domain.entity.Remains;
 
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
@@ -31,6 +41,7 @@ public class LanceOfDestiny implements Runnable{
         lastMovingTime = 0;
         tapMoving = false;
         startGameLoop();
+        playGameSong();
     }
 
     @Override
@@ -229,5 +240,30 @@ public class LanceOfDestiny implements Runnable{
     private void startGameLoop(){
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+
+    public void playGameSong(){
+        Thread songThread = new Thread(() -> {
+            try {
+                playSong("game_artifact/src/main/resources/sounds/fireball.aiff"); // Replace this with the path to your song file
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        songThread.start();
+    }
+
+
+    static void playSong(String filePath) throws Exception {
+        File audioFile = new File(filePath);
+        AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+        AudioFormat format = audioStream.getFormat();
+        DataLine.Info info = new DataLine.Info(Clip.class, format);
+        Clip audioClip = (Clip) AudioSystem.getLine(info);
+        audioClip.open(audioStream);
+        audioClip.start();
+        // Optionally, you can loop the song
+        // audioClip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 }

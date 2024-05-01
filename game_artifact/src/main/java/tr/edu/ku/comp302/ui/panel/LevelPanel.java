@@ -11,6 +11,8 @@ import tr.edu.ku.comp302.ui.view.RemainsView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -116,7 +118,32 @@ public class LevelPanel extends JPanel {
            
             //turn of the button until next spell collected
             lanceExtSpellButton.setEnabled(false);
+
+
+            JLabel timerLabel = new JLabel("10");
+            timerLabel.setBounds((getSize().width / 2) + 160, (int) (getSize().height * 0.875), 50, 30); // Adjust position as needed
+            this.add(timerLabel);
+
+            Timer timer = new Timer(1000, new ActionListener() {
+                int count = 10;
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    count--;
+                    timerLabel.setText(String.valueOf(count));
+                    if (count == 0) {
+                        ((Timer) e.getSource()).stop();
+                        lanceExtSpellButton.setEnabled(true); // Enable button after countdown finishes
+                        remove(timerLabel); // Remove timer label after countdown finishes
+                    }
+                }
+            });
+            timer.start();
+
             this.requestFocusInWindow();
+
+
+
         });
     }
 
