@@ -38,6 +38,8 @@ public class FireBall extends Entity {
     // for handling reflections with steady surfaces
     // need to pass the surface angle
     public void handleReflection(double surfaceAngleDegrees) {
+
+
         double surfaceAngle = Math.toRadians(surfaceAngleDegrees);
         double totalSpeedAngle = Math.atan2(dy, dx);
 
@@ -46,6 +48,7 @@ public class FireBall extends Entity {
         double totalSpeed = Math.sqrt(dx * dx + dy * dy);
         dx = totalSpeed * Math.cos(newAngle);
         dy = totalSpeed * Math.sin(newAngle);
+        
     }
     // for handling reflections with moving surfaces
     // need to pass the surface angle and the surface speed
@@ -156,6 +159,13 @@ public class FireBall extends Entity {
     public double getSpeed() {
         return speed;
     }
+
+    public boolean isOverwhelmed() {
+        return isOverwhelmed;
+    }
+
+    
 }
+
 
 

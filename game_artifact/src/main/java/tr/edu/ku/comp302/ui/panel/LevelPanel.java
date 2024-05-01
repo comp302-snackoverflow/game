@@ -46,7 +46,7 @@ public class LevelPanel extends JPanel {
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
-        lanceView.getLance().setL(size.getWidth() * 2  / 10.0);
+        lanceView.getLance().setL(size.getWidth() / 10.0);
         lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),
                 (int) lanceView.getLance().getLength(),
                 (int) lanceView.getLance().getThickness())) ;
@@ -104,12 +104,14 @@ public class LevelPanel extends JPanel {
 
     private void initializeSpellButtons() {
         JButton lanceExtSpellButton = new JButton("Extension Spell");
+        JButton overwhelmSpellButton = new JButton("Overwhelö Spell");
 
         // Set the bounds for the button
-        lanceExtSpellButton.setBounds(   (getSize().width / 2 ), (int) (getSize().height * 0.875) , 150, 30); // Adjust x, y, width, and height as needed
-
+        lanceExtSpellButton.setBounds(   (getSize().width / 2 ), (int) (getSize().height * 0.98) , 150, 30); // Adjust x, y, width, and height as needed
+        overwhelmSpellButton.setBounds(   (getSize().width / 2 ) - 170, (int) (getSize().height * 0.98) , 150, 30); // Adjust x, y, width, and height as needed
         // Add the button to the panel
         this.add(lanceExtSpellButton);
+        this.add(overwhelmSpellButton);
 
         lanceExtSpellButton.addActionListener(e -> {
             
@@ -145,7 +147,44 @@ public class LevelPanel extends JPanel {
 
 
         });
+    
+
+        overwhelmSpellButton.addActionListener(e -> {
+            
+            // Your existing action when the button is pressed
+            Spell.overWhelmingFireBall(fireBallView);
+           
+            //turn of the button until next spell collected
+            overwhelmSpellButton.setEnabled(false);
+
+
+            JLabel timerLabel = new JLabel("10");
+            timerLabel.setBounds((getSize().width / 2) - 10, (int) (getSize().height * 0.98), 50, 30); // Adjust position as needed
+            this.add(timerLabel);
+
+            Timer timer = new Timer(1000, new ActionListener() {
+                int count = 10;
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    count--;
+                    timerLabel.setText(String.valueOf(count));
+                    if (count == 0) {
+                        ((Timer) e.getSource()).stop();
+                        overwhelmSpellButton.setEnabled(true); // Enable button after countdown finishes
+                        remove(timerLabel); // Remove timer label after countdown finishes
+                    }
+                }
+            });
+            timer.start();
+
+            this.requestFocusInWindow();
+
+
+
+        });
     }
+
 
 }
 

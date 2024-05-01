@@ -2,7 +2,7 @@ package tr.edu.ku.comp302.domain.entity;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.lang.Math.*;
+
 
 public class Lance extends Entity{
 
