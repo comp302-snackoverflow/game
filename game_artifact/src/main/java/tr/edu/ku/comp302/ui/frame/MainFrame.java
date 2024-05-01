@@ -75,6 +75,7 @@ public class MainFrame extends JFrame {
         // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)));
         // TODO: FIX THIS AS WELL
 
+        System.out.println("main frame prepare level panel bi kez çağırılması lazım");
         BuildPanelModel randomModel = new BuildPanelModel();
 
         levelPanel = new LevelPanel(level, lv,

@@ -49,6 +49,8 @@ public class LanceOfDestiny implements Runnable {
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private final Lance lance;  // TODO: Later change this.
+    public boolean songisPlaying = false;
+    Clip audioClip;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
@@ -59,8 +61,17 @@ public class LanceOfDestiny implements Runnable {
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
+        System.out.println("yenisini oluşturmasan sanki");
+        try {
+            audioClip = playSong("game_artifact/src/main/resources/sounds/fireball.aiff");
+            songisPlaying = true;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         startGameLoop();
-        playGameSong();
+       
+        
     }
 
     @Override
@@ -68,7 +79,7 @@ public class LanceOfDestiny implements Runnable {
         double timePerFrame = 1_000_000_000.0 / FPS_SET;
         double timePerUpdate = 1_000_000_000.0 / UPS_SET;
         previousTime = System.nanoTime();
-        // TODO: Change while loop condition
+        
         while (true) {
             if (GameState.state.isPlaying()){ // TODO: LoD game state should be used instead of this static variable.
                 long currentTime = System.nanoTime();
@@ -76,8 +87,10 @@ public class LanceOfDestiny implements Runnable {
                 deltaFrame += (currentTime - previousTime) / timePerFrame;
                 update(currentTime);
                 previousTime = currentTime;
+                audioClip.start();
             }else{  // TODO: Change this else statement whenever implemented other game states.
                 try{
+                    audioClip.stop();
                     Thread.sleep(1000 / UPS_SET);
                     previousTime = System.nanoTime(); // Should not accumulate while waiting
                 } catch (InterruptedException e) {    // however, does not work
@@ -241,7 +254,9 @@ public class LanceOfDestiny implements Runnable {
         for (int i = 0; i < levelPanel.getBarrierViews().size(); i++) {
             try {
                 if (CollisionHandler.testFireballBarrierOverlap(fbv.getFireBall(), levelPanel.getBarrierViews().get(i).getBarrier()) != null){
-                    fbv.getFireBall().handleReflection(0);
+                    if(!fbv.getFireBall().isOverwhelmed()){
+                        fbv.getFireBall().handleReflection(0);
+                    }
                     levelPanel.getBarrierViews().get(i).getBarrier().handleCollision(false);
                 }
             } catch (CollisionError e) {
@@ -323,4 +338,20 @@ public class LanceOfDestiny implements Runnable {
     }
 
 
+
+    static Clip playSong(String filePath) throws Exception {
+        File audioFile = new File(filePath);
+        AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+        AudioFormat format = audioStream.getFormat();
+        DataLine.Info info = new DataLine.Info(Clip.class, format);
+        Clip audioClip = (Clip) AudioSystem.getLine(info);
+        audioClip.open(audioStream);
+    
+        return audioClip;
+        
+        // Optionally, you can loop the song
+        // audioClip.loop(Clip.LOOP_CONTINUOUSLY);
+    }
 }
+
+

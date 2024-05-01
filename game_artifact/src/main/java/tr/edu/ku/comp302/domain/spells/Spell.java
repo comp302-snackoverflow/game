@@ -24,7 +24,7 @@ public class Spell{
         //Gets the lance object from the view.
         Lance lance = lanceView.getLance();
         //Doubles the length of the lance.
-        lance.setL(lance.getL() * 2);
+        lance.setLength(lance.getLength() * 2);
         //Sets the lance image according to the new length.
         lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),
                 (int) lanceView.getLance().getLength(),
@@ -39,7 +39,7 @@ public class Spell{
 
                 
                 //Halves the length of the lance.
-                lance.setL(lance.getL() / 2);
+                lance.setLength(lance.getLength() / 2);
 
                 //Sets the lance image according to the new length.
                 lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),

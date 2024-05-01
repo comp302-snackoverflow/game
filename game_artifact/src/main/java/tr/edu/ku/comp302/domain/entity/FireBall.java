@@ -188,12 +188,6 @@ public class FireBall extends Entity {
         return isOverwhelmed;
     }
 
-    
-}
-
-
-
-
     public boolean isMoving() {
         return moving;
     }
