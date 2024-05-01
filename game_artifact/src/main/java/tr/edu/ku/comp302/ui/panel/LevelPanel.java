@@ -100,27 +100,26 @@ public class LevelPanel extends JPanel {
     }
 
 
-    void initializeSpellButtons() {
-        JButton fireSpellButton = new JButton("Fire Spell");
-        JButton iceSpellButton = new JButton("Ice Spell");
-        JButton lightningSpellButton = new JButton("Lightning Spell");
+    private void initializeSpellButtons() {
+        JButton lanceExtSpellButton = new JButton("Extension Spell");
 
-        // Add the buttons to the panel without using any layout
-        this.add(fireSpellButton, 0, 0);
-        this.add(iceSpellButton, 1, 0);
-        this.add(lightningSpellButton, 2, 0);
+        // Set the bounds for the button
+        lanceExtSpellButton.setBounds(   (getSize().width / 2 ), (int) (getSize().height * 0.875) , 150, 30); // Adjust x, y, width, and height as needed
 
+        // Add the button to the panel
+        this.add(lanceExtSpellButton);
 
-        fireSpellButton.addActionListener(e -> {
-            Spell.extendLance(lanceView.getLance());
-            lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),
-                (int) lanceView.getLance().getLength(),
-                (int) lanceView.getLance().getThickness()));
+        lanceExtSpellButton.addActionListener(e -> {
+            
+            // Your existing action when the button is pressed
+            Spell.extendLance(lanceView);
+           
+            //turn of the button until next spell collected
+            lanceExtSpellButton.setEnabled(false);
             this.requestFocusInWindow();
         });
-
-
     }
+
 }
 
 
