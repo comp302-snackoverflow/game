@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.domain.spells.Spell;
 import tr.edu.ku.comp302.ui.view.BarrierView;
 import tr.edu.ku.comp302.ui.view.FireBallView;
 import tr.edu.ku.comp302.ui.view.LanceView;
@@ -27,6 +28,7 @@ public class LevelPanel extends JPanel {
         this.lanceView = lanceView;
         this.fireBallView = fireBallView;
         this.barriers = barriers;
+        initializeSpellButtons();
         addKeyListener(new KeyboardHandler());
     }
 
@@ -42,7 +44,7 @@ public class LevelPanel extends JPanel {
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
-        lanceView.getLance().setL(size.getWidth() / 10.0);
+        lanceView.getLance().setL(size.getWidth() * 2  / 10.0);
         lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),
                 (int) lanceView.getLance().getLength(),
                 (int) lanceView.getLance().getThickness())) ;
@@ -95,6 +97,29 @@ public class LevelPanel extends JPanel {
 
     public void setRemainView(List<RemainsView> remains) {
         this.remains = remains;
+    }
+
+
+    void initializeSpellButtons() {
+        JButton fireSpellButton = new JButton("Fire Spell");
+        JButton iceSpellButton = new JButton("Ice Spell");
+        JButton lightningSpellButton = new JButton("Lightning Spell");
+
+        // Add the buttons to the panel without using any layout
+        this.add(fireSpellButton, 0, 0);
+        this.add(iceSpellButton, 1, 0);
+        this.add(lightningSpellButton, 2, 0);
+
+
+        fireSpellButton.addActionListener(e -> {
+            Spell.extendLance(lanceView.getLance());
+            lanceView.setLanceImage(ImageHandler.resizeImage(lanceView.getLanceImage(),
+                (int) lanceView.getLance().getLength(),
+                (int) lanceView.getLance().getThickness()));
+            this.requestFocusInWindow();
+        });
+
+
     }
 }
 

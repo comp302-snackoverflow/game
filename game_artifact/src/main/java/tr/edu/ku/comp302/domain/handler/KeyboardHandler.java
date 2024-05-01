@@ -21,6 +21,7 @@ public class KeyboardHandler implements KeyListener {
         switch (e.getKeyCode()){
             case KeyEvent.VK_RIGHT:
                 rightArrowPressed = true;
+                System.out.println("still pressed");
                 break;
             case KeyEvent.VK_LEFT:
                 leftArrowPressed = true;

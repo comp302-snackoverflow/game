@@ -89,6 +89,10 @@ public class MainFrame extends JFrame {
         levelPanel.requestFocusInWindow();
     }
 
+
+
+
+
     private void prepareBuildPanel() {
         buildPanel = new BuildPanel(frameHeight, frameWidth);
         buildPanel.repaint();
@@ -156,5 +160,9 @@ public class MainFrame extends JFrame {
     public JPanel getBuildPanel() {
         return buildPanel;
     }
+
+    
+
+
 }
 

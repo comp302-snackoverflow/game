@@ -24,7 +24,8 @@ public class LanceOfDestiny implements Runnable{
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
-        mainFrame = MainFrame.createMainFrame();
+        //TODO: fix main frame instance creation
+        mainFrame = MainFrame.createMainFrame(); 
         levelPanel.requestFocusInWindow();
         lastMoving = null;
         lastMovingTime = 0;

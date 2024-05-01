@@ -11,12 +11,13 @@ import java.awt.image.BufferedImage;
 public class LanceView {
     private Lance lance;
     private BufferedImage lanceImage;
+    Graphics2D g2d;
     public LanceView(Lance lance) {
         this.lance = lance;
         setLanceImage();    // May change
     }
     public void render(Graphics g){
-        Graphics2D g2d = (Graphics2D) g;
+        g2d = (Graphics2D) g;
         double rotationAngle = Math.toRadians(getLance().getRotationAngle());
         AffineTransform oldTransform = g2d.getTransform();
         g2d.rotate(rotationAngle, lance.getXPosition() + lance.getLength() / 2.0, lance.getYPosition() + lance.getThickness() / 2.0);
@@ -50,5 +51,7 @@ public class LanceView {
         this.lanceImage = lanceImage;
     }
 
+
+    
 }
 
