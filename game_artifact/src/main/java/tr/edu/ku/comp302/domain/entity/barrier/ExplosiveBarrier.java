@@ -11,14 +11,14 @@ public class ExplosiveBarrier extends Barrier {
     public ExplosiveBarrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         health = 1;
-        this.MovementStrategy = new CircularMovement(this);
+        this.movementStrategy = new CircularMovement(this);
     }
 
     public Remain dropRemains(){
         // barrier is removed then the asset remains added 
         // starting from the x and y position fot he center of 
         // the barrier that was destroyed the remains fall with constant speed 
-        remain = new Remain(this.getXPosition() + this.getLength()/2, this.getYPosition() + this.getThickness()/2);
+        remain = new Remain(getXPosition() + getLength() / 2, getYPosition() + getThickness() / 2);
         //call to remain view here
         return remain;
         

@@ -12,7 +12,7 @@ public class SimpleBarrier extends Barrier {
     public SimpleBarrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         health = 1;
-        this.MovementStrategy = new HorizontalMovement(this);
+        this.movementStrategy = new HorizontalMovement(this);
     }
     
 }
