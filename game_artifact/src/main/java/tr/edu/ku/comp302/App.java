@@ -1,8 +1,8 @@
 package tr.edu.ku.comp302;
 
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.BuildPanelModel;
-import tr.edu.ku.comp302.ui.view.BarrierView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,10 +16,10 @@ public class App {
         frame.setVisible(true);
     }
 
-    public static List<BarrierView> generateBarriers(double w, double h, BuildPanelModel randomModel) {
+    public static List<Barrier> generateBarriers(double w, double h, BuildPanelModel randomModel) {
         // TODO: in MainFrame class, prepareLevelPanel method,
         //  the constructor of levelPanel needs List<BarrierView>
-        List<BarrierView> barriers = new ArrayList<>();
+        List<Barrier> barriers = new ArrayList<>();
         ArrayList<Double> x_intervals = new ArrayList<>();
         ArrayList<Double> y_intervals = new ArrayList<>();
 
@@ -37,9 +37,9 @@ public class App {
         y_intervals.removeLast();
 
         //the number of gift barriers at the start were chosen to be 0 for now since they were not implemented
-        HashMap<List<Double>, BarrierView> newMap = randomModel.generateRandomMap(x_intervals, y_intervals, 90, 25, 0, 35);
+        HashMap<List<Double>, Barrier> newMap = randomModel.generateRandomMap(x_intervals, y_intervals, 90, 25, 0, 35);
 
-        for (Map.Entry<List<Double>, BarrierView> entry : newMap.entrySet()) {
+        for (Map.Entry<List<Double>, Barrier> entry : newMap.entrySet()) {
             barriers.add(entry.getValue());
         }
 
