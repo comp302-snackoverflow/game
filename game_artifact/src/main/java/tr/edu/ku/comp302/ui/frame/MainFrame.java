@@ -71,7 +71,7 @@ public class MainFrame extends JFrame {
         var barriers = App.generateBarriers(LanceOfDestiny.getScreenWidth(),
                 LanceOfDestiny.getScreenHeight(), new BuildPanelModel());
 
-        Level level = new Level(lance, fb, barriers, new ArrayList<>());
+        Level level = new Level(lance, fb, barriers);
         levelPanel = new LevelPanel(new LevelHandler(level));
         // levelPanel = new LevelPanel(level, lv); TODO: FIX THIS
         // levelPanel = new LevelPanel(level, lv,

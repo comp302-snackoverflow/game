@@ -43,7 +43,7 @@ public class LoadService {
         List<Barrier> barriers = loadBarriers(data.barriersData(), windowWidth, windowHeight);
         // TODO: score must be loaded into LanceOfDestiny (probably),
         //  find a way to do it because its stupid to statically set it
-        return new Level(lance, fb, barriers, new ArrayList<>());
+        return new Level(lance, fb, barriers);
     }
 
     private Lance loadLance(LanceData ld, double windowWidth, double windowHeight) {
