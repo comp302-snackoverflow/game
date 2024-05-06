@@ -10,17 +10,14 @@ import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
-import tr.edu.ku.comp302.ui.panel.LevelPanel;
-import tr.edu.ku.comp302.ui.view.FireBallView;
-import tr.edu.ku.comp302.ui.view.LanceView;
-import tr.edu.ku.comp302.ui.view.BarrierView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoadService {
-    private LoadService instance;
     private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
+    private LoadService instance;
 
     private LoadService() {
         dbHandler = DatabaseHandler.getInstance();
@@ -33,7 +30,7 @@ public class LoadService {
         return instance;
     }
 
-    public LevelPanel loadGame(int saveId) {
+    public Level loadGame(int saveId) {
         GameData data = dbHandler.loadGame(saveId);
         if (data == null) {
             return null;
@@ -44,12 +41,9 @@ public class LoadService {
         FireBall fb = loadFireBall(data.fireballData(), windowWidth, windowHeight);
         Lance lance = loadLance(data.lanceData(), windowWidth, windowHeight);
         List<Barrier> barriers = loadBarriers(data.barriersData(), windowWidth, windowHeight);
-        FireBallView fbv = new FireBallView(fb);
-        LanceView lv = new LanceView(lance);
-        List<BarrierView> barrierViews = barriers.stream().map(BarrierView::new).toList();
         // TODO: score must be loaded into LanceOfDestiny (probably),
         //  find a way to do it because its stupid to statically set it
-        return new LevelPanel(new Level(), lv, fbv, barrierViews);
+        return new Level(lance, fb, barriers, new ArrayList<>());
     }
 
     private Lance loadLance(LanceData ld, double windowWidth, double windowHeight) {
