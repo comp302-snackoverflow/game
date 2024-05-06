@@ -1,16 +1,14 @@
 package tr.edu.ku.comp302.domain.entity;
 
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 
 public abstract class Entity {
     protected double xPosition;
     protected double yPosition;
     protected Rectangle2D boundingBox;
-    protected RectangularShape actualShape;
 
     // TODO: screen size something
-    public Entity(double xPosition, double yPosition){
+    public Entity(double xPosition, double yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }
@@ -19,7 +17,6 @@ public abstract class Entity {
         xPosition = xPosition * newWidth / oldWidth;
         yPosition = yPosition * newHeight / oldHeight;
         boundingBox.setRect(xPosition, yPosition, boundingBox.getWidth(), boundingBox.getHeight());
-        actualShape.setFrame(xPosition, yPosition, actualShape.getWidth(), actualShape.getHeight());
     }
 
     public double getXPosition() {
@@ -42,10 +39,5 @@ public abstract class Entity {
         return boundingBox;
     }
 
-    public RectangularShape getActualShape() {
-        return actualShape;
-    }
-
-    public abstract void handleCollision(boolean isWall); //entity,integer input ??
 }
 

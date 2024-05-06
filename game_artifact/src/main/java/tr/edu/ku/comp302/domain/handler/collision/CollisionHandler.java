@@ -1,11 +1,12 @@
 package tr.edu.ku.comp302.domain.handler.collision;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import tr.edu.ku.comp302.domain.entity.Entity;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
-import tr.edu.ku.comp302.ui.view.BarrierView;
-import tr.edu.ku.comp302.ui.view.FireBallView;
-import tr.edu.ku.comp302.ui.view.LanceView;
 import tr.edu.ku.comp302.domain.entity.barrier.*;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.*;
 import java.util.List;
@@ -13,63 +14,155 @@ import java.awt.geom.RectangularShape;
 import java.awt.geom.Rectangle2D;
 
 public class CollisionHandler {
+    private static Logger logger = LogManager.getLogger(CollisionHandler.class);
+
+    public static void checkFireballBarriersCollisions(FireBall fireBall, List<Barrier> barriers) {
+        for (Barrier barrier : barriers) {
+            checkFireBallEntityCollisions(fireBall, barrier);
+        }
+    }
+
     /**
-     * Tests if the fireball collides with the barrier.
-     * Probably has some bugs (More like for sure)
-     * Works in three steps:
-     * First step check for bounding box collision since it's faster
-     * Then, a narrower check is made. However, it's only different for the fireball
-     * Finally, another step is made to determine the exact side of the collision
-     *
-     * @param fireBall the fireball object
-     * @param barrier  the barrier object
-     * @return the side of the collision, or null if there is no collision
-     * @throws CollisionError we're damned if we see this
+     * Check if the target collides with any of the barriers in the list. Includes vertical and horizontal padding
+     * to the hitbox of the target.
+     * @param target    the barrier to tes
+     * @param barriers  list of all barriers.
+     * @return a 4-bit integer, where bits from least to most significant represent collisions
+     * with the top, right, bottom, and left sides of the target.
      */
-    public static Collision testFireballBarrierOverlap(FireBall fireBall, Barrier barrier) throws CollisionError {
-        // We can also return the exact angle (hopefully correctly) if we want to
-        // For now, returns the direction of the collision (again, hopefully correctly)
-        Rectangle2D b1 = fireBall.getBoundingBox();
-        Rectangle2D b2 = barrier.getBoundingBox();
+    public static int checkCloseCalls(Barrier target, List<Barrier> barriers, double padX, double padY) {
+        Rectangle2D rect = target.getBoundingBox(); // same as the actual hitbox
+        Rectangle2D wider = new Rectangle2D.Double(rect.getX() - padX, rect.getY(),
+                rect.getWidth() + 2 * padX, rect.getHeight());
+        Rectangle2D taller = new Rectangle2D.Double(rect.getX(), rect.getY() - padY,
+                rect.getWidth(), rect.getHeight() + 2 * padY);
 
-        if (!b1.intersects(b2)) {
-            return null;
+        int sides = 0; // the bit order is `lbrt`
+
+        if (target.getXPosition() <= padX) {
+            sides |= 0b1000; // left side
+        }
+        if (target.getXPosition() + target.getLength() >= LanceOfDestiny.getScreenWidth() - padX) {
+            sides |= 0b0010; // right side
+        }
+        if (target.getYPosition() <= padY) {
+            sides |= 0b0001; // top side
+        }
+        if (target.getYPosition() + target.getThickness() >= LanceOfDestiny.getScreenHeight() - padY) {
+            sides |= 0b0100; // bottom side
+            logger.warn("checkCloseCalls: Barrier is at the bottom of the screen");
         }
 
-        RectangularShape actualFireball = fireBall.getActualShape();
-        Rectangle2D rect = (Rectangle2D) barrier.getActualShape();
+        for (Barrier barrier : barriers) {
+            if (barrier == target) {
+                continue;
+            }
+            if (sides == 0b1111) {
+                break; // all sides are already collided
+            }
+            Rectangle2D box = barrier.getBoundingBox();
 
-        if (!actualFireball.intersects(rect)) {
-            return null;
+            if (wider.intersects(box)) {
+                int outcode = wider.outcode(box.getCenterX(), box.getCenterY());
+                if ((outcode & Rectangle2D.OUT_LEFT) != 0) {
+                    sides |= 0b1000;
+                }
+                if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
+                    sides |= 0b0010;
+                }
+                if ((outcode & Rectangle2D.OUT_TOP) != 0) {
+                    logger.warn("checkCloseCalls: Horizontal padded hit box top intersects");
+                    logger.warn("Wider rect: " + wider);
+                    logger.warn("Barrier: " + box);
+                }
+                if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
+                    logger.warn("checkCloseCalls: Horizontal padded hit box bottom intersects");
+                    logger.warn("Wider rect: " + wider);
+                    logger.warn("Barrier: " + box);
+                }
+            }
+            if (taller.intersects(box)) {
+                int outcode = taller.outcode(box.getCenterX(), box.getCenterY());
+                if ((outcode & Rectangle2D.OUT_TOP) != 0) {
+                    sides |= 0b0001;
+                }
+                if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
+                    sides |= 0b0100;
+                }
+                if ((outcode & Rectangle2D.OUT_LEFT) != 0) {
+                    logger.warn("checkCloseCalls: Vertical padded hit box left intersects");
+                    logger.warn("Taller rect: " + taller);
+                    logger.warn("Barrier: " + box);
+                }
+                if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
+                    logger.warn("checkCloseCalls: Vertical padded hit box right intersects");
+                    logger.warn("Taller rect: " + taller);
+                    logger.warn("Barrier: " + box);
+                }
+            }
         }
+        return sides;
+    }
 
-        double x1 = rect.getMinX();
-        double y1 = rect.getMinY(); // top left corner
+    public static void checkFireBallBorderCollisions(FireBall fireBall, int frameWidth, int frameHeight) {
+        if (fireBall.getXPosition() <= 0 ||
+                fireBall.getXPosition() + fireBall.getSize() >= frameWidth) {
+            fireBall.bounceOffVerticalSurface();
+        }
+        if (fireBall.getYPosition() <= 0 ||
+                fireBall.getYPosition() + fireBall.getSize() >= frameHeight) {
+            fireBall.bounceOffHorizontalSurface();
+        }
+    }
 
-        double x2 = rect.getMinX() + rect.getWidth();
-        double y2 = rect.getMinY(); // top right corner
+    public static void checkFireBallEntityCollisions(FireBall fireBall, Entity entity) {
+        switch (entity) {
+            case Lance lance -> {
+                if (boundingBoxCollision(fireBall, lance)) {
+                    try {
+                        Collision side = hitBoxCollision(fireBall, lance);
+                        if (side != null) {
+                            resolveCollision(fireBall, lance, side);
+                        }
+                    } catch (CollisionError ignored) {
+                    }
+                }
+            }
 
-        double x3 = rect.getMinX() + rect.getWidth();
-        double y3 = rect.getMinY() + rect.getHeight(); // bottom right corner
+            case Barrier barrier -> {
+                if (boundingBoxCollision(fireBall, barrier)) {
+                    try {
+                        Collision side = hitBoxCollision(fireBall, barrier);
+                        if (side != null) {
+                            resolveCollision(fireBall, barrier, side);
+                        }
+                    } catch (CollisionError ignored) {}
+                }
+            }
+            case Entity ignored ->
+                logger.warn("checkFireBallEntityCollisions: Unknown entity type");
+        }
+    }
 
-        double x4 = rect.getMinX();
-        double y4 = rect.getMinY() + rect.getHeight(); // bottom left corner
-
+    private static int findCollisions(FireBall fireBall, Point topLeft, Point topRight,
+                                      Point bottomRight, Point bottomLeft) {
         int collision = 0;
-        if (fireballIntersectsLine(fireBall, x1, y1, x2, y2)) {
+        if (fireballIntersectsLine(fireBall, topLeft, topRight)) {
             collision |= 0b0001;  // top segment
         }
-        if (fireballIntersectsLine(fireBall, x2, y2, x3, y3)) {
+        if (fireballIntersectsLine(fireBall, topRight, bottomRight)) {
             collision |= 0b0010;  // right segment
         }
-        if (fireballIntersectsLine(fireBall, x3, y3, x4, y4)) {
+        if (fireballIntersectsLine(fireBall, bottomRight, bottomLeft)) {
             collision |= 0b0100; // bottom segment
         }
-        if (fireballIntersectsLine(fireBall, x4, y4, x1, y1)) {
+        if (fireballIntersectsLine(fireBall, bottomLeft, topLeft)) {
             collision |= 0b1000;  // left segment
         }
 
-
+        return collision;
+    }
+    private static Collision getCollisionSide(int collision) throws CollisionError {
         return switch (collision) {
             case 0b0001, 0b1011 -> // 1011 => top, left, right. Reduced to top case.
                     Collision.TOP;
@@ -84,56 +177,16 @@ public class CollisionHandler {
             case 0b0110 -> Collision.BOTTOM_RIGHT;
             case 0b1100 -> Collision.BOTTOM_LEFT;
             case 0b1001 -> Collision.TOP_LEFT;
-            default -> Collision.RIGHT;
+            default -> throw new CollisionError("How did we get here?");
             // top and bottom; left and right; all 4 sides; no sides => should never happen
-                    // throw new CollisionError("How did we get here?");
-
+            // throw new CollisionError("How did we get here?");
         };
     }
 
-    public static Collision testBarrierFireballOverlap(FireBall fireBall, List<BarrierView> barrierViews) throws CollisionError {
-        for (BarrierView barrierView : barrierViews) {
-            Barrier barrier = barrierView.getBarrier();
-            Collision overlap = testFireballBarrierOverlap(fireBall, barrier);
-            if (overlap != null) {
-                return overlap;
-            }
-        }
-        return null;
-    }
-
-    public static boolean hitLeftWall(FireBall fireBall) {
-        return fireBall.getXPosition() <= 0;
-    }
-
-    public static boolean hitRightWall(FireBall fireBall, double width) {
-        return fireBall.getXPosition() + fireBall.getSize() >= width;
-    }
-
-    public static boolean hitCeiling(FireBall fireBall) {
-        return fireBall.getYPosition() <= 0;
-    }
-
-    public static boolean hitFloor(FireBall fireBall, double height) {
-        return fireBall.getYPosition() + fireBall.getSize() >= height;
-    }
-
-    private static boolean fireballIntersectsLine(FireBall fireball, double x1, double y1, double x2, double y2) {
-        double x = fireball.getXPosition();
-        double y = fireball.getYPosition();
-        double size = fireball.getSize();
-
-        double centerX = x + size;
-        double centerY = y + size;
-
-        double minDistance = 2 * CollisionMath.triangleArea(x1, y1, x2, y2, centerX, centerY) / CollisionMath.lineLength(x1, y1, x2, y2);
-        return minDistance <= size;
-    }
-
-    private static boolean fireballIntersectsLine(FireBall fireball, Point p1, Point p2) {
-        double x = fireball.getXPosition();
-        double y = fireball.getYPosition();
-        double radius = (double) fireball.getSize() / 2;
+    private static boolean fireballIntersectsLine(FireBall fireBall, Point p1, Point p2) {
+        double x = fireBall.getXPosition();
+        double y = fireBall.getYPosition();
+        double radius = (double) fireBall.getSize() / 2;
 
         double centerX = x + radius;
         double centerY = y + radius;
@@ -142,38 +195,7 @@ public class CollisionHandler {
         return minDistance <= radius;
     }
 
-    public static void checkCollisions(FireBall fireBall, Lance lance) {
-        Rectangle2D fireBallBounds = fireBall.getBoundingBox();
-        Rectangle lanceBounds = lance.getLanceBounds();
-
-        if (fireBallBounds.intersects(lanceBounds)) { // fireball is intersecting the bounding box of the lance
-                try {
-                    Collision side = findCollisionSide(fireBall, lance.getActualHitbox());
-                    if (side == null) {
-                        return;
-                    }
-                    System.out.println(side);
-                    switch (side) {
-                        case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle());
-                        case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                                fireBall.handleCornerReflection(lance.getRotationAngle(), side);
-                    }
-                } catch (CollisionError ignored) {}
-        }
-    }
-
-    public static void checkFireBallBorderCollisions(FireBall fireBall, int frameWidth, int frameHeight) {
-        if (fireBall.getXPosition() <= 0 ||
-                fireBall.getXPosition() + fireBall.getSize() >= frameWidth) {
-            fireBall.bounceOffVerticalSurface();
-        }
-        if (fireBall.getYPosition() <= 0 ||
-                fireBall.getYPosition() + fireBall.getSize() >= frameHeight) {
-            fireBall.bounceOffHorizontalSurface();
-        }
-    }
-
-    public static Collision findCollisionSide(FireBall fireBall, Polygon hitBox) throws CollisionError {
+    private static Collision findCollisionSide(FireBall fireBall, Polygon hitBox) throws CollisionError {
         int[] xPoints = hitBox.xpoints;
         int[] yPoints = hitBox.ypoints;
         Point[] points = new Point[4];
@@ -181,92 +203,48 @@ public class CollisionHandler {
             points[i] = new Point(xPoints[i], yPoints[i]);
         }
 
-        int collision = 0;
-        if (fireballIntersectsLine(fireBall, points[0], points[1])) {
-            collision |= 0b0001;  // top segment
-        }
-        if (fireballIntersectsLine(fireBall, points[1], points[2])) {
-            collision |= 0b0010;  // right segment
-        }
-        if (fireballIntersectsLine(fireBall, points[2], points[3])) {
-            collision |= 0b0100; // bottom segment
-        }
-        if (fireballIntersectsLine(fireBall, points[3], points[0])) {
-            collision |= 0b1000;  // left segment
-        }
+        int collision = findCollisions(fireBall, points[0], points[1], points[2], points[3]);
 
-
-        return switch (collision) {
-            case 0b0000 -> // no collision
-                    null;
-            case 0b0001, 0b1011 -> // 1011 => top, left, right. Reduced to top case.
-                    Collision.TOP;
-            case 0b0010, 0b0111 -> // 0111 => top, right, bottom. Reduced to right case.
-                    Collision.RIGHT;
-            case 0b0100, 0b1110 -> // 1110 => left, right, bottom. Reduced to bottom case.
-                    Collision.BOTTOM;
-            case 0b1000, 0b1101 -> // 1101 => top, left, bottom. Reduced to left case.
-                    Collision.LEFT;
-            case 0b0011 -> Collision.TOP_RIGHT;
-            case 0b0110 -> Collision.BOTTOM_RIGHT;
-            case 0b1100 -> Collision.BOTTOM_LEFT;
-            case 0b1001 -> Collision.TOP_LEFT;
-            default -> // top and bottom; left and right; all 4 sides => should never happen
-                    throw new CollisionError("How did we get here?");
-        };
-
+        if (collision == 0) {
+            return null;
+        }
+        return getCollisionSide(collision);
     }
 
+    private static boolean boundingBoxCollision(FireBall fireBall, Entity entity) {
+        Rectangle2D fireballBounds = fireBall.getBoundingBox();
+        Rectangle2D entityBounds = entity.getBoundingBox();
+        return fireballBounds.intersects(entityBounds);
+    }
 
-}
+    private static Collision hitBoxCollision(FireBall fireball, Lance lance) throws CollisionError {
+        return findCollisionSide(fireball, lance.getActualHitbox());
+    }
 
+    private static Collision hitBoxCollision(FireBall fireball, Barrier barrier) throws CollisionError {
+        Point tl = new Point((int) barrier.getXPosition(), (int) barrier.getYPosition());
+        Point tr = new Point((int) (barrier.getXPosition() + barrier.getLength()), (int) barrier.getYPosition());
+        Point br = new Point((int) (barrier.getXPosition() + barrier.getLength()), (int) (barrier.getYPosition() + barrier.getThickness()));
+        Point bl = new Point((int) barrier.getXPosition(), (int) (barrier.getYPosition() + barrier.getThickness()));
 
-/*
-else if (actualEntity instanceof Ellipse2D circle) {
-            double fireBallCenterX = actualFireball.getCenterX();
-            double fireBallCenterY = actualFireball.getCenterY();
+        return getCollisionSide(findCollisions(fireball, tl, tr, br, bl));
+    }
 
-            double entityCenterX = circle.getCenterX();
-            double entityCenterY = circle.getCenterY();
-
-            double sumOfR = actualFireball.getWidth() / 2 + actualEntity.getWidth() / 2;
-            double distanceSquared = Math.pow(fireBallCenterX - entityCenterX, 2) + Math.pow(fireBallCenterY - entityCenterY, 2);
-            if (distanceSquared <= sumOfR * sumOfR) {
-                double angle = CollisionMath.getTangentAngle(fireBallCenterX, fireBallCenterY, actualFireball.getWidth() / 2,
-                        entityCenterX, entityCenterY, circle.getWidth() / 2);
-                // keeping it just to be safe
-                // exploding barrier is a rectangle bruh
-                if (angle < Math.PI / 8
-                        && angle >= -Math.PI / 8) {
-                    return Collision.RIGHT;
-                }
-                else if (angle < 3 * Math.PI / 8
-                        && angle >= Math.PI / 8) {
-                    return Collision.BOTTOM_RIGHT;
-                } else if (angle < -Math.PI / 8
-                        && angle >= -3 * Math.PI / 8){
-                    return Collision.TOP_RIGHT;
-                }
-                else if (angle < 5 * Math.PI / 8
-                        && angle >= 3 * Math.PI / 8) {
-                    return Collision.BOTTOM;
-                } else if (angle < -3 * Math.PI / 8
-                        && angle >= -5 * Math.PI / 8) {
-                    return Collision.TOP;
-                }
-                else if (angle < 7 * Math.PI / 8
-                        && angle >= 5 * Math.PI / 8) {
-                    return Collision.BOTTOM_LEFT;
-                } else if (angle < -5 * Math.PI / 8
-                        && angle >= -7 * Math.PI / 8) {
-                    return Collision.TOP_LEFT;
-                }
-                else if (angle < -7 * Math.PI / 8
-                        || angle >= 7 * Math.PI / 8) {
-                    return Collision.LEFT;
-                } else { // if we get here I quit
-                    throw new CollisionError("How did we get here?");
-                }
-            }
+    private static void resolveCollision(FireBall fireBall, Lance lance, Collision side) {
+        switch (side) {
+            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle());
+            case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
+                    fireBall.handleCornerReflection(lance.getRotationAngle(), side);
         }
- */
+    }
+
+    private static void resolveCollision(FireBall fireBall, Barrier barrier, Collision side) {
+        switch (side) {
+            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(0, barrier.getDirection());
+            case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
+                    fireBall.handleCornerReflection(0, barrier.getDirection(), side);
+        }
+
+        barrier.decreaseHealth();
+    }
+}

@@ -3,15 +3,13 @@ package tr.edu.ku.comp302.domain.entity;
 import java.awt.geom.Rectangle2D;
 
 public class Remain extends Entity{
-    
     private double speed = 1.5;     // TODO: Change speed
     private int size = 50;
-
+    private boolean isDropped = false;
 
     public Remain(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
-        actualShape = boundingBox;
     }
 
     public double getSpeed() {
@@ -22,18 +20,9 @@ public class Remain extends Entity{
         this.speed = speed;
     }
 
-    // TODO: collision with lance to be added
-
-    @Override
-    public void handleCollision(boolean isWall) {
-        System.out.println("Remains collided with lance");
-//        throw new UnsupportedOperationException("Unimplemented method 'handleCollision'");
-    }
-
     public void move() {
         yPosition += speed;
-        boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
-        actualShape = boundingBox;
+        boundingBox.setRect(xPosition, yPosition, size, size);
     }
 
     public int getSize() {
@@ -42,5 +31,13 @@ public class Remain extends Entity{
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public boolean isDropped() {
+        return isDropped;
+    }
+
+    public void drop() {
+        isDropped = true;
     }
 }

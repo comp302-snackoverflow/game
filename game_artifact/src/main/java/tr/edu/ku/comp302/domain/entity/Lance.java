@@ -4,22 +4,20 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.lang.Math.*;
 
 public class Lance extends Entity {
+    public static final double rotationSpeed = 20.0;
+    public static final double horizontalRecoverySpeed = 45.0;
     private double length;
     private double speedWithHold;
     private double speedWithTap;
     private double thickness;
     private short direction;
     private double rotationAngle;
-    public static final double rotationSpeed = 20.0;
-    public static final double horizontalRecoverySpeed = 45.0;
 
     public Lance(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
-        actualShape = boundingBox;
         direction = 0;
         length = LanceOfDestiny.getScreenWidth() / 10.;
         speedWithHold = 2 * length;
@@ -46,8 +44,9 @@ public class Lance extends Entity {
             incrementRotationAngle(degrees);
         }
     }
+
     // TODO: set bounding box in these methods
-    public void adjustPositionAndSize(int oldWidth, int oldHeight, int newWidth, int newHeight){
+    public void adjustPositionAndSize(int oldWidth, int oldHeight, int newWidth, int newHeight) {
         updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
         setLength(newWidth / 10.);      // changes other size-relative instances too.
     }
@@ -82,7 +81,6 @@ public class Lance extends Entity {
         speedWithHold = length * 2;
         speedWithTap = length;
         boundingBox.setRect(xPosition, yPosition, length, thickness);
-        actualShape = boundingBox;
     }
 
     public double getThickness() {
@@ -115,11 +113,6 @@ public class Lance extends Entity {
 
     public void setRotationAngle(double rotationAngle) {
         this.rotationAngle = rotationAngle;
-    }
-
-    // TODO: Implement collision for Lance
-    public void handleCollision(boolean isWall) {
-        // nothing happens
     }
 
     public void setDirection(int direction) {
@@ -159,8 +152,7 @@ public class Lance extends Entity {
             y3 = boundingY + thickness * Math.cos(B);
             x4 = boundingX + thickness * Math.abs(Math.sin(B));
             y4 = boundingY + n;
-        }
-        else {
+        } else {
             x1 = boundingX + thickness * Math.abs(Math.sin(B));
             y1 = boundingY;
             x2 = boundingX + m;
@@ -177,8 +169,8 @@ public class Lance extends Entity {
         return new Polygon(xPoints, yPoints, 4);
     }
 
-    public Rectangle getLanceBounds() {
-        return getActualHitbox().getBounds();
+    @Override
+    public Rectangle2D getBoundingBox() {
+        return getActualHitbox().getBounds2D();
     }
-
 }

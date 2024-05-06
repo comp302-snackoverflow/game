@@ -1,5 +1,7 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.Remain;
@@ -8,16 +10,14 @@ import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
-import tr.edu.ku.comp302.domain.handler.collision.CollisionError;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
-import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
-import tr.edu.ku.comp302.ui.view.RemainView;
 
 import java.awt.*;
+import java.util.List;
 
 public class LanceOfDestiny implements Runnable {
-    private static MainFrame mainFrame = MainFrame.createMainFrame();
+    private Logger logger = LogManager.getLogger(LanceOfDestiny.class);
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
@@ -40,7 +40,6 @@ public class LanceOfDestiny implements Runnable {
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
         levelHandler = levelPanel.getLevelHandler();    // TODO: Ğ
-        mainFrame = MainFrame.createMainFrame();
         levelPanel.requestFocusInWindow();
         currentGameState = GameState.PLAYING;   // for testing purposes.
         lastMoving = null;
@@ -73,16 +72,22 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void update(long currentTime){
-        while (deltaUpdate >= 1){
+        boolean recall = false;
+        if (deltaUpdate >= 1){
             handleGameLogic(currentTime);
             updates++;
             deltaUpdate--;
+            recall = true;
         }
-        while (deltaFrame >= 1){
+        if (deltaFrame >= 1){
             render();
             levelPanel.repaint();
             frames++;
             deltaFrame--;
+            recall = true;
+        }
+        if (recall) {
+            update(currentTime);
         }
     }
 
@@ -92,17 +97,17 @@ public class LanceOfDestiny implements Runnable {
         boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
         double holdSpeed = lance.getSpeedWithHold();
         double tapSpeed = lance.getSpeedWithTap();
-        handleLanceMovement(moveLeft, moveRight, arrowKeyPressTimes, currentTime, tapSpeed, holdSpeed, lanceMovementRemainder);
-
-        // TODO: check names
         boolean rotateCCW = KeyboardHandler.buttonAPressed && !KeyboardHandler.buttonDPressed;
         boolean rotateCW = KeyboardHandler.buttonDPressed && !KeyboardHandler.buttonAPressed;
+
+        handleLanceMovement(moveLeft, moveRight, arrowKeyPressTimes, currentTime, tapSpeed, holdSpeed, lanceMovementRemainder);
         handleRotationLogic(rotateCCW, -Lance.rotationSpeed);
         handleRotationLogic(rotateCW, Lance.rotationSpeed);
         handleSteadyStateLogic(!rotateCCW && !rotateCW, Lance.horizontalRecoverySpeed);
 
         handleFireballLogic();
-        handleBarriersMovement();
+
+        handleBarriersMovement(currentTime);
 
         handleCollisionLogic();
     }
@@ -219,42 +224,47 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleCollisionLogic() {
-        CollisionHandler.checkCollisions(levelHandler.getFireBall(), levelHandler.getLance());
+        CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
-        for (int i = 0; i < levelHandler.getBarriers().size(); i++) {
-            try {
-                if (CollisionHandler.testFireballBarrierOverlap(levelHandler.getFireBall(), levelHandler.getBarriers().get(i)) != null){
-                    levelHandler.getFireBall().handleReflection(0);
-                    levelHandler.getBarriers().get(i).handleCollision(false);
+
+        List<Barrier> barriers = levelHandler.getBarriers();
+        CollisionHandler.checkFireballBarriersCollisions(levelHandler.getFireBall(), barriers);
+
+        for (Barrier barrier : barriers.stream().toList()) {
+            if (barrier.isDead()) {
+                if (barrier instanceof ExplosiveBarrier b) {
+                    b.dropRemains();
                 }
-            } catch (CollisionError e) {
-                throw new RuntimeException(e);
-            }
-        }
-        //check if barrier is broken or not
-        for (int i = 0; i < levelHandler.getBarriers().size(); i++) {
-            if (levelHandler.getBarriers().get(i).isDead()) {
-                if(levelHandler.getBarriers().get(i) instanceof ExplosiveBarrier){
-                    Remain remain = ((ExplosiveBarrier)levelHandler.getBarriers().get(i)).dropRemains();
-                    levelHandler.getRemains().add(remain);
-                }
-                levelHandler.getBarriers().remove(i);
-                break;
+                barriers.remove(barrier);
             }
         }
     }
 
-    private void handleBarriersMovement() {
+    private void handleBarriersMovement(long currentTime) {
         // FIXME: @ayazici21 please fix the below errors tysm - Meric
         for(Barrier barrier : levelHandler.getBarriers()){
-            if(barrier.getMovementStrategy()!= null){
-                barrier.getMovementStrategy().checkCollision(levelHandler.getBarriers());   // TODO: Fix this issue
-                barrier.move();
+            if(barrier.getMovementStrategy() != null){
+                // If the barrier moved with 0.2 probability and stopped with 0.8, the barriers would stop a lot
+                // with 1s intervals. However, if they moved endlessly after rolling <= 0.2, a lot of them would
+                // start to move at the same time. So, I decided to increase testing time to 3s and also added
+                // stopping with 0.2 probability for moving barriers. This is of course subject to change.
+                if (!barrier.isMoving() && currentTime - barrier.getLastDiceRollTime() >= 3_000_000_000L) {
+                    barrier.tryMove(currentTime);
+                } else if (barrier.isMoving() && currentTime - barrier.getLastDiceRollTime() >= 3_000_000_000L) {
+                    barrier.tryStop(currentTime);
+                }
+                barrier.move(barrier.getSpeed() / UPS_SET);
+                barrier.handleCloseCalls(levelHandler.getBarriers());
             }
         }
 
-        for (Remain remain : levelHandler.getRemains()) {
+        List<Remain> remains = levelHandler.getRemains();
+        for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
+
             remain.move();
+            if (remain.getYPosition() > screenHeight) {
+                remains.remove(remain);
+            }
             //TODO: handle collision with lance, and also remove when it goes below the wall.
         }
     }

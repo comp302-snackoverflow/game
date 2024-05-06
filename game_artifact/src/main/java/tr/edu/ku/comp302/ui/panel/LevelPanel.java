@@ -37,16 +37,16 @@ public class LevelPanel extends JPanel {
                 (int) size.getWidth(), (int) size.getHeight());
         levelHandler.resizeFireBallImage();
 
-        /*
-        barriers.forEach(barrierView -> {
-            barrierView.getBarrier().setL(size.getWidth() / 10.0);
-            barrierView.setBarrierImage(ImageHandler.resizeImage(
-                    barrierView.getBarrierImage(),
-                    (int) barrierView.getBarrier().getLength(),
-                    (int) barrierView.getBarrier().getThickness()
-            ));
+        levelHandler.resizeBarrierImages();
+        levelHandler.getBarriers().forEach(barrier -> {
+            barrier.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
+                    (int) size.getWidth(), (int) size.getHeight());
         });
-         */
+
+        levelHandler.resizeRemainImage();
+        levelHandler.getRemains().forEach(remain ->
+            remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
+                    (int) size.getWidth(), (int) size.getHeight()));
     }
 
     public LevelHandler getLevelHandler() {
