@@ -34,6 +34,8 @@ public class MainFrame extends JFrame {
     private static final int frameWidth = 1280;
     private static final int frameHeight = 720;
 
+    LanceOfDestiny currentLanceOfDestiny = null;
+
     private MainFrame() {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
 
@@ -142,8 +144,13 @@ public class MainFrame extends JFrame {
         // TODO Level should be prepared here
 
         layout.show(cards, LEVEL);
+        levelPanel.requestFocus();
         refresh();
-        new LanceOfDestiny((LevelPanel) levelPanel);
+        //If a lanceof detiny object exist, do not create a new one!!!
+        if (currentLanceOfDestiny == null) {
+            currentLanceOfDestiny = new LanceOfDestiny((LevelPanel) levelPanel);
+        }
+        
     }
 
     public void showBuildPanel() {

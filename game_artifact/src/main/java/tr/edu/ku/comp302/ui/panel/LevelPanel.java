@@ -29,6 +29,7 @@ public class LevelPanel extends JPanel {
 
     private MainFrame mainFrame;
     private JButton pauseButton;
+    
 
     private List <RemainsView> remains = new ArrayList<>();
 
