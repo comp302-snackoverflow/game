@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 
+import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
@@ -90,10 +91,12 @@ public class LanceOfDestiny implements Runnable{
     // Copilot's thoughts about this function: "I'm not sure what you're trying to do here."
     // (It couldn't even suggest any reasonable code for this)
     private void handleLanceMovement(boolean leftPressed, boolean rightPressed, long[] keyPressTimes, long currentTime, double tapSpeed, double holdSpeed, double[] remainder) {
+        Lance lance = levelPanel.getLanceView().getLance();
         if (leftPressed != rightPressed) {
             int index = leftPressed ? 1 : 0;
             Character oldLastMoving = lastMoving;
             lastMoving = leftPressed ? 'l' : 'r';
+            lance.setDirection(leftPressed ? -1 : 1);
             if (tapMoving) {
                 tapMoving = false;
                 keyPressTimes[0] = 0;
@@ -117,7 +120,7 @@ public class LanceOfDestiny implements Runnable{
             double minMsToMove = minPx * 1000.0 / speed;
 
             if (elapsedMs >= minMsToMove){
-                levelPanel.getLanceView().getLance().updateXPosition(leftPressed ? -minPx : minPx);
+                lance.updateXPosition(minPx);
                 remainder[index] = elapsedMs - minMsToMove;
                 keyPressTimes[index] = System.nanoTime();
             }
@@ -131,6 +134,7 @@ public class LanceOfDestiny implements Runnable{
                 }
                 double tapTime = (currentTime - lastMovingTime) / 1_000_000.0;
                 if (tapTime >= 500) {
+                    lance.setDirection(0);
                     tapMoving = false;
                     lastMoving = null;
                     lastMovingTime = 0;
@@ -142,7 +146,7 @@ public class LanceOfDestiny implements Runnable{
                     int minPx = calculateMinIntegerPxMovement(tapSpeed);
                     double minMsToMove = minPx * 1000. / tapSpeed;
                     if (elapsedMs >= minMsToMove) {
-                        levelPanel.getLanceView().getLance().updateXPosition(lastMoving == 'l' ? -minPx : minPx);
+                        lance.updateXPosition(minPx);
                         remainder[index] = elapsedMs - minMsToMove;
                         keyPressTimes[index] = System.nanoTime();
                     }

@@ -15,6 +15,7 @@ public class Lance extends Entity{
 
     private double speedWithHold;
     private double speedWithTap;
+    private short direction;
 
     private double rotationAngle;
     public static final double rotationSpeed = 20.0;
@@ -24,7 +25,8 @@ public class Lance extends Entity{
         super(xPosition, yPosition, screenWidth, screenHeight);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
         actualShape = boundingBox;
-        System.out.println(xPosition);
+        direction = 0;
+        //System.out.println(xPosition);
     }
 
     public void incrementRotationAngle(double degrees){
@@ -57,8 +59,8 @@ public class Lance extends Entity{
 
 
     public void updateXPosition(int updateVal){
-        xPosition += updateVal;
-        System.out.println(xPosition);
+        xPosition += updateVal * direction;
+        //System.out.println(xPosition);
     }
 
     public void updateYPosition(int updateVal){
@@ -130,6 +132,13 @@ public class Lance extends Entity{
 
     public short getDirection() {
         return direction;
+    }
+
+    public void setDirection(int direction) {
+        if (direction > 1 || direction < -1) {
+            throw new IllegalArgumentException("Direction can be -1 for left, 0 for no movement, 1 for right");
+        }
+        this.direction = (short) direction;
     }
 
     // TODO: FINISH THIS METHOD
