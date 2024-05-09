@@ -120,10 +120,13 @@ public class CollisionHandler {
         double x = fireball.getXPosition();
         double y = fireball.getYPosition();
         double size = fireball.getSize();
-
+        // finding the coordinates of the center of the fireball
         double centerX = x + size;
         double centerY = y + size;
 
+        // triangle area equals height (distance) times base over two,
+        // distance equals 2 times area over base
+        // area is solely found with the coordinates of the three corners
         double minDistance = 2 * CollisionMath.triangleArea(x1, y1, x2, y2, centerX, centerY) / CollisionMath.lineLength(x1, y1, x2, y2);
         return minDistance <= size;
     }
@@ -132,10 +135,13 @@ public class CollisionHandler {
         double x = fireball.getXPosition();
         double y = fireball.getYPosition();
         double radius = (double) fireball.getSize() / 2;
-
+        // finding the coordinates of the center of the fireball
         double centerX = x + radius;
         double centerY = y + radius;
 
+        // triangle area equals height (distance) times base over two,
+        // distance equals 2 times area over base
+        // area is solely found with the coordinates of the three corners
         double minDistance = 2 * CollisionMath.triangleArea(p1.x, p1.y, p2.x, p2.y, centerX, centerY) / CollisionMath.lineLength(p1.x, p1.y, p2.x, p2.y);
         return minDistance <= radius;
     }
@@ -149,9 +155,10 @@ public class CollisionHandler {
         if (fireBallBounds.intersects(lanceBounds)) { // fireball is intersecting the bounding box of the lance
                 try {
                     Collision side = findCollisionSide(fireBall, lance.getActualHitbox());
-                    if (side == null) {
+                    if (side == null) { // fireball is not intersecting the actual shape of the lance
                         return;
                     }
+                    // uncomment for easier debugging regarding side detection
                     System.out.println(side);
                     switch (side) {
                         case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle(), lance.getDirection());
@@ -164,10 +171,12 @@ public class CollisionHandler {
 
     public static void checkFireBallBorderCollisions(FireBallView fireBallView, int frameWidth, int frameHeight) {
 
+        // bounce off of vertical sides when fireball touches left or right side of the frame
         if (fireBallView.getFireBall().getXPosition() <= 0 ||
                 fireBallView.getFireBall().getXPosition() + fireBallView.getFireBall().getSize() >= frameWidth) {
             fireBallView.getFireBall().bounceOffVerticalSurface();
         }
+        // bounce off of horizontal sides when fireball touches top or bottom side of the frame
         if (fireBallView.getFireBall().getYPosition() <= 0 ||
                 fireBallView.getFireBall().getYPosition() + fireBallView.getFireBall().getSize() >= frameHeight) {
             fireBallView.getFireBall().bounceOffHorizontalSurface();
@@ -175,6 +184,7 @@ public class CollisionHandler {
     }
 
     public static Collision findCollisionSide(FireBall fireBall, Polygon hitBox) throws CollisionError {
+        // setting up an array of Points of the actual shape of the lance
         int[] xPoints = hitBox.xpoints;
         int[] yPoints = hitBox.ypoints;
         Point[] points = new Point[4];
@@ -182,6 +192,7 @@ public class CollisionHandler {
             points[i] = new Point(xPoints[i], yPoints[i]);
         }
 
+        // first point is the top left corner, and rest of them are in clock-wise order
         int collision = 0;
         if (fireballIntersectsLine(fireBall, points[0], points[1])) {
             collision |= 0b0001;  // top segment
