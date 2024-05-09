@@ -22,9 +22,18 @@ public class LanceView {
         g2d.rotate(rotationAngle, lance.getXPosition() + lance.getLength() / 2.0, lance.getYPosition() + lance.getThickness() / 2.0);
         g2d.drawImage(lanceImage, (int) lance.getXPosition(), (int) lance.getYPosition(), null);
         g2d.setTransform(oldTransform);    // Reset transformation to prevent unintended rotations.
-        // uncomment the below two lines to see Lance Hit Box and Lance Bounding Box
+
+        // uncomment the below two lines to draw Lance Hitbox and Lance Bounding Box
+
         g2d.drawPolygon(lance.getActualHitbox());
         ((Graphics2D) g).draw(lance.getLanceBounds());
+
+        // uncomment below lines to draw a desired Side Line of the Lance Hitbox
+        // change the indexes for different sides
+        // index zero is the top left corner, rest of them are in clock-wise order
+
+        //g.drawLine(lance.getActualHitbox().xpoints[0], lance.getActualHitbox().ypoints[0],
+        //        lance.getActualHitbox().xpoints[3], lance.getActualHitbox().ypoints[3]);
     }
 
     public void rotateLance(double degrees){
