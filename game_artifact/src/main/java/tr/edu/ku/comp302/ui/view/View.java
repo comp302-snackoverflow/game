@@ -12,7 +12,7 @@ public class View {
         FIRM_BARRIER,
         EXPLOSIVE_BARRIER,
         REMAIN,
-        GIFTING_BARRIER,
+        GIFT_BARRIER,
         LANCE_EXTENSION,
         MISSING_TEXTURE,
     }
@@ -23,7 +23,7 @@ public class View {
     public static final Type FIRM_BARRIER = Type.FIRM_BARRIER;
     public static final Type EXPLOSIVE_BARRIER = Type.EXPLOSIVE_BARRIER;
     public static final Type REMAIN = Type.REMAIN;
-    public static final Type GIFTING_BARRIER = Type.GIFTING_BARRIER;
+    public static final Type GIFT_BARRIER = Type.GIFT_BARRIER;
     public static final Type LANCE_EXTENSION = Type.LANCE_EXTENSION;
     public static final Type MISSING_TEXTURE = Type.MISSING_TEXTURE;
 
@@ -62,7 +62,7 @@ public class View {
             case FIRM_BARRIER -> new View(FIRM_BARRIER_IMAGE_PATH);
             case EXPLOSIVE_BARRIER -> new View(EXPLOSIVE_BARRIER_IMAGE_PATH);
             case REMAIN -> new View(REMAIN_IMAGE_PATH);
-            case GIFTING_BARRIER -> new View(GIFTING_BARRIER_IMAGE_PATH);
+            case GIFT_BARRIER -> new View(GIFTING_BARRIER_IMAGE_PATH);
             case LANCE_EXTENSION -> new View(LANCE_EXTENSION_IMAGE_PATH);
             case MISSING_TEXTURE -> new View(MISSING_TEXTURE_IMAGE_PATH);
         };

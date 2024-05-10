@@ -10,10 +10,21 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class BuildHandler {
+
+    public enum BarrierType{
+        SIMPLE_BARRIER,
+        EXPLOSIVE_BARRIER,
+        FIRM_BARRIER,
+        GIFT_BARRIER,
+        EMPTY_BARRIER
+    }
+
+    private BarrierType[][] barriersOnMap = new BarrierType[25][6];
     private List<Double> xIndices;
     private List<Double> yIndices;
     private List<Barrier> barriers;
@@ -38,12 +49,39 @@ public class BuildHandler {
     public BuildHandler(BuildPanel panel) {
         xIndices = new ArrayList<>();
         yIndices = new ArrayList<>();
+        clearGrid();
+
         panel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 calculateIndices(e.getComponent().getWidth(), e.getComponent().getHeight());
             }
         });
+    }
+
+    public void reconfigureGrid(int rowNum, int colNum){
+        BarrierType[][] reconfiguredBarriers = new BarrierType[rowNum][colNum];
+        for (int i = 0; i < Math.min(barriersOnMap.length, reconfiguredBarriers.length); i++){
+            System.arraycopy(barriersOnMap[i], 0, reconfiguredBarriers[i], 0, Math.min(barriersOnMap[i].length, colNum));
+        }
+        barriersOnMap = reconfiguredBarriers;
+        fillNullGridsWithFlag();
+
+    }
+    private void clearGrid(){
+        for (BarrierType[] barrierTypesRow : barriersOnMap) {
+            Arrays.fill(barrierTypesRow, BarrierType.EMPTY_BARRIER);
+        }
+    }
+
+    private void fillNullGridsWithFlag(){
+        for (int i = 0; i < barriersOnMap.length; i++) {
+            for (int j = 0; j < barriersOnMap[i].length; j++) {
+                if (barriersOnMap[i][j] == null) {
+                    barriersOnMap[i][j] = BarrierType.EMPTY_BARRIER;
+                }
+            }
+        }
     }
 
     public void countBarriers(List<Barrier> barriers) {
@@ -79,7 +117,6 @@ public class BuildHandler {
     }
 
     private void paintGrid(Graphics g, int panelWidth, int panelHeight) {
-        double x_start= panelWidth/52;
         int yEnd = panelHeight >> 1;
 
         g.setColor(Color.BLACK);
@@ -94,10 +131,8 @@ public class BuildHandler {
             yIndices.add(y);
         }
         // removed the last indices so that the generated barriers do not go out of bounds.
-        xIndices.removeLast();
-        yIndices.removeLast();
-
-
+        xIndices.remove(xIndices.size() - 1);
+        yIndices.remove(xIndices.size() - 1);
     }
 
 
@@ -126,12 +161,13 @@ public class BuildHandler {
         }
 
         Collections.shuffle(barriersToAdd);
-
     }
 
     public void saveMap() {}
 
-    public void clearMap() {}
+    public void clearMap() {
+
+    }
 
     public void handlePress(int x, int y) {}
 
