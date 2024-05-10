@@ -166,7 +166,7 @@ public class BuildHandler {
     public void saveMap() {}
 
     public void clearMap() {
-
+        clearGrid();
     }
 
     public void handlePress(int x, int y) {}
