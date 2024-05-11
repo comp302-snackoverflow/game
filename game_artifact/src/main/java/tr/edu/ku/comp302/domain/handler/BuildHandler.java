@@ -8,6 +8,7 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import tr.edu.ku.comp302.ui.view.View;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -17,6 +18,13 @@ import java.util.List;
 
 public class BuildHandler {
 
+    public enum BarrierType{
+        SIMPLE_BARRIER,
+        EXPLOSIVE_BARRIER,
+        FIRM_BARRIER,
+        GIFT_BARRIER
+    }
+
     private List<Barrier> barriersOnMap = new ArrayList<>();
     private int simpleBarrierCount;
     private int firmBarrierCount;
@@ -24,6 +32,7 @@ public class BuildHandler {
     private int giftBarrierCount;
     private int selectionMode;
     private BuildPanel buildPanel;
+
     private BarrierRenderer barrierRenderer = new BarrierRenderer();
 
     public static final int DELETE_MODE = -1;
@@ -79,20 +88,79 @@ public class BuildHandler {
          */
     }
 
+    private void paintBuildingSection(int panelWidth, int panelHeight){
+
+    }
+
     public void setSelection(int mode) {
         selectionMode = mode;
     }
 
 
     public void generateRandomMap(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
+        clearMap();
+        JPanel buildSection = buildPanel.getBuildSection();
+        double scaleH = (double) buildSection.getHeight() / LanceOfDestiny.getScreenHeight();
+        double barrierThickness = scaleH * 20.;
+        double barrierWidth = buildSection.getWidth() / 50.;
+        SecureRandom secureRandom = new SecureRandom();
 
+        for (int i = 0; i < simpleBarrierCount; i++) {
+            generateRandomBarrier(barrierWidth, barrierThickness, BarrierType.SIMPLE_BARRIER, secureRandom);
+        }
+        for (int i = 0; i < firmBarrierCount; i++) {
+            generateRandomBarrier(barrierWidth, barrierThickness, BarrierType.FIRM_BARRIER, secureRandom);
+        }
+        for (int i = 0; i < explosiveBarrierCount; i++) {
+            generateRandomBarrier(barrierWidth, barrierThickness, BarrierType.EXPLOSIVE_BARRIER, secureRandom);
+        }
+        for (int i = 0; i < giftBarrierCount; i++) {
+            generateRandomBarrier(barrierWidth, barrierThickness, BarrierType.GIFT_BARRIER, secureRandom);
+        }
+        countBarriers(barriersOnMap);
+    }
+
+
+
+    private void generateRandomBarrier(double barrierWidth, double barrierThickness, BarrierType barrierType, SecureRandom secureRandom){
+        int buildSectionWidth = buildPanel.getBuildSection().getWidth();
+        int buildSectionHeight = buildPanel.getBuildSection().getHeight();
+        boolean collided;
+        int x, y;
+        Barrier randomBarrier;
+        do{
+            x = secureRandom.nextInt(buildSectionWidth - (int) barrierWidth);
+            y = secureRandom.nextInt(buildSectionHeight - (int) barrierThickness);
+            randomBarrier = createBarrier(barrierType, x, y, barrierWidth, barrierThickness);
+            collided = checkBarrierCollisionWithBarriers(randomBarrier);
+        }while(collided);
+        barriersOnMap.add(randomBarrier);
+
+    }
+
+    private Barrier createBarrier(BarrierType barrierType, int x, int y, double barrierWidth, double barrierThickness){
+        Barrier barrier;
+        switch (barrierType) {
+            case SIMPLE_BARRIER -> barrier = new SimpleBarrier(x, y);
+            case FIRM_BARRIER -> barrier = new FirmBarrier(x, y);
+            case EXPLOSIVE_BARRIER -> barrier = new ExplosiveBarrier(x, y);
+            // case GIFT_BARRIER -> barrier = new GiftBarrier(x, y, barrierWidth, barrierThickness);
+            default -> barrier = new SimpleBarrier(x, y);
+        }
+        barrier.setLength(barrierWidth);
+        barrier.setThickness(barrierThickness);
+        return barrier;
     }
 
     public void saveMap() {}
 
     public void clearMap() {
         barriersOnMap.clear();
-        // TODO: Repaint
+        simpleBarrierCount = 0;
+        firmBarrierCount = 0;
+        giftBarrierCount = 0;
+        explosiveBarrierCount = 0;
+        buildPanel.repaint();
     }
 
     public void handlePress(int x, int y) {}
@@ -100,4 +168,13 @@ public class BuildHandler {
     public void handleMouseDrag(int x, int y) {}
 
     public void handleMouseMove(int x, int y) {}
+
+    public boolean checkBarrierCollisionWithBarriers(Barrier barrier){
+        // TODO: Implement this using barriersOnMap
+        return false;
+    }
+    private boolean checkBarrierCollision(Barrier b1, Barrier b2){
+        // TODO: Implement this
+        return false;
+    }
 }

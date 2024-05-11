@@ -52,6 +52,10 @@ public abstract class Barrier extends Entity {
         return thickness;
     }
 
+    public void setThickness(double thickness) {
+        this.thickness = thickness;
+    }
+
     public int getHealth() {
         return health;
     }
