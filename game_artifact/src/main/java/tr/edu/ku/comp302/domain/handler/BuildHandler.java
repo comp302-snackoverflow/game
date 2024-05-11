@@ -9,6 +9,7 @@ import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +32,7 @@ public class BuildHandler {
     private int simpleBarrierCount;
     private int firmBarrierCount;
     private int explosiveBarrierCount;
-    private int giftingBarrierCount;
+    private int giftBarrierCount;
     private int panelWidth;
     private int panelHeight;
     private int selectionMode;
@@ -66,7 +67,6 @@ public class BuildHandler {
         }
         barriersOnMap = reconfiguredBarriers;
         fillNullGridsWithFlag();
-
     }
     private void clearGrid(){
         for (BarrierType[] barrierTypesRow : barriersOnMap) {
@@ -84,11 +84,34 @@ public class BuildHandler {
         }
     }
 
+    public void countBarriers(){
+        for (BarrierType[] row : barriersOnMap) {
+            for (BarrierType barrier : row) {
+                switch (barrier) {
+                    case SIMPLE_BARRIER:
+                        simpleBarrierCount++;
+                        break;
+                    case FIRM_BARRIER:
+                        firmBarrierCount++;
+                        break;
+                    case EXPLOSIVE_BARRIER:
+                        explosiveBarrierCount++;
+                        break;
+                    case GIFT_BARRIER:
+                        giftBarrierCount++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    @Deprecated(forRemoval = true)
     public void countBarriers(List<Barrier> barriers) {
         simpleBarrierCount = 0;
         firmBarrierCount = 0;
         explosiveBarrierCount = 0;
-        giftingBarrierCount = 0;
+        giftBarrierCount = 0;
 
         for (Barrier barrier : barriers) {
             switch (barrier) {
@@ -141,26 +164,38 @@ public class BuildHandler {
     }
 
 
-    public void generateRandomMap(int simpleCount, int firmCount, int explosiveCount, int giftingCount) {
-        List<Integer> barriersToAdd = new ArrayList<>(simpleCount + firmCount + explosiveCount + giftingCount);
+    public void generateRandomMap(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
+        clearGrid();    // Clear the existing map
 
-        for (int i = 0; i < simpleCount; i++) {
-            barriersToAdd.add(SIMPLE_MODE); // I know this is not for this purpose. But whatever, it will work
+        SecureRandom secureRandom = new SecureRandom();
+
+        int totalCells = barriersOnMap.length * barriersOnMap[0].length;
+        int totalBarriers = simpleBarrierCount + firmBarrierCount + explosiveBarrierCount + giftBarrierCount;
+        if (totalBarriers > totalCells){
+            // TODO: Add logger in here.
+            return;
         }
-
-        for (int i = 0; i < firmCount; i++) {
-            barriersToAdd.add(FIRM_MODE);
+        for (int i = 0; i < simpleBarrierCount; i++) {
+            placeBarrierRandomly(BarrierType.SIMPLE_BARRIER, secureRandom);
         }
-
-        for (int i = 0; i < explosiveCount; i++) {
-            barriersToAdd.add(EXPLOSIVE_MODE);
+        for (int i = 0; i < firmBarrierCount; i++) {
+            placeBarrierRandomly(BarrierType.FIRM_BARRIER, secureRandom);
         }
-
-        for (int i = 0; i < giftingCount; i++) {
-            barriersToAdd.add(GIFT_MODE);
+        for (int i = 0; i < explosiveBarrierCount; i++) {
+            placeBarrierRandomly(BarrierType.EXPLOSIVE_BARRIER, secureRandom);
         }
+        for (int i = 0; i < giftBarrierCount; i++) {
+            placeBarrierRandomly(BarrierType.GIFT_BARRIER, secureRandom);
+        }
+    }
 
-        Collections.shuffle(barriersToAdd);
+    private void placeBarrierRandomly(BarrierType barrierType, SecureRandom secureRandom) {
+        int x, y;
+        do {
+            x = secureRandom.nextInt(barriersOnMap.length);
+            y = secureRandom.nextInt(barriersOnMap[0].length);
+        } while (barriersOnMap[x][y] != BarrierType.EMPTY_BARRIER);
+        barriersOnMap[x][y] = barrierType;
     }
 
     public void saveMap() {}
