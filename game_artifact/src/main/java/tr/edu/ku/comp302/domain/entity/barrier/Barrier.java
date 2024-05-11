@@ -54,6 +54,7 @@ public abstract class Barrier extends Entity {
 
     public void setThickness(double thickness) {
         this.thickness = thickness;
+        boundingBox.setRect(xPosition, yPosition, length, thickness);
     }
 
     public int getHealth() {
