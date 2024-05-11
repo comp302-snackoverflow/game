@@ -100,29 +100,27 @@ public class BuildHandler {
     public void generateRandomMap(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
         clearMap();
         JPanel buildSection = buildPanel.getBuildSection();
-        double scaleH = (double) buildSection.getHeight() / LanceOfDestiny.getScreenHeight();
-        double barrierThickness = scaleH * 20.;
         double barrierWidth = buildSection.getWidth() / 50.;
         SecureRandom secureRandom = new SecureRandom();
 
         for (int i = 0; i < simpleBarrierCount; i++) {
-            generateRandomBarrier(barrierWidth, barrierThickness, BarrierType.SIMPLE_BARRIER, secureRandom);
+            generateRandomBarrier(barrierWidth, BarrierType.SIMPLE_BARRIER, secureRandom);
         }
         for (int i = 0; i < firmBarrierCount; i++) {
-            generateRandomBarrier(barrierWidth, barrierThickness, BarrierType.FIRM_BARRIER, secureRandom);
+            generateRandomBarrier(barrierWidth, BarrierType.FIRM_BARRIER, secureRandom);
         }
         for (int i = 0; i < explosiveBarrierCount; i++) {
-            generateRandomBarrier(barrierWidth, barrierThickness, BarrierType.EXPLOSIVE_BARRIER, secureRandom);
+            generateRandomBarrier(barrierWidth, BarrierType.EXPLOSIVE_BARRIER, secureRandom);
         }
         for (int i = 0; i < giftBarrierCount; i++) {
-            generateRandomBarrier(barrierWidth, barrierThickness, BarrierType.GIFT_BARRIER, secureRandom);
+            generateRandomBarrier(barrierWidth, BarrierType.GIFT_BARRIER, secureRandom);
         }
         countBarriers(barriersOnMap);
     }
 
 
 
-    private void generateRandomBarrier(double barrierWidth, double barrierThickness, BarrierType barrierType, SecureRandom secureRandom){
+    private void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom){
         int buildSectionWidth = buildPanel.getBuildSection().getWidth();
         int buildSectionHeight = buildPanel.getBuildSection().getHeight();
         boolean collided;
@@ -130,25 +128,24 @@ public class BuildHandler {
         Barrier randomBarrier;
         do{
             x = secureRandom.nextInt(buildSectionWidth - (int) barrierWidth);
-            y = secureRandom.nextInt(buildSectionHeight - (int) barrierThickness);
-            randomBarrier = createBarrier(barrierType, x, y, barrierWidth, barrierThickness);
+            y = secureRandom.nextInt(buildSectionHeight - (int) 20.);
+            randomBarrier = createBarrier(barrierType, x, y, barrierWidth);
             collided = checkBarrierCollisionWithBarriers(randomBarrier);
         }while(collided);
         barriersOnMap.add(randomBarrier);
 
     }
 
-    private Barrier createBarrier(BarrierType barrierType, int x, int y, double barrierWidth, double barrierThickness){
+    private Barrier createBarrier(BarrierType barrierType, int x, int y, double barrierWidth){
         Barrier barrier;
         switch (barrierType) {
             case SIMPLE_BARRIER -> barrier = new SimpleBarrier(x, y);
             case FIRM_BARRIER -> barrier = new FirmBarrier(x, y);
             case EXPLOSIVE_BARRIER -> barrier = new ExplosiveBarrier(x, y);
-            // case GIFT_BARRIER -> barrier = new GiftBarrier(x, y, barrierWidth, barrierThickness);
+            // case GIFT_BARRIER -> barrier = new GiftBarrier(x, y);
             default -> barrier = new SimpleBarrier(x, y);
         }
         barrier.setLength(barrierWidth);
-        barrier.setThickness(barrierThickness);
         return barrier;
     }
 
