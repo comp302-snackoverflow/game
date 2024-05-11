@@ -19,9 +19,7 @@ import java.util.List;
 public class LevelHandler {
     private static final View fireBallView = View.of(View.FIREBALL);
     private static final View lanceView = View.of(View.LANCE);
-    private static final View simpleBarrierView = View.of(View.SIMPLE_BARRIER);
-    private static final View firmBarrierView = View.of(View.FIRM_BARRIER);
-    private static final View explosiveBarrierView = View.of(View.EXPLOSIVE_BARRIER);
+    private BarrierRenderer barrierRenderer = new BarrierRenderer();
     private static final View remainView = View.of(View.REMAIN);
     private final Logger logger = LogManager.getLogger(LevelHandler.class);
     private Level level;
@@ -42,14 +40,7 @@ public class LevelHandler {
     }
 
     public void resizeBarrierImages() {
-        if (!getBarriers().isEmpty()) {
-            Barrier b = getBarriers().getFirst();
-            int length = (int) b.getLength();
-            int thickness = (int) b.getThickness();
-            simpleBarrierView.resizeImage(length, thickness);
-            firmBarrierView.resizeImage(length, thickness);
-            explosiveBarrierView.resizeImage(length, thickness);
-        }
+        barrierRenderer.resizeBarrierImages(getBarriers());
     }
 
     public void resizeRemainImage() {
@@ -82,40 +73,7 @@ public class LevelHandler {
 
 
     public void renderBarriers(Graphics g) {
-        List<Barrier> barriers = level.getBarriers();
-        for (Barrier barrier : barriers) {
-            renderBarrier(g, barrier);
-        }
-    }
-
-    private void renderBarrier(Graphics g, Barrier barrier) {
-        var image = switch (barrier) {
-            case SimpleBarrier ignored -> simpleBarrierView.getImage();
-            case FirmBarrier ignored -> {
-                renderFirmBarrier(g, barrier);
-                yield null;
-            }
-            case ExplosiveBarrier ignored -> explosiveBarrierView.getImage();
-            case Barrier ignored -> {
-                logger.warn("renderBarrier: Unknown barrier type");
-                yield View.of(View.MISSING_TEXTURE) // I hope this works
-                          .resizeImage((int) barrier.getLength(), (int) barrier.getThickness());
-            }
-        };
-
-        if (image != null) {
-            g.drawImage(image, (int) barrier.getXPosition(), (int) barrier.getYPosition(), null);
-        }
-    }
-
-    private void renderFirmBarrier(Graphics g, Barrier barrier) {
-        g.drawImage(firmBarrierView.getImage(), (int) barrier.getXPosition(), (int) barrier.getYPosition(), null);
-        int health = barrier.getHealth();
-        int textX = (int) barrier.getXPosition() + firmBarrierView.getImage().getWidth(null) / 2;
-        int textY = (int) barrier.getYPosition() - 3; // 3 pixels above the barrier
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.BOLD, 8));
-        g.drawString(String.valueOf(health), textX, textY);
+        barrierRenderer.renderBarriers(g, getBarriers());
     }
 
     public void renderRemains(Graphics g) {
