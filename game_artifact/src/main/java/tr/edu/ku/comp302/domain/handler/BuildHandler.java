@@ -167,11 +167,14 @@ public class BuildHandler {
     public void handleMouseMove(int x, int y) {}
 
     public boolean checkBarrierCollisionWithBarriers(Barrier barrier){
-        // TODO: Implement this using barriersOnMap
+        for (Barrier b : barriersOnMap) {
+            if (b != barrier && checkBarrierCollision(b, barrier)) {
+                return true;
+            }
+        }
         return false;
     }
     private boolean checkBarrierCollision(Barrier b1, Barrier b2){
-        // TODO: Implement this
-        return false;
+        return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
 }
