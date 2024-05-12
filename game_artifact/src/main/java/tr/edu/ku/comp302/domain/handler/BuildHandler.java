@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,9 +84,13 @@ public class BuildHandler {
 
 
     public void paintPanel(Graphics g, int panelWidth, int panelHeight) {
-        /*
-        TODO:
-         */
+        double lanceLength = panelWidth / 10.;
+        barrierRenderer.resizeBarrierImages(barriersOnMap);
+        barrierRenderer.renderBarriers(g, barriersOnMap);
+        BufferedImage lanceImage = View.of(View.LANCE).getImage();
+        int lanceXPos = (int) (panelWidth - lanceLength) / 2;
+        int lanceYPos = panelHeight * 6 / 8;
+        g.drawImage(ImageHandler.resizeImage(lanceImage, (int) lanceLength, 20), lanceXPos, lanceYPos, null);
     }
 
     private void paintBuildingSection(int panelWidth, int panelHeight){
@@ -122,7 +127,7 @@ public class BuildHandler {
 
     private void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom){
         int buildSectionWidth = buildPanel.getBuildSection().getWidth();
-        int buildSectionHeight = buildPanel.getBuildSection().getHeight();
+        int buildSectionHeight = buildPanel.getBuildSection().getHeight() * 5 / 8; // TODO: Change ratio later to a constant value
         boolean collided;
         int x, y;
         Barrier randomBarrier;
