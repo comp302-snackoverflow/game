@@ -90,7 +90,6 @@ public class MainFrame extends JFrame {
     private void prepareBuildPanel() {
         buildPanel = new BuildPanel(this);
         buildPanel.repaint();
-        buildPanel.setLayout(null);
         buildPanel.requestFocusInWindow();
     }
 
