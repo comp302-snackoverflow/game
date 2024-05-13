@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 
+
 public class LevelHandler {
     private static final View fireBallView = View.of(View.FIREBALL);
     private static final View lanceView = View.of(View.LANCE);
@@ -24,6 +25,11 @@ public class LevelHandler {
     private final Logger logger = LogManager.getLogger(LevelHandler.class);
     private Level level;
 
+    /**
+     * Handling the render of the views of the objects of the level instance.
+     * (Use this with your own risk!!!)
+     * @param level
+     */
     public LevelHandler(Level level) {
         this.level = level;
     }
@@ -76,9 +82,25 @@ public class LevelHandler {
         barrierRenderer.renderBarriers(g, getBarriers());
     }
 
+    /**
+     * Renders the remains of destroyed ExplosiveBarriers on the game screen.
+     * Retrieves the remains from the current level and renders them if they are marked as dropped.
+     * 
+     * @param g The Graphics object used for rendering.
+     * 
+     * @see Level
+     * @see Remain
+     * @see Barrier
+     * @see ExplosiveBarrier
+     */
     public void renderRemains(Graphics g) {
+        // Retrieve the remains from the current level
         List<Remain> remains = level.getRemains();
+        
+        // Output the number of remains for debugging purposes
         System.out.println(remains.size());
+        
+        // Iterate through the remains and render those that are marked as dropped
         for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
             renderRemainView(g, remain);
         }

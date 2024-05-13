@@ -12,7 +12,7 @@ import java.util.Map;
 public class App {
     public static void main(String[] args) {
         MainFrame frame = MainFrame.createMainFrame();
-        frame.showLevelPanel();
+        frame.showMainMenuPanel();
         frame.setVisible(true);
     }
 

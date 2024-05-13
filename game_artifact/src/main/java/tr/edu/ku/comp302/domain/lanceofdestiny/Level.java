@@ -16,17 +16,40 @@ public class Level {
     private List<Remain> remains;
     private static List<Level> levels = new ArrayList<>();
 
+
+
+    /**
+     * This class represents level information in the game.
+     * It holds the objects that are present in the level.
+     *
+     * @param lance     The lance object in the level.
+     * @param fireBall  The fireball object in the level.
+     * @param barriers  The list of barriers present in the level.
+     * 
+     * @see Lance
+     * @see FireBall
+     * @see Barrier
+     * @see ExplosiveBarrier
+     */
     public Level(Lance lance, FireBall fireBall, List<Barrier> barriers) {
+        // Initialize the lance, fireball, and barriers for the level
         this.lance = lance;
         this.fireBall = fireBall;
         this.barriers = barriers;
+        
+        // Initialize the list of remains for ExplosiveBarriers
         this.remains = new ArrayList<>();
 
+        // Iterate through barriers to extract remains from ExplosiveBarriers
         for (Barrier barrier : barriers) {
-            if (barrier instanceof ExplosiveBarrier b) {
-                remains.add(b.getRemain());
+            // If the barrier is an ExplosiveBarrier, add its remain to the list
+            if (barrier instanceof ExplosiveBarrier) {
+                ExplosiveBarrier explosiveBarrier = (ExplosiveBarrier) barrier;
+                remains.add(explosiveBarrier.getRemain());
             }
         }
+
+        // Add this level instance to the levels list
         levels.add(this);
     }
 

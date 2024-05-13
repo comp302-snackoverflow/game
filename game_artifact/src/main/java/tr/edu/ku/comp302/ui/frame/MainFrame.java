@@ -65,23 +65,40 @@ public class MainFrame extends JFrame {
         mainMenuPanel.setBounds(0, 11, 804, 781);
     }
 
+
+
+    /**
+     * Prepares the level panel by initializing the game elements and setting up the level.
+     * 
+     * @see Lance
+     * @see FireBall
+     * @see App
+     * @see Level
+     * @see LevelPanel
+     * @see LevelHandler
+     */
     private void prepareLevelPanel() {
+        // Initialize Lance and FireBall objects
         Lance lance = new Lance(576, 600);
         FireBall fb = new FireBall(600, 560);
+
+        // Generate barriers using the App class
         var barriers = App.generateBarriers(LanceOfDestiny.getScreenWidth(),
                 LanceOfDestiny.getScreenHeight(), new BuildPanelModel());
 
+        // Create a new level with the initialized objects
         Level level = new Level(lance, fb, barriers);
+
+        // Create a new LevelPanel with the LevelHandler
         levelPanel = new LevelPanel(new LevelHandler(level));
-        // levelPanel = new LevelPanel(level, lv); TODO: FIX THIS
+
+        // TODO: Investigate and fix the following lines
+        // levelPanel = new LevelPanel(level, lv); // FIX THIS
         // levelPanel = new LevelPanel(level, lv,
-        // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)));
-        // TODO: FIX THIS AS WELL
+        // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight))); // FIX THIS AS WELL
 
-        // BuildPanelModel randomModel = new BuildPanelModel();
-
-        // to demonstrate how the game works.
-       //(LevelPanel) levelPanel).setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()))
+        // Set panel size and request focus for interaction
+        // (LevelPanel) levelPanel).setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()))
         levelPanel.repaint();
         levelPanel.setFocusable(true);
         levelPanel.requestFocusInWindow();
