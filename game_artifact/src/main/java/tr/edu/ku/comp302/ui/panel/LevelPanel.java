@@ -6,21 +6,40 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 public class LevelPanel extends JPanel {
     private LevelHandler levelHandler;
+    private LanceOfDestiny lanceOfDestiny;
 
     public LevelPanel(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
         addKeyListener(new KeyboardHandler());
+        addButtons();
     }
 
+    /**
+     * Overrides the paintComponent method from JPanel to render the components
+     * in the levelHandler.
+     *
+     * @param g The Graphics object used for rendering.
+     */
     public void paintComponent(Graphics g){
+        // Call the paintComponent method of the superclass
         super.paintComponent(g);
+
+        // Render the lance using the levelHandler
         levelHandler.renderLance(g);
+
+        // Render the fireball using the levelHandler
         levelHandler.renderFireBall(g);
+
+        // Render the barriers using the levelHandler
         levelHandler.renderBarriers(g);
+
+        // Render the remains of destroyed ExplosiveBarriers using the levelHandler
         levelHandler.renderRemains(g);
     }
 
@@ -47,6 +66,8 @@ public class LevelPanel extends JPanel {
         levelHandler.getRemains().forEach(remain ->
             remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
                     (int) size.getWidth(), (int) size.getHeight()));
+
+
     }
 
     public LevelHandler getLevelHandler() {
@@ -55,5 +76,45 @@ public class LevelPanel extends JPanel {
 
     public void setLevelHandler(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
+    }
+
+    public void addButtons(){
+
+        this.add(createLanceExtensionButton());
+       
+        
+        //TODO: add more buttons for other spelss as overwhelming fireball, etc.
+
+        
+
+    
+
+    }
+
+    public JButton createLanceExtensionButton() {
+        JButton button = new JButton("Lance Extension");
+        double screenWidth = LanceOfDestiny.getScreenWidth();
+        double screenHeight = LanceOfDestiny.getScreenHeight();
+        int buttonWidth = 200;
+        int buttonHeight = 40;
+        int buttonX = (int) (screenWidth / 2 - buttonWidth / 2);
+        int buttonY = (int) (screenHeight / 2 - buttonHeight / 2);
+        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                lanceOfDestiny.extendLance();
+                
+                requestFocus();
+                repaint();
+            }
+        });
+        return button;
+    }
+
+
+    public void setLanceOfDestiny(LanceOfDestiny lanceOfDestiny) {
+        this.lanceOfDestiny = lanceOfDestiny;
     }
 }

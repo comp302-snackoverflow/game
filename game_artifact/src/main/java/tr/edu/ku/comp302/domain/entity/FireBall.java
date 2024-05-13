@@ -42,7 +42,7 @@ public class FireBall extends Entity {
         if (surfaceXSpeed != 0) { // if the lance is moving
             if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
                 double currentSpeed = Math.sqrt(dx * dx + dy * dy);
-                double newSpeed = currentSpeed + 5; // increase total speed by 5
+                double newSpeed = currentSpeed ; // increase total speed by 5
                 dx = newSpeed * Math.cos(totalSpeedAngle);
                 dy = newSpeed * Math.sin(totalSpeedAngle);
             } else { // in the opposite direction

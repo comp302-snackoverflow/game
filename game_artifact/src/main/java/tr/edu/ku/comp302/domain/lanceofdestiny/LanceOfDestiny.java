@@ -8,13 +8,20 @@ import tr.edu.ku.comp302.domain.entity.Remain;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+
 
 public class LanceOfDestiny implements Runnable {
     private Logger logger = LogManager.getLogger(LanceOfDestiny.class);
@@ -39,6 +46,7 @@ public class LanceOfDestiny implements Runnable {
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
+        levelPanel.setLanceOfDestiny(this);
         levelHandler = levelPanel.getLevelHandler();    // TODO: Ğ
         levelPanel.requestFocusInWindow();
         currentGameState = GameState.PLAYING;   // for testing purposes.
@@ -92,7 +100,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleGameLogic(long currentTime){
-        Lance lance = levelPanel.getLevelHandler().getLance();
+        Lance lance = levelHandler.getLance();
         boolean moveLeft = KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed;
         boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
         double holdSpeed = lance.getSpeedWithHold();
@@ -289,6 +297,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
 
+
     private void startGameLoop() {
         gameThread = new Thread(this);
         gameThread.start();
@@ -313,5 +322,24 @@ public class LanceOfDestiny implements Runnable {
     public static void setCurrentGameState(GameState gameState) {
         GameState.state = gameState;
     }
+
+    public void extendLance() {
+        Lance lance = levelHandler.getLance();
+        lance.setLength(lance.getLength() * 2);
+        levelHandler.resizeLanceImage();
+
+        TimerTask extendLanceTask = new TimerTask() {
+            @Override
+            public void run() {
+                lance.setLength(lance.getLength() / 2);
+                levelHandler.resizeLanceImage();
+            }
+        };
+
+        Timer timer = new Timer();
+        timer.schedule(extendLanceTask, 10000);
+
+    }
+
 
 }
