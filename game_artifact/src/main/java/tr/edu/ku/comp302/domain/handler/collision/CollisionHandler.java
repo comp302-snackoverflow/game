@@ -9,6 +9,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.*;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.util.List;
 import java.awt.geom.RectangularShape;
 import java.awt.geom.Rectangle2D;
@@ -246,5 +247,30 @@ public class CollisionHandler {
         }
 
         barrier.decreaseHealth();
+    }
+
+    private static int ellipseOutcode(Ellipse2D ellipse, double centerX, double centerY) {
+        double ellipseCenterX = ellipse.getCenterX();
+        double ellipseCenterY = ellipse.getCenterY();
+        double pi = Math.PI;
+        int out = 0;
+
+        // multiplying with -1 because Y Axis is inverted in Swing
+        double lineAngle = -1 * Math.atan2((centerY - ellipseCenterY) , (centerX - ellipseCenterX));
+
+        if (centerY < ellipseCenterY && pi/6 < lineAngle && lineAngle < 5*pi/6) { // point is above the ellipse
+            out |= 0b0001; // top segment
+        }
+        if (centerX > ellipseCenterX && -pi/3 < lineAngle && lineAngle < pi/3) { // point is to the Right of the ellipse
+            out |= 0b0010; // right segment
+        }
+        if (centerY > ellipseCenterY && -5*pi/6 < lineAngle && lineAngle < -pi/6) { // point is below the ellipse
+            out |= 0b0100; // bottom segment
+        }
+        if (centerY < ellipseCenterY && pi/3 < lineAngle && lineAngle < -pi/3) { // point is to the Left of the ellipse
+            out |= 0b1000; // left segment
+        }
+
+        return  out;
     }
 }
