@@ -78,7 +78,6 @@ public class LevelHandler {
 
     public void renderRemains(Graphics g) {
         List<Remain> remains = level.getRemains();
-        System.out.println(remains.size());
         for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
             renderRemainView(g, remain);
         }
