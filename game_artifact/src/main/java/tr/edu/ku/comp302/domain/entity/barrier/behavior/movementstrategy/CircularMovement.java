@@ -11,6 +11,7 @@ import java.security.SecureRandom;
 import java.util.List;
 
 public class CircularMovement implements IMovementStrategy {
+    private static final double INITIAL_ANGLE = Math.PI / 2;
     private final Logger logger = LogManager.getLogger(CircularMovement.class);
     private final SecureRandom random;
     private Direction direction = Direction.STIFF;
@@ -18,10 +19,13 @@ public class CircularMovement implements IMovementStrategy {
     private double radius;
     private double centerX;
     private double centerY;
-    private static final double INITIAL_ANGLE = Math.PI / 2;
 
     public CircularMovement(Barrier barrier) {
-        angle = INITIAL_ANGLE;
+        this(barrier, INITIAL_ANGLE);
+    }
+
+    public CircularMovement(Barrier barrier, double angle) {
+        this.angle = angle;
         radius = LanceOfDestiny.getScreenWidth() * 0.15; // L/10 * 1.5 = 1.5L
         centerX = barrier.getXPosition() + barrier.getLength() / 2 - radius * Math.cos(angle);
         centerY = barrier.getYPosition() + barrier.getThickness() / 2 + radius * Math.sin(angle);
@@ -91,11 +95,11 @@ public class CircularMovement implements IMovementStrategy {
             yDirection = -1;
         }
 
-         return switch (direction) {
-             case CLOCKWISE -> yDirection;
-             case COUNTER_CLOCKWISE -> -yDirection;
-             case STIFF -> 0;
-         };
+        return switch (direction) {
+            case CLOCKWISE -> yDirection;
+            case COUNTER_CLOCKWISE -> -yDirection;
+            case STIFF -> 0;
+        };
     }
 
     @Override
@@ -211,8 +215,6 @@ public class CircularMovement implements IMovementStrategy {
         radius = LanceOfDestiny.getScreenWidth() * 0.15;
         centerX = barrier.getXPosition() + barrier.getLength() / 2 - radius * Math.cos(angle);
         centerY = barrier.getYPosition() + barrier.getThickness() / 2 + radius * Math.sin(angle);
-//        centerX = barrier.getXPosition() + barrier.getLength() / 2 - radius * Math.cos(angle);
-//        centerY = barrier.getYPosition() + barrier.getThickness() / 2 - radius * Math.sin(angle);
     }
 
     private enum Direction {

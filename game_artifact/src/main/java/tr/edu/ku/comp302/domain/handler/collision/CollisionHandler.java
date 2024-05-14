@@ -332,7 +332,7 @@ public class CollisionHandler {
         if (centerY > ellipseCenterY && -5 * pi / 6 < lineAngle && lineAngle < -pi / 6) { // point is below the ellipse
             out |= 0b0100; // bottom segment
         }
-        if (centerY < ellipseCenterY &&  2 * pi / 3 < lineAngle || lineAngle < -2 * pi / 3) { // point is to the Left of the ellipse
+        if (centerY < ellipseCenterY && 2 * pi / 3 < lineAngle || lineAngle < -2 * pi / 3) { // point is to the Left of the ellipse
             out |= 0b1000; // left segment
         }
 

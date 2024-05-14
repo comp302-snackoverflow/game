@@ -10,8 +10,8 @@ import java.util.List;
 
 public abstract class Barrier extends Entity {
     protected static final double DEFAULT_THICKNESS = 20;
-    protected int health;
     protected final SecureRandom random;
+    protected int health;
     protected IMovementStrategy movementStrategy;
     private double length;
     private double thickness;

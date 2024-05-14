@@ -5,7 +5,7 @@ public class CollisionMath {
     public static double triangleArea(double Ax, double Ay,
                                       double Bx, double By,
                                       double Cx, double Cy) {
-        return (0.5) * Math.abs(Ax*(By-Cy) + Bx*(Cy-Ay) + Cx*(Ay-By));
+        return (0.5) * Math.abs(Ax * (By - Cy) + Bx * (Cy - Ay) + Cx * (Ay - By));
     }
 
     public static double lineLength(double Ax, double Ay, double Bx, double By) {

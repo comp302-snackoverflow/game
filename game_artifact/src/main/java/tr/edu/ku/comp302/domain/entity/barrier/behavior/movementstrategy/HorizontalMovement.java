@@ -11,13 +11,14 @@ import java.util.List;
  * This strategy class calculates the movements and collisions of the horizontal moving barriers
  */
 public class HorizontalMovement implements IMovementStrategy {
-    private int direction;
     private final SecureRandom random;
+    private int direction;
 
     public HorizontalMovement() {
         direction = 0;
         random = new SecureRandom();
     }
+
     @Override
     public double getXPadding() {
         return LanceOfDestiny.getScreenWidth() / 52.0;
@@ -42,6 +43,7 @@ public class HorizontalMovement implements IMovementStrategy {
     public void turnBack() {
         direction = -direction;
     }
+
     @Override
     public void handleCloseCalls(Barrier barrier, List<Barrier> barriers) {
         int sides = CollisionHandler.checkCloseCalls(barrier, barriers,
