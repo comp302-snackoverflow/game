@@ -41,13 +41,18 @@ public class LevelPanel extends JPanel {
 
         // Render the remains of destroyed ExplosiveBarriers using the levelHandler
         levelHandler.renderRemains(g);
+
+
+        levelHandler.renderHexs(g);
     }
 
     // TODO: Handle this method later.
     public void setPanelSize(Dimension size){
+        System.out.println("Setting panel size: " + size);
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
+        
         // TODO: Add other entities
         levelHandler.getLance().adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
                 (int) size.getWidth(), (int) size.getHeight());
@@ -81,7 +86,7 @@ public class LevelPanel extends JPanel {
     public void addButtons(){
 
         this.add(createLanceExtensionButton());
-       
+        this.add(createHexPUButton());
         
         //TODO: add more buttons for other spelss as overwhelming fireball, etc.
 
@@ -98,13 +103,36 @@ public class LevelPanel extends JPanel {
         int buttonWidth = 200;
         int buttonHeight = 40;
         int buttonX = (int) (screenWidth / 2 - buttonWidth / 2);
-        int buttonY = (int) (screenHeight / 2 - buttonHeight / 2);
+        int buttonY = (int) (screenHeight * 0.8 - (2 * buttonHeight) );
         button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 lanceOfDestiny.extendLance();
+                
+                requestFocus();
+                repaint();
+            }
+        });
+        return button;
+    }
+
+
+    public JButton createHexPUButton() {
+        JButton button = new JButton("Use Hex Extension");
+        double screenWidth = LanceOfDestiny.getScreenWidth();
+        double screenHeight = LanceOfDestiny.getScreenHeight();
+        int buttonWidth = 200;
+        int buttonHeight = 40;
+        int buttonX = (int) (screenWidth / 2 + buttonWidth / 2);
+        int buttonY = (int) (screenHeight * 0.8 - (2 * buttonHeight) );
+        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                levelHandler.createHex();
                 
                 requestFocus();
                 repaint();

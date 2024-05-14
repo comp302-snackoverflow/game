@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
@@ -14,6 +15,7 @@ public class Level {
     private FireBall fireBall;
     private List<Barrier> barriers;
     private List<Remain> remains;
+    private List<Hex> hexs = new ArrayList<>();
     private static List<Level> levels = new ArrayList<>();
 
 
@@ -31,7 +33,7 @@ public class Level {
      * @see Barrier
      * @see ExplosiveBarrier
      */
-    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers) {
+    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, List<Hex> hexs) {
         // Initialize the lance, fireball, and barriers for the level
         this.lance = lance;
         this.fireBall = fireBall;
@@ -54,7 +56,7 @@ public class Level {
     }
 
     public Level(Lance lance, FireBall fireBall) {
-        this(lance, fireBall, new ArrayList<>());
+        this(lance, fireBall, new ArrayList<>(), new ArrayList<>());
     }
 
     public Level(){
@@ -108,6 +110,14 @@ public class Level {
 
     public static void setLevels(List<Level> levels) {
         Level.levels = levels;
+    }
+
+    public List<Hex> getHexs() {
+        return hexs;
+    }
+
+    public void setHexs(List<Hex> hexs) {
+        this.hexs = hexs;
     }
 }
 

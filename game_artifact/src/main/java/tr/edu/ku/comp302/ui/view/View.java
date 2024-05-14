@@ -15,6 +15,7 @@ public class View {
         GIFT_BARRIER,
         LANCE_EXTENSION,
         MISSING_TEXTURE,
+        HEX,
     }
 
     public static final Type FIREBALL = Type.FIREBALL;
@@ -26,7 +27,9 @@ public class View {
     public static final Type GIFT_BARRIER = Type.GIFT_BARRIER;
     public static final Type LANCE_EXTENSION = Type.LANCE_EXTENSION;
     public static final Type MISSING_TEXTURE = Type.MISSING_TEXTURE;
+    public static final Type HEX = Type.HEX;
 
+    private static final String HEX_IMAGE_PATH = "/assets/fireball_image.png";
     private static final String FIREBALL_IMAGE_PATH = "/assets/fireball_image.png";
     private static final String LANCE_IMAGE_PATH = "/assets/lance_image.png";
     private static final String SIMPLE_BARRIER_IMAGE_PATH = "/assets/simple_barrier.png";
@@ -65,6 +68,7 @@ public class View {
             case GIFT_BARRIER -> new View(GIFTING_BARRIER_IMAGE_PATH);
             case LANCE_EXTENSION -> new View(LANCE_EXTENSION_IMAGE_PATH);
             case MISSING_TEXTURE -> new View(MISSING_TEXTURE_IMAGE_PATH);
+            case HEX -> new View(HEX_IMAGE_PATH);
         };
     }
 }

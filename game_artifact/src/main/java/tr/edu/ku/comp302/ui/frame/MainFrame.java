@@ -87,7 +87,8 @@ public class MainFrame extends JFrame {
                 LanceOfDestiny.getScreenHeight(), new BuildPanelModel());
 
         // Create a new level with the initialized objects
-        Level level = new Level(lance, fb, barriers);
+        //pass a new empty arraylist for the hex objects
+        Level level = new Level(lance, fb, barriers, new ArrayList<>());
 
         // Create a new LevelPanel with the LevelHandler
         levelPanel = new LevelPanel(new LevelHandler(level));
@@ -99,6 +100,8 @@ public class MainFrame extends JFrame {
 
         // Set panel size and request focus for interaction
         // (LevelPanel) levelPanel).setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()))
+        
+        levelPanel.setLayout(null);
         levelPanel.repaint();
         levelPanel.setFocusable(true);
         levelPanel.requestFocusInWindow();

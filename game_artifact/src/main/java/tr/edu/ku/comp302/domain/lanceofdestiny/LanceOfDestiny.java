@@ -7,10 +7,12 @@ import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.Remain;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
+import tr.edu.ku.comp302.domain.handler.SpellHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
@@ -43,6 +45,7 @@ public class LanceOfDestiny implements Runnable {
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private LevelHandler levelHandler;
+    private SpellHandler spellHandler;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
@@ -53,6 +56,7 @@ public class LanceOfDestiny implements Runnable {
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
+        spellHandler = new SpellHandler(this);
         startGameLoop();
     }
 
@@ -114,11 +118,12 @@ public class LanceOfDestiny implements Runnable {
         handleSteadyStateLogic(!rotateCCW && !rotateCW, Lance.horizontalRecoverySpeed);
 
         handleFireballLogic();
-
         handleBarriersMovement(currentTime);
-
         handleCollisionLogic();
+        handleHexMovement();
+        spellHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
     }
+
 
     private void render(){
         int width = (int) levelPanel.getSize().getWidth();
@@ -202,6 +207,13 @@ public class LanceOfDestiny implements Runnable {
         }
     }
 
+
+
+    private void handleHexMovement() {
+        for (Hex hex: levelHandler.getHexs()){
+            hex.move();
+        }
+    }
     private void handleRotationLogic(boolean keyPressed, double angularSpeed) {
         Lance lance = levelPanel.getLevelHandler().getLance();
         if (keyPressed) {
@@ -325,14 +337,16 @@ public class LanceOfDestiny implements Runnable {
 
     public void extendLance() {
         Lance lance = levelHandler.getLance();
-        lance.setLength(lance.getLength() * 2);
+        
+        spellHandler.extendLance(lance);
         levelHandler.resizeLanceImage();
 
         TimerTask extendLanceTask = new TimerTask() {
             @Override
             public void run() {
-                lance.setLength(lance.getLength() / 2);
+                spellHandler.shrinkLance(lance);
                 levelHandler.resizeLanceImage();
+
             }
         };
 

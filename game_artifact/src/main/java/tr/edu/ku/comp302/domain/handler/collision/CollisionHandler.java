@@ -25,7 +25,7 @@ public class CollisionHandler {
     /**
      * Check if the target collides with any of the barriers in the list. Includes vertical and horizontal padding
      * to the hitbox of the target.
-     * @param target    the barrier to tes
+     * @param target    the barrier to test?
      * @param barriers  list of all barriers.
      * @return a 4-bit integer, where bits from least to most significant represent collisions
      * with the top, right, bottom, and left sides of the target.
