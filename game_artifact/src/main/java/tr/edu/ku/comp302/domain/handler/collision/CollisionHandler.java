@@ -256,21 +256,21 @@ public class CollisionHandler {
         int out = 0;
 
         // multiplying with -1 because Y Axis is inverted in Swing
-        double lineAngle = -1 * Math.atan2((centerY - ellipseCenterY) , (centerX - ellipseCenterX));
+        double lineAngle = -1 * Math.atan2((centerY - ellipseCenterY), (centerX - ellipseCenterX));
 
-        if (centerY < ellipseCenterY && pi/6 < lineAngle && lineAngle < 5*pi/6) { // point is above the ellipse
+        if (centerY < ellipseCenterY && pi / 6 < lineAngle && lineAngle < 5 * pi / 6) { // point is above the ellipse
             out |= 0b0001; // top segment
         }
-        if (centerX > ellipseCenterX && -pi/3 < lineAngle && lineAngle < pi/3) { // point is to the Right of the ellipse
+        if (centerX > ellipseCenterX && -pi / 3 < lineAngle && lineAngle < pi / 3) { // point is to the Right of the ellipse
             out |= 0b0010; // right segment
         }
-        if (centerY > ellipseCenterY && -5*pi/6 < lineAngle && lineAngle < -pi/6) { // point is below the ellipse
+        if (centerY > ellipseCenterY && -5 * pi / 6 < lineAngle && lineAngle < -pi / 6) { // point is below the ellipse
             out |= 0b0100; // bottom segment
         }
-        if (centerY < ellipseCenterY && pi/3 < lineAngle && lineAngle < -pi/3) { // point is to the Left of the ellipse
+        if (centerY < ellipseCenterY &&  2 * pi / 3 < lineAngle || lineAngle < -2 * pi / 3) { // point is to the Left of the ellipse
             out |= 0b1000; // left segment
         }
 
-        return  out;
+        return out;
     }
 }
