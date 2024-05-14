@@ -5,17 +5,19 @@ import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.Entity;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
-import tr.edu.ku.comp302.domain.entity.barrier.*;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
+import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.CircularMovement;
+import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.HorizontalMovement;
+import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.IMovementStrategy;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.util.List;
-import java.awt.geom.RectangularShape;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
 
 public class CollisionHandler {
-    private static Logger logger = LogManager.getLogger(CollisionHandler.class);
+    private static final Logger logger = LogManager.getLogger(CollisionHandler.class);
 
     public static void checkFireballBarriersCollisions(FireBall fireBall, List<Barrier> barriers) {
         for (Barrier barrier : barriers) {
@@ -24,32 +26,88 @@ public class CollisionHandler {
     }
 
     /**
-     * Check if the target collides with any of the barriers in the list. Includes vertical and horizontal padding
-     * to the hitbox of the target.
-     * @param target    the barrier to tes
-     * @param barriers  list of all barriers.
+     * Check if the target collides with any of the barriers in the list. Includes vertical and horizontal padding that
+     * is applied differently depending on the target barrier's movement strategy.
+     *
+     * @param target   the barrier to tes
+     * @param barriers list of all barriers.
+     * @param padX     padding to the left and right sides of the target.
+     * @param padY     padding to the top and bottom sides of the target.
      * @return a 4-bit integer, where bits from least to most significant represent collisions
      * with the top, right, bottom, and left sides of the target.
      */
     public static int checkCloseCalls(Barrier target, List<Barrier> barriers, double padX, double padY) {
-        Rectangle2D rect = target.getBoundingBox(); // same as the actual hitbox
-        Rectangle2D wider = new Rectangle2D.Double(rect.getX() - padX, rect.getY(),
-                rect.getWidth() + 2 * padX, rect.getHeight());
-        Rectangle2D taller = new Rectangle2D.Double(rect.getX(), rect.getY() - padY,
-                rect.getWidth(), rect.getHeight() + 2 * padY);
+        switch (target.getMovementStrategy()) {
+            case HorizontalMovement ignored -> {
+                Rectangle2D wider = new Rectangle2D.Double(target.getXPosition() - padX, target.getYPosition(),
+                        target.getLength() + 2 * padX, target.getThickness());
+                Rectangle2D taller = new Rectangle2D.Double(target.getXPosition(), target.getYPosition() - padY,
+                        target.getLength(), target.getThickness() + 2 * padY);
+                return checkCloseCalls(target, barriers, wider, taller);
+            }
+            case CircularMovement ignored -> {
+                Ellipse2D ellipse = new Ellipse2D.Double(target.getXPosition() - padX, target.getYPosition() - padY,
+                        target.getLength() + 2 * padX, target.getThickness() + 2 * padY);
 
+                return checkCloseCalls(target, barriers, ellipse);
+            }
+            case null -> logger.warn("Barrier type {} has no movement strategy", target.getClass().getName());
+            case IMovementStrategy strategy ->
+                    logger.warn("Unknown movement strategy for Barrier: {}", strategy.getClass().getName());
+        }
+        return 0b1111; // return all sides collided just in case. Should never happen but also
+    }                  // should not let a barrier with an unknown movement strategy move.
+
+    private static int checkCloseCalls(Barrier target, List<Barrier> barriers, Ellipse2D ellipse) {
         int sides = 0; // the bit order is `lbrt`
 
-        if (target.getXPosition() <= padX) {
+        if (ellipse.getX() <= 0) {
             sides |= 0b1000; // left side
         }
-        if (target.getXPosition() + target.getLength() >= LanceOfDestiny.getScreenWidth() - padX) {
+        if (ellipse.getX() + ellipse.getWidth() >= LanceOfDestiny.getScreenWidth() * 0.98) {
             sides |= 0b0010; // right side
         }
-        if (target.getYPosition() <= padY) {
+        if (ellipse.getY() <= 0) {
             sides |= 0b0001; // top side
         }
-        if (target.getYPosition() + target.getThickness() >= LanceOfDestiny.getScreenHeight() - padY) {
+        if (ellipse.getY() + ellipse.getHeight() >= LanceOfDestiny.getScreenHeight() >> 1) {
+            sides |= 0b0100; // bottom side
+        }
+
+        for (Barrier b : barriers) {
+            if (b == target) {
+                continue;
+            }
+            if (sides == 0b1111) {
+                break;
+            }
+            Rectangle2D box = b.getBoundingBox();
+            if (box.intersects(target.getBoundingBox())) {
+                logger.warn("checkCloseCalls: Barrier bounding boxes intersect");
+                logger.warn("Target: " + target.getBoundingBox());
+                logger.warn("Barrier: " + box);
+            }
+            if (ellipse.intersects(box)) {
+                int outcode = ellipseOutcode(ellipse, box.getCenterX(), box.getCenterY());
+                sides |= outcode;
+            }
+        }
+        return sides;
+    }
+
+    private static int checkCloseCalls(Barrier target, List<Barrier> barriers, Rectangle2D wider, Rectangle2D taller) {
+        int sides = 0; // the bit order is `lbrt`
+
+        if (wider.getMinX() <= 0) {
+            sides |= 0b1000; // left side
+        }
+        if (wider.getMaxX() >= LanceOfDestiny.getScreenWidth() * 0.98) {
+            sides |= 0b0010; // right side
+        }
+        if (taller.getMinY() <= 0) {
+            sides |= 0b0001; // top side
+        }
+        if (taller.getMaxY() >= LanceOfDestiny.getScreenHeight() >> 1) {
             sides |= 0b0100; // bottom side
             logger.warn("checkCloseCalls: Barrier is at the bottom of the screen");
         }
@@ -58,6 +116,10 @@ public class CollisionHandler {
             if (barrier == target) {
                 continue;
             }
+            if (barrier.getBoundingBox().intersects(target.getBoundingBox())) {
+                logger.warn("checkCloseCalls: Barrier bounding boxes intersect");
+            }
+
             if (sides == 0b1111) {
                 break; // all sides are already collided
             }
@@ -137,11 +199,11 @@ public class CollisionHandler {
                         if (side != null) {
                             resolveCollision(fireBall, barrier, side);
                         }
-                    } catch (CollisionError ignored) {}
+                    } catch (CollisionError ignored) {
+                    }
                 }
             }
-            case Entity ignored ->
-                logger.warn("checkFireBallEntityCollisions: Unknown entity type");
+            case Entity ignored -> logger.warn("checkFireBallEntityCollisions: Unknown entity type");
         }
     }
 
@@ -163,6 +225,7 @@ public class CollisionHandler {
 
         return collision;
     }
+
     private static Collision getCollisionSide(int collision) throws CollisionError {
         return switch (collision) {
             case 0b0001, 0b1011 -> // 1011 => top, left, right. Reduced to top case.
@@ -240,10 +303,12 @@ public class CollisionHandler {
     }
 
     private static void resolveCollision(FireBall fireBall, Barrier barrier, Collision side) {
+        // FIXME surface speed should be barrier.getYDirection when collision side is left or right
+        //  think about the corner collision cases. @Omer-Burak-Duran
         switch (side) {
-            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(0, barrier.getDirection());
+            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(0, barrier.getXDirection());
             case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                    fireBall.handleCornerReflection(0, barrier.getDirection(), side);
+                    fireBall.handleCornerReflection(0, barrier.getXDirection(), side);
         }
 
         barrier.decreaseHealth();

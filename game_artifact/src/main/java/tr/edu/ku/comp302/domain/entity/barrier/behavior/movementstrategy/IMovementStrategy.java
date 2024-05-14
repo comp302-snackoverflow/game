@@ -24,4 +24,16 @@ public interface IMovementStrategy {
      * @param barriers all barriers
      */
     void handleCloseCalls(Barrier barrier, List<Barrier> barriers);
+
+    int getXDirection();
+
+    int getYDirection();
+
+    void turnBack();
+
+    void stopMoving();
+
+    void startMoving();
+
+    void adjustMovementParameters(Barrier barrier);
 }

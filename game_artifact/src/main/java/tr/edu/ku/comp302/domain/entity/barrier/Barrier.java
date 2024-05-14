@@ -11,12 +11,10 @@ import java.util.List;
 public abstract class Barrier extends Entity {
     protected static final double DEFAULT_THICKNESS = 20;
     protected int health;
-
     protected final SecureRandom random;
     protected IMovementStrategy movementStrategy;
     private double length;
     private double thickness;
-    private int direction;
     private long lastDiceRollTimeNs;
 
     public Barrier(double xPosition, double yPosition) {
@@ -25,14 +23,14 @@ public abstract class Barrier extends Entity {
         health = 1;
         length = LanceOfDestiny.getScreenWidth() / 50.;
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
-        direction = 0;
         random = new SecureRandom();
         lastDiceRollTimeNs = 0;
     }
 
     public void adjustPositionAndSize(int oldWidth, int oldHeight, int newWidth, int newHeight) {
         updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
-        setLength(newWidth / 50.);      // changes other size-relative instances too.
+        setLength(newWidth / 50.); // changes other size-relative instances too.
+        movementStrategy.adjustMovementParameters(this);
     }
 
     public boolean isDead() {
@@ -70,23 +68,27 @@ public abstract class Barrier extends Entity {
     }
 
     public double getSpeed() {
-        return LanceOfDestiny.getScreenWidth() / 40.0;
+        return LanceOfDestiny.getScreenWidth() / 40.0; // random value, but it's not in the pdf so whatever
     }
 
     public void move(double speed) {
         movementStrategy.move(this, speed);
     }
 
-    public void goBack() {
-        direction = -direction;
+    public void turnBack() {
+        movementStrategy.turnBack();
     }
 
-    public void stop() {
-        direction = 0;
+    public void stopMoving() {
+        movementStrategy.stopMoving();
     }
 
-    public int getDirection() {
-        return direction;
+    public int getXDirection() {
+        return movementStrategy.getXDirection();
+    }
+
+    public int getYDirection() {
+        return movementStrategy.getYDirection();
     }
 
     public IMovementStrategy getMovementStrategy() {
@@ -100,21 +102,21 @@ public abstract class Barrier extends Entity {
     public void tryMove(long currentTime) {
         lastDiceRollTimeNs = currentTime;
         boolean willMove = random.nextDouble() <= 0.2;
-        if (direction == 0 && willMove) {
-            direction = random.nextInt(2) * 2 - 1; // -1 if nextInt is 0 else 1.
+        if (getXDirection() == 0 && getYDirection() == 0 && willMove) {
+            movementStrategy.startMoving();
         }
     }
 
     public void tryStop(long currentTime) {
         lastDiceRollTimeNs = currentTime;
         boolean willStop = random.nextDouble() <= 0.2;
-        if (direction != 0 && willStop) {
-            direction = 0;
+        if (isMoving() && willStop) {
+            stopMoving();
         }
     }
 
     public boolean isMoving() {
-        return direction != 0;
+        return getXDirection() != 0 || getYDirection() != 0;
     }
 
     public void handleCloseCalls(List<Barrier> barriers) {

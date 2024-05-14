@@ -1,232 +1,223 @@
 package tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
+import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+
+import java.security.SecureRandom;
 import java.util.List;
 
-import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
-import tr.edu.ku.comp302.ui.view.BarrierView;
-
 public class CircularMovement implements IMovementStrategy {
-    private Barrier Barrier;
+    private final Logger logger = LogManager.getLogger(CircularMovement.class);
+    private final SecureRandom random;
+    private Direction direction = Direction.STIFF;
+    private double angle;
     private double radius;
     private double centerX;
     private double centerY;
-    private double angle;
-    boolean stiffness = true;
-    double BarrierThickness;
-    double BarrierLength;
-
-    static final short CLOCKWISE = 1;
-    static final short COUNTER_CLOCKWISE= 0;
-    short direction = CLOCKWISE;
-
-    static private final short NORTH_WEST_CORNER= 0;
-    static private final short NORTH_EAST_CORNER= 1;
-    static private final short SOUTH_WEST_CORNER= 2;
-    static private final short SOUTH_EAST_CORNER= 3;
+    private static final double INITIAL_ANGLE = Math.PI / 2;
 
     public CircularMovement(Barrier barrier) {
-        this.Barrier = barrier;
-        this.radius = 1.5 * barrier.getLength();
-        this.centerX = barrier.getXPosition() + barrier.getLength() / 2;
-        this.centerY = barrier.getYPosition() + 1.5 * LanceOfDestiny.getScreenWidth() / 10;
-        this.angle = 0; 
-        this.stiffness = false; 
-
-        BarrierLength = barrier.getLength();
-        BarrierThickness = barrier.getThickness();
+        angle = INITIAL_ANGLE;
+        radius = LanceOfDestiny.getScreenWidth() * 0.15; // L/10 * 1.5 = 1.5L
+        centerX = barrier.getXPosition() + barrier.getLength() / 2 - radius * Math.cos(angle);
+        centerY = barrier.getYPosition() + barrier.getThickness() / 2 + radius * Math.sin(angle);
+        random = new SecureRandom();
     }
 
     @Override
-    public void move() {
-        if (!stiffness) {
-            double newX = centerX + radius * Math.cos(angle) - Barrier.getLength() / 2;
-            double newY = centerY + radius * Math.sin(angle) - 1.5 * LanceOfDestiny.getScreenWidth() / 10;
-
-            Barrier.setXPosition(newX);
-            Barrier.setYPosition(newY);
-            Barrier.getBoundingBox().setRect(newX, newY, Barrier.getLength(), Barrier.getThickness());
-
-            this.angle += Math.toRadians(0.5);
-            if (angle >= 2 * Math.PI) {
-                angle -= 2 * Math.PI; 
-            }
-        }
+    public double getXPadding() {
+        return LanceOfDestiny.getScreenWidth() / 50.0;
     }
 
-    
-
-    //IMPLEMENTED 
     @Override
-    public void checkCollision(List<BarrierView> BarrierViews) {
-        // TODO Auto-generated method stub
+    public double getYPadding() {
+        return LanceOfDestiny.getScreenHeight() / 20.0;
+    }
 
-        double xPosition = Barrier.getXPosition();
-        double yPosition = Barrier.getYPosition();
-
-        double[] NorthWestCorner = {xPosition, yPosition};
-        double[] NorthEastCorner = {xPosition + BarrierLength, yPosition};
-        double[] SouthWestCorner = {xPosition, yPosition + BarrierThickness};
-        double[] SouthEastCorner = {xPosition + BarrierLength, yPosition + BarrierThickness};
-       
-        
-        
-
-        boolean IsNorthCollision = false;
-        boolean IsWestCollision = false;
-        boolean IsSouthCollision = false;
-        boolean IsEastCollision = false;
-
-
-        
-
-        //TODO Avoid collision of barrier with itself!!!
-        int i = 0;
-        while (i < BarrierViews.size()) {
-            Barrier b = BarrierViews.get(i).getBarrier();
-            boolean[] output;
-
-            if (!Barrier.equals(b) && Barrier.getBoundingBox().intersects(b.getBoundingBox())) {
-                stiffness = true;
-                return;
-            }
-            
-            if (!IsNorthCollision && !IsWestCollision) {
-                
-                
-                output = calculateInterception(NorthWestCorner, b, NORTH_WEST_CORNER);
-
-                IsNorthCollision = output[0];
-                IsWestCollision = output[1];
-
-            }
-
-            if (!IsNorthCollision && !IsEastCollision) {
-                
-                
-                output = calculateInterception(NorthEastCorner, b, NORTH_EAST_CORNER);
-
-                IsNorthCollision = output[0];
-                IsEastCollision = output[1];
-
-            }
-
-            if (!IsSouthCollision && !IsWestCollision) {
-                
-                
-                output = calculateInterception(SouthWestCorner, b, SOUTH_WEST_CORNER);
-
-                IsSouthCollision = output[0];
-                IsWestCollision = output[1];
-
-            }
-
-            if (!IsSouthCollision && !IsEastCollision) {
-                
-                
-                output = calculateInterception(SouthEastCorner, b, SOUTH_EAST_CORNER);
-
-                IsSouthCollision = output[0];
-                IsEastCollision = output[1];
-
-            }
-
-            i++;
+    @Override
+    public void move(Barrier barrier, double speed) {
+        if (direction == Direction.STIFF) {
+            return;
         }
 
-       // System.out.println(IsEastCollision + "__ EAST __ WEST __ " + IsWestCollision);
-        //System.out.println(IsNorthCollision + "__ NORTH __ SOUTH __ " + IsSouthCollision);
-        //if there are collisions from the sides at the same time
-        if(IsEastCollision && IsWestCollision){
-            stiffness = true;
-        }
-        if(IsEastCollision || IsWestCollision){
-            stiffness = true;
+        double circumference = 2 * Math.PI * radius;
+        double deltaAngle = speed / circumference;
 
-            //changeDirection(IsWestCollision);
-            
+        switch (direction) {
+            case CLOCKWISE -> angle -= deltaAngle;
+            case COUNTER_CLOCKWISE -> angle += deltaAngle;
+        }
+        if (angle >= 2 * Math.PI) {
+            angle -= 2 * Math.PI;
+        } else if (angle < 0) {
+            angle += 2 * Math.PI;
         }
 
+        double newX = centerX + radius * Math.cos(angle) - barrier.getLength() / 2;
+        double newY = centerY - radius * Math.sin(angle) - barrier.getThickness() / 2;
 
-        //if there are collisions from above and bottom at the same time 
-        if(IsSouthCollision && IsNorthCollision){
-            stiffness = true;
-        }
-        if(IsSouthCollision || IsNorthCollision){
-            stiffness = false;
-
-            //changeDirection(IsWestCollision);
-            
-        }
-        
-
-        //If there is one collision only on single side
-        
-        //if no collision at all
-        else if (!(IsWestCollision||IsEastCollision||IsSouthCollision||IsNorthCollision)){
-            stiffness = false;
-        }
+        barrier.setXPosition(newX);
+        barrier.setYPosition(newY);
+        barrier.getBoundingBox().setRect(newX, newY, barrier.getLength(), barrier.getThickness());
 
     }
 
-    //OLD VERSION
+    @Override
+    public int getXDirection() {
+        int xDirection = 0;
+        if (Math.PI * 0.25 <= angle && angle <= Math.PI * 0.75) {
+            xDirection = 1;
+        } else if (Math.PI * 1.25 <= angle && angle <= Math.PI * 1.75) {
+            xDirection = -1;
+        }
+
+        return switch (direction) {
+            case CLOCKWISE -> xDirection;
+            case COUNTER_CLOCKWISE -> -xDirection;
+            case STIFF -> 0;
+        };
+    }
+
+    @Override
+    public int getYDirection() {
+        int yDirection = 0;
+        if (angle <= 0.25 * Math.PI || angle >= 1.75 * Math.PI) {
+            yDirection = 1;
+        } else if (0.75 * Math.PI < angle && angle < 1.25 * Math.PI) {
+            yDirection = -1;
+        }
+
+         return switch (direction) {
+             case CLOCKWISE -> yDirection;
+             case COUNTER_CLOCKWISE -> -yDirection;
+             case STIFF -> 0;
+         };
+    }
+
+    @Override
+    public void turnBack() {
+        switch (direction) {
+            case CLOCKWISE -> direction = Direction.COUNTER_CLOCKWISE;
+            case COUNTER_CLOCKWISE -> direction = Direction.CLOCKWISE;
+        }
+    }
+
+    @Override
+    public void stopMoving() {
+        direction = Direction.STIFF;
+    }
+
+    @Override
+    public void startMoving() {
+        int dir = random.nextInt(2) * 2 - 1; // -1 if nextInt is 0 else 1.
+        switch (dir) {
+            case -1 -> direction = Direction.CLOCKWISE;
+            case 1 -> direction = Direction.COUNTER_CLOCKWISE;
+        }
+    }
+
+    @Override
+    public void handleCloseCalls(Barrier barrier, List<Barrier> barriers) {
+        int sides = CollisionHandler.checkCloseCalls(barrier, barriers,
+                getXPadding(), getYPadding());
+
+        if (isStuck(sides)) {
+            barrier.stopMoving();
+        } else if (shouldTurnBack(sides)) {
+            barrier.turnBack();
+        }
+    }
+
     /**
-     * 
-     * @param cornerPoint
-     * @param barrier
-     * @param CornerNumber 0: NORTH WEST, 1: NORTH EAST, 2: SOUTH WEST, 3: SOUTH EAST
-     * @return
+     * Checks if the barrier is stuck considering its current direction, current angle and the sides that is close to a barrier.
+     * Sides is a 4-bit integer where the bits represent the sides of the barrier in the order of left, bottom, right, top.
+     *
+     * @param sides 4 bit `lbrt` number, representing close calls from each side
+     * @return whether the barrier can move or not
      */
-    boolean[] calculateInterception(double[] cornerPoint, Barrier barrier, short CornerNumber ){
-        double screenWidth = LanceOfDestiny.getScreenWidth();
-        double screenHeight = LanceOfDestiny.getScreenHeight();
+    private boolean isStuck(int sides) {
+        final var PI = Math.PI;
 
-        boolean horizontalCollision = false;
-        boolean verticalCollision = false;
-
-        double xBarrier = barrier.getXPosition();
-        double yBarrier = barrier.getYPosition();
-        double lengthBarrier = screenWidth/50;
-        double thicknessBarrier = barrier.getThickness();
-
-        double cornerPointX = cornerPoint[0];
-        double cornerPointY = cornerPoint[1];
-
-        double horizontalCornerPointX = cornerPointX + (CornerNumber % 2 == 0 ? (-screenWidth/52) : (screenWidth/52));
-    
-       
-
-        double verticalCornerPointY = cornerPointY + (CornerNumber <= 1 ? (-screenWidth/52) : (screenWidth/52));
-
-
-        //Calculate Horizontal Collision
-        if (horizontalCornerPointX <= xBarrier + lengthBarrier && horizontalCornerPointX >= xBarrier){
-            if (cornerPointY <= yBarrier + thicknessBarrier && cornerPointY >= yBarrier){
-                horizontalCollision = true;
-            }
+        if (0.375 * PI <= angle && angle < 0.625 * PI) { // top
+            return (sides & 0b1010) == 0b1010; // cannot move l or r
+        } else if (0.875 * PI <= angle && angle < 1.125 * PI) { // left
+            return (sides & 0b0101) == 0b0101; // cannot move b or t
+        } else if (1.375 * PI <= angle && angle < 1.625 * PI) { // bottom
+            return (sides & 0b1010) == 0b1010; // cannot move l or r
+        } else if (1.875 * PI <= angle || angle < 0.125 * PI) { // right
+            return (sides & 0b0101) == 0b0101; // cannot move t or b
+        } else {
+            logger.debug("Sides from the CollisionHandler: " + Integer.toBinaryString(sides));
+            return (sides & 0b1010) == 0b1010 || (sides & 0b0101) == 0b0101;
         }
-        
-        //Calculate Vertical Collision
-        if (cornerPointX <= xBarrier + lengthBarrier && cornerPointX >= xBarrier){
-            if (verticalCornerPointY <= yBarrier + thicknessBarrier && verticalCornerPointY >= yBarrier){
-                verticalCollision = true;
-                
-            }
-        }
-
-        //Calculate Horizontal Boundary Exceed
-        
-        if (horizontalCornerPointX >= screenWidth || horizontalCornerPointX <= 0){
-            horizontalCollision = true;
-        }
-
-        //Calculate Vertical Boundary Exceed
-        
-        if (verticalCornerPointY >= screenHeight || verticalCornerPointY <= 0){
-            verticalCollision = true;
-        }
-
-        return new boolean[]{verticalCollision, horizontalCollision};
     }
-    // TODO: CHANGE DIRECTION TO BE ADDED(?)
+
+    private boolean shouldTurnBack(int sides) {
+        return !(direction == Direction.STIFF)
+                && (direction == Direction.CLOCKWISE && !canGoClockwise(sides))
+                || (direction == Direction.COUNTER_CLOCKWISE && !canGoCounterClockwise(sides));
+    }
+
+    private boolean canGoClockwise(int sides) { // sides = `lbrt`
+        final var PI = Math.PI;
+
+        if (0.375 * PI <= angle && angle < 0.625 * PI) { // top
+            return (sides & 0b0010) == 0; // right
+        } else if (0.875 * PI <= angle && angle < 1.125 * PI) { // left
+            return (sides & 0b0001) == 0; // top
+        } else if (1.375 * PI <= angle && angle < 1.625 * PI) { // bottom
+            return (sides & 0b1000) == 0; // left
+        } else if (1.875 * PI <= angle || angle < 0.125 * PI) { // right
+            return (sides & 0b0100) == 0; // bottom
+        } else if (0.125 * PI <= angle && angle < 0.375 * PI) { // top-right
+            return (sides & 0b0010) == 0 && (sides & 0b0100) == 0; // bottom and right
+        } else if (0.625 * PI <= angle && angle < 0.875 * PI) { // top-left
+            return (sides & 0b0010) == 0 && (sides & 0b0001) == 0; // right and top
+        } else if (1.125 * PI <= angle && angle < 1.375 * PI) { // bottom-left
+            return (sides & 0b0001) == 0 && (sides & 0b1000) == 0; // top and left
+        } else { // bottom-right
+            return (sides & 0b0100) == 0 && (sides & 0b1000) == 0; // left and bottom
+        }
+    }
+
+    private boolean canGoCounterClockwise(int sides) { // sides = `lbrt
+        final var PI = Math.PI;
+
+        if (0.375 * PI <= angle && angle < 0.625 * PI) { // top
+            return (sides & 0b1000) == 0; // left
+        } else if (0.875 * PI <= angle && angle < 1.125 * PI) { // left
+            return (sides & 0b0100) == 0; // bottom
+        } else if (1.375 * PI <= angle && angle < 1.625 * PI) { // bottom
+            return (sides & 0b0010) == 0; // right
+        } else if (1.875 * PI <= angle || angle < 0.125 * PI) { // right
+            return (sides & 0b0001) == 0; // top
+        } else if (0.125 * PI <= angle && angle < 0.375 * PI) { // top-right
+            return (sides & 0b0001) == 0 && (sides & 0b1000) == 0; // top and left
+        } else if (0.625 * PI <= angle && angle < 0.875 * PI) { // top-left
+            return (sides & 0b0100) == 0 && (sides & 0b1000) == 0; // bottom and left
+        } else if (1.125 * PI <= angle && angle < 1.375 * PI) { // bottom-left
+            return (sides & 0b0100) == 0 && (sides & 0b0010) == 0; // bottom and right
+        } else { // bottom-right
+            return (sides & 0b0001) == 0 && (sides & 0b0010) == 0; // top and right
+        }
+    }
+
+    @Override
+    public void adjustMovementParameters(Barrier barrier) {
+        radius = LanceOfDestiny.getScreenWidth() * 0.15;
+        centerX = barrier.getXPosition() + barrier.getLength() / 2 - radius * Math.cos(angle);
+        centerY = barrier.getYPosition() + barrier.getThickness() / 2 + radius * Math.sin(angle);
+//        centerX = barrier.getXPosition() + barrier.getLength() / 2 - radius * Math.cos(angle);
+//        centerY = barrier.getYPosition() + barrier.getThickness() / 2 - radius * Math.sin(angle);
+    }
+
+    private enum Direction {
+        CLOCKWISE,
+        STIFF,
+        COUNTER_CLOCKWISE
+    }
 }
