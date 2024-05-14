@@ -119,4 +119,6 @@ public class BuildPanel extends JPanel {
     public JPanel getBuildSection() {
         return buildSection;
     }
+
+    public BuildHandler getBuildHandler() {return buildHandler;}
 }

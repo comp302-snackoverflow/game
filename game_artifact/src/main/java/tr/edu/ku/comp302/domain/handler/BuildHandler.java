@@ -248,6 +248,54 @@ public class BuildHandler {
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
 
+    public ArrayList<Barrier> generateRandomMapTest(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
+        clearMap();
+        JPanel buildSection = buildPanel.getBuildSection();
+        double barrierWidth = buildSection.getWidth() / 50.;
+        ArrayList<Barrier> randomMap = new ArrayList<>();
+        SecureRandom secureRandom = new SecureRandom();
+        if (!countsSatisfied(simpleBarrierCount, firmBarrierCount, explosiveBarrierCount, giftBarrierCount)){
+            // TODO: Add system message and logger
+            return null;
+        }
+        for (int i = 0; i < simpleBarrierCount; i++) {
+            Barrier barrier = generateRandomBarrierTest(barrierWidth, BarrierType.SIMPLE_BARRIER, secureRandom);
+            randomMap.add(barrier);
+        }
+        for (int i = 0; i < firmBarrierCount; i++) {
+            Barrier barrier = generateRandomBarrierTest(barrierWidth, BarrierType.FIRM_BARRIER, secureRandom);
+            randomMap.add(barrier);
+        }
+        for (int i = 0; i < explosiveBarrierCount; i++) {
+            Barrier barrier = generateRandomBarrierTest(barrierWidth, BarrierType.EXPLOSIVE_BARRIER, secureRandom);
+            randomMap.add(barrier);
+        }
+        for (int i = 0; i < giftBarrierCount; i++) {
+            Barrier barrier = generateRandomBarrierTest(barrierWidth, BarrierType.GIFT_BARRIER, secureRandom);
+            randomMap.add(barrier);
+        }
+        countBarriers(barriersOnMap);
+        return randomMap;
+    }
+
+
+
+    private Barrier generateRandomBarrierTest(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom){
+        int buildSectionWidth = buildPanel.getBuildSection().getWidth();
+        int buildSectionHeight = buildPanel.getBuildSection().getHeight() * 4 / 8; // TODO: Change ratio later to a constant value
+        boolean collided;
+        int x, y;
+        Barrier randomBarrier;
+        do{
+            x = (int)barrierWidth / 2 + secureRandom.nextInt(buildSectionWidth - (int) barrierWidth - (int) barrierWidth / 2);
+            y = 20 + secureRandom.nextInt(buildSectionHeight - 40);  // -20 barrier -20 padding
+            randomBarrier = createBarrier(barrierType, x, y, barrierWidth);
+            collided = checkBarrierCollisionWithBarriers(randomBarrier);
+        }while(collided);
+        barriersOnMap.add(randomBarrier);
+        return randomBarrier;
+    }
+
     public int getOldWidth() {
         return oldWidth;
     }
