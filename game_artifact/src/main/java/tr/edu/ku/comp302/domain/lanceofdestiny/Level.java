@@ -20,6 +20,8 @@ public class Level {
     private List<Hex> hexs = new ArrayList<>();
     private static List<Level> levels = new ArrayList<>();
     private List<SpellBox> spellBoxes;
+    private int chances;
+    private int score;
 
 
 
@@ -41,7 +43,7 @@ public class Level {
         this.lance = lance;
         this.fireBall = fireBall;
         this.barriers = barriers;
-        
+        this.score = 0;
         // Initialize the list of remains for ExplosiveBarriers
         this.remains = new ArrayList<>();
         this.spellBoxes = new ArrayList<>();
@@ -132,6 +134,22 @@ public class Level {
     public List<SpellBox> getSpellBoxes() {
         // TODO Auto-generated method stub
         return this.spellBoxes;
+    }
+
+    public void setChances(int chances) {
+        this.chances = chances;
+    }
+
+    public int getChances() {
+        return chances;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getScore() {
+        return score;
     }
 }
 

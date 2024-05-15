@@ -123,6 +123,7 @@ public class LanceOfDestiny implements Runnable {
         handleCollisionLogic();
         handleHexMovement();
         spellHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
+        handleChanceReductionLogic();
     }
 
 
@@ -300,6 +301,15 @@ public class LanceOfDestiny implements Runnable {
                 spellBoxes.remove(spellBox);
             }
             //TODO: handle collision with lance, and also remove when it goes below the wall.
+        }
+    }
+
+    private void handleChanceReductionLogic() {
+        FireBall fb = levelPanel.getLevelHandler().getFireBall();
+        if (fb.getYPosition() + fb.getSize() >= screenHeight) {
+            // levelPanel.getLevelHandler().getLevel().setChances(levelPanel.getLevelHandler().getLevel().getChances()-1); //TODO: CHANGE THIS
+            fb.stopFireball();
+            fb.stickToLance(levelPanel.getLevelHandler().getLance());
         }
     }
 

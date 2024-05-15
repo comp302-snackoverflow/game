@@ -5,15 +5,18 @@ import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.HorizontalMovement;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
-public class GiftBarrier extends Barrier{
-    public static final String TYPE= "gift";
+public class GiftBarrier extends Barrier {
+    public static final String TYPE = "gift";
     private final SpellBox spellBox;
+
     public GiftBarrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         health = 1;
         this.movementStrategy = new HorizontalMovement();
         spellBox = new SpellBox(0, 0);
-        };
+    }
+
+    ;
 
     public void dropSpellBox() {
         spellBox.setXPosition(getXPosition() + getLength() / 2);
@@ -25,10 +28,5 @@ public class GiftBarrier extends Barrier{
         return spellBox;
     }
 
-    @Override
-    public double getSpeed() {
-        return LanceOfDestiny.getScreenWidth() * 0.075 * Math.PI;
-    }
 }
-
 

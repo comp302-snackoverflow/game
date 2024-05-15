@@ -106,6 +106,11 @@ public class FireBall extends Entity {
         this.dy = speed;
     }
 
+    public void stopFireball() {
+        moving = false;
+        this.dy = 0;
+    }
+
     public void increaseSpeed(double updateVal) {
         this.speed += updateVal;
     }
