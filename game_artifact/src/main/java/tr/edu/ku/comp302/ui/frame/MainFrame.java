@@ -88,7 +88,7 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareBuildPanel() {
-        buildPanel = new BuildPanel(this);
+        buildPanel = BuildPanel.createPanel(this);
         buildPanel.repaint();
         buildPanel.requestFocusInWindow();
     }
@@ -98,12 +98,12 @@ public class MainFrame extends JFrame {
         self.prepareLoginPanel();
         self.prepareRegisterPanel();
         self.prepareMainMenu();
-        self.prepareLevelPanel();
+        // self.prepareLevelPanel();
         self.prepareBuildPanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
-        self.cards.add(self.levelPanel, LEVEL);
+        // self.cards.add(self.levelPanel, LEVEL);
         self.cards.add(self.buildPanel, BUILD);
         return self;
     }
