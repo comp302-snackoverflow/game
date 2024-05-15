@@ -90,7 +90,7 @@ public class GenerateRandomMapTest {
         int buildSectionWidth = ((BuildPanel)mainFrame.getBuildPanel()).getBuildSection().getWidth();
         int buildSectionHeight = ((BuildPanel)mainFrame.getBuildPanel()).getBuildSection().getHeight() * 4 / 8;
         for (Barrier barrier: generatedMap) {
-            if (barrier.getYPosition() < 0 || barrier.getYPosition() > buildSectionHeight - 20 || barrier.getXPosition() < 0 || barrier.getXPosition() > buildSectionWidth - barrier.getLength() / 2) {
+            if (barrier.getYPosition() < 0 || barrier.getYPosition() > buildSectionHeight - 20|| barrier.getXPosition() < 0 || barrier.getXPosition() > buildSectionWidth - barrier.getLength() / 2) {
                 windowBoundaryPassed = true;
                 break;
             }
@@ -98,5 +98,19 @@ public class GenerateRandomMapTest {
 
         Assertions.assertFalse(windowBoundaryPassed, "The barrier positions should not pass the window boundaries!");
 
+    }
+
+    @Test
+    public void checkCollisions() {
+        boolean collisionDetected = false;
+        ArrayList<Barrier> generatedMap = buildHandler.generateRandomMapTest(100,30,30,40);
+        for (Barrier barrier: generatedMap) {
+            if(buildHandler.checkBarrierCollisionWithBarriers(barrier)) {
+                collisionDetected = true;
+                break;
+            }
+        }
+
+        Assertions.assertFalse(collisionDetected, "The barriers should not collide once a random map is generated.");
     }
 }
