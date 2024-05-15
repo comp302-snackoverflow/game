@@ -28,7 +28,6 @@ public class GenerateRandomMapTest {
         mainFrame = MainFrame.createMainFrame();
         buildHandler = ((BuildPanel) mainFrame.getBuildPanel()).getBuildHandler();
         mainFrame.showBuildPanel();
-
     }
 
     @Test
