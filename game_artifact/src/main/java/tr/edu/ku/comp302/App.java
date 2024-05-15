@@ -37,7 +37,7 @@ public class App {
         y_intervals.removeLast();
 
         //the number of gift barriers at the start were chosen to be 0 for now since they were not implemented
-        HashMap<List<Double>, Barrier> newMap = randomModel.generateRandomMap(x_intervals, y_intervals, 90, 25, 0, 35);
+        HashMap<List<Double>, Barrier> newMap = randomModel.generateRandomMap(x_intervals, y_intervals,75, 25, 10, 35);
 
         for (Map.Entry<List<Double>, Barrier> entry : newMap.entrySet()) {
             barriers.add(entry.getValue());

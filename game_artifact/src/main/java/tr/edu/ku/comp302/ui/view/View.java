@@ -36,7 +36,7 @@ public class View {
     private static final String FIRM_BARRIER_IMAGE_PATH = "/assets/firm_barrier.png";
     private static final String EXPLOSIVE_BARRIER_IMAGE_PATH = "/assets/explosive_barrier.png";
     private static final String REMAIN_IMAGE_PATH = "/assets/remain_image.png";
-    private static final String GIFTING_BARRIER_IMAGE_PATH = "/assets/gifting_barrier.png";
+    private static final String GIFTING_BARRIER_IMAGE_PATH = "/assets/gift_barrier.png";
     private static final String LANCE_EXTENSION_IMAGE_PATH = "/assets/lance_extension.png";
     private static final String MISSING_TEXTURE_IMAGE_PATH = "/assets/missing_texture.png";
 

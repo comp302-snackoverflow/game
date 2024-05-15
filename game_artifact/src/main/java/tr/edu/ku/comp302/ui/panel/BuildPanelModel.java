@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
@@ -55,7 +56,7 @@ public class BuildPanelModel {
         int firmCount = 0;
         int simpleCount = 0;
         int explosiveCount = 0;
-//        int giftCount = 0;
+        int giftCount = 0;
 
         //TODO: add the gift barrier once you have it !
         for (Map.Entry<List<Double>, Barrier> e : barriers.entrySet()) {
@@ -63,6 +64,7 @@ public class BuildPanelModel {
                 case FirmBarrier ignored -> firmCount++;
                 case ExplosiveBarrier ignored -> explosiveCount++;
                 case SimpleBarrier ignored -> simpleCount++;
+                case GiftBarrier ignored -> giftCount++;
                 default -> {
                 }
             }
@@ -71,6 +73,7 @@ public class BuildPanelModel {
         this.simpleBarrierCount = simpleCount;
         this.firmBarrierCount = firmCount;
         this.explosiveBarrierCount = explosiveCount;
+        this.giftBarrierCount = giftCount;
     }
 
 
@@ -84,6 +87,8 @@ public class BuildPanelModel {
         generateRandomBarrierType(newMap, xCopy, yCopy, simpleNum, "simple");
         generateRandomBarrierType(newMap, xCopy, yCopy, explosiveNum, "explosive");
         generateRandomBarrierType(newMap, xCopy, yCopy, firmNum, "firm");
+        generateRandomBarrierType(newMap, xCopy, yCopy, giftNum, "gift");
+
 
         return newMap;
     }
@@ -124,6 +129,10 @@ public class BuildPanelModel {
                     barrier = new FirmBarrier(x + width / 104, y + (((height / 2) - 120) / 7) / 2);
                     barrierMap.put(coordinates, barrier);
                     break;
+                case "gift":
+                    barrier = new GiftBarrier(x + width / 104, y + (((height / 2) - 120) / 7) / 2);
+                    barrierMap.put(coordinates, barrier);
+                    break;    
                 default:
                     break;
             }
