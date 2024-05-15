@@ -124,6 +124,7 @@ public class LanceOfDestiny implements Runnable {
         handleHexMovement();
         spellHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
         handleChanceReductionLogic();
+        handleScoreLogic(currentTime);
     }
 
 
@@ -307,10 +308,19 @@ public class LanceOfDestiny implements Runnable {
     private void handleChanceReductionLogic() {
         FireBall fb = levelPanel.getLevelHandler().getFireBall();
         if (fb.getYPosition() + fb.getSize() >= screenHeight) {
-            // levelPanel.getLevelHandler().getLevel().setChances(levelPanel.getLevelHandler().getLevel().getChances()-1); //TODO: CHANGE THIS
+            levelPanel.getLevelHandler().getLevel().decreaseChances();
+            //TODO: Stop the game if the chances become 0!
             fb.stopFireball();
             fb.stickToLance(levelPanel.getLevelHandler().getLance());
         }
+    }
+
+    //TODO: Ask mert/meriç/ömer on how to implement the time. Since it's in miliseconds, the score is just zero all the time.
+    private void handleScoreLogic(long currentTime) {
+        Level level = levelPanel.getLevelHandler().getLevel();
+        long newScore = level.getScore() + 300 / (currentTime);
+        level.setScore((int)newScore);
+        // newScore = oldScore + 300 / (currentTime - gameStartingTime) //TODO: is gameStartingTime needed ? Ask this to meriç/mert/ömer.
     }
 
     private double calculateAngularChangePerUpdate(double angularSpeed) {

@@ -44,6 +44,7 @@ public class Level {
         this.fireBall = fireBall;
         this.barriers = barriers;
         this.score = 0;
+        this.chances = 3;
         // Initialize the list of remains for ExplosiveBarriers
         this.remains = new ArrayList<>();
         this.spellBoxes = new ArrayList<>();
@@ -136,8 +137,8 @@ public class Level {
         return this.spellBoxes;
     }
 
-    public void setChances(int chances) {
-        this.chances = chances;
+    public void decreaseChances() {
+        this.chances--;
     }
 
     public int getChances() {

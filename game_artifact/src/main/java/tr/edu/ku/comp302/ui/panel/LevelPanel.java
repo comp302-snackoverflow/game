@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.entity.SpellBox;
+import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
@@ -9,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 
 public class LevelPanel extends JPanel {
@@ -47,6 +49,8 @@ public class LevelPanel extends JPanel {
         levelHandler.renderHexs(g);
 
         levelHandler.renderSpellBox(g);
+        prepareHeartImage(g);
+
     }
 
     // TODO: Handle this method later.
@@ -147,6 +151,19 @@ public class LevelPanel extends JPanel {
             }
         });
         return button;
+    }
+
+    //TODO: The heart is not resizing for some reason. Fix this when you can.
+    public void prepareHeartImage(Graphics g) {
+        BufferedImage heart = ImageHandler.getImageFromPath("/assets/heart_image.png");
+        assert heart != null;
+        ImageHandler.resizeImage(heart, LanceOfDestiny.getScreenWidth()/100,10);
+        int x = getWidth() - heart.getWidth() - 40;
+        int y = 5;
+        g.drawImage(heart, x, y, null);
+        g.setColor(Color.BLACK); // You can change the color as needed
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+        g.drawString("x" + levelHandler.getLevel().getChances(), x + heart.getWidth() + 5, y + heart.getHeight() / 2 + 6);
     }
 
 
