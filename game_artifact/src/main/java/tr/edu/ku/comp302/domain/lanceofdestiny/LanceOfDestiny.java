@@ -20,6 +20,7 @@ import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -125,6 +126,7 @@ public class LanceOfDestiny implements Runnable {
         spellHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
         handleChanceReductionLogic();
         handleScoreLogic(currentTime);
+        handleRemainLogic();
     }
 
 
@@ -312,6 +314,18 @@ public class LanceOfDestiny implements Runnable {
             //TODO: Stop the game if the chances become 0!
             fb.stopFireball();
             fb.stickToLance(levelPanel.getLevelHandler().getLance());
+        }
+    }
+
+    private void handleRemainLogic() {
+        List<Remain> remains = levelHandler.getLevel().getRemains();
+
+        for (Iterator<Remain> iterator = remains.iterator(); iterator.hasNext(); ) {
+            Remain remain = iterator.next();
+            if (CollisionHandler.checkRemainLanceCollisions(levelHandler.getLance(), remain)) {
+                levelHandler.getLevel().decreaseChances();
+                iterator.remove();
+            }
         }
     }
 
