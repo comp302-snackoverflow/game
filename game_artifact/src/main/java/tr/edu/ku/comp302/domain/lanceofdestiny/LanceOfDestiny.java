@@ -121,11 +121,10 @@ public class LanceOfDestiny implements Runnable {
 
         handleFireballLogic();
         handleBarriersMovement(currentTime);
-        handleCollisionLogic();
+        handleCollisionLogic(currentTime);
         handleHexMovement();
         spellHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
         handleChanceReductionLogic();
-        handleScoreLogic(currentTime);
         handleRemainLogic();
     }
 
@@ -248,7 +247,7 @@ public class LanceOfDestiny implements Runnable {
         fb.move();
     }
 
-    private void handleCollisionLogic() {
+    private void handleCollisionLogic(long currentTime) {
         CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
 
@@ -257,6 +256,7 @@ public class LanceOfDestiny implements Runnable {
 
         for (Barrier barrier : barriers.stream().toList()) {
             if (barrier.isDead()) {
+                handleScoreLogic(currentTime);
                 if (barrier instanceof ExplosiveBarrier b) {
                     b.dropRemains();
                 }
@@ -293,7 +293,6 @@ public class LanceOfDestiny implements Runnable {
             if (remain.getYPosition() > screenHeight) {
                 remains.remove(remain);
             }
-            //TODO: handle collision with lance, and also remove when it goes below the wall.
         }
 
         List<SpellBox> spellBoxes = levelHandler.getSpellBoxes();
@@ -303,17 +302,16 @@ public class LanceOfDestiny implements Runnable {
             if (spellBox.getYPosition() > screenHeight) {
                 spellBoxes.remove(spellBox);
             }
-            //TODO: handle collision with lance, and also remove when it goes below the wall.
         }
     }
 
     private void handleChanceReductionLogic() {
-        FireBall fb = levelPanel.getLevelHandler().getFireBall();
+        FireBall fb = levelHandler.getFireBall();
         if (fb.getYPosition() + fb.getSize() >= screenHeight) {
-            levelPanel.getLevelHandler().getLevel().decreaseChances();
+            levelHandler.getLevel().decreaseChances();
             //TODO: Stop the game if the chances become 0!
             fb.stopFireball();
-            fb.stickToLance(levelPanel.getLevelHandler().getLance());
+            fb.stickToLance(levelHandler.getLance());
         }
     }
 
@@ -331,8 +329,8 @@ public class LanceOfDestiny implements Runnable {
 
     //TODO: Ask mert/meriç/ömer on how to implement the time. Since it's in miliseconds, the score is just zero all the time.
     private void handleScoreLogic(long currentTime) {
-        Level level = levelPanel.getLevelHandler().getLevel();
-        long newScore = level.getScore() + 300 / (currentTime);
+        Level level = levelHandler.getLevel();
+        long newScore = level.getScore() + 300 / (currentTime/1000);
         level.setScore((int)newScore);
         // newScore = oldScore + 300 / (currentTime - gameStartingTime) //TODO: is gameStartingTime needed ? Ask this to meriç/mert/ömer.
     }
