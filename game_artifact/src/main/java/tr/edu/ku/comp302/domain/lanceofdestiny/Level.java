@@ -4,8 +4,10 @@ import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ public class Level {
     private List<Remain> remains;
     private List<Hex> hexs = new ArrayList<>();
     private static List<Level> levels = new ArrayList<>();
+    private List<SpellBox> spellBoxes;
 
 
 
@@ -41,6 +44,8 @@ public class Level {
         
         // Initialize the list of remains for ExplosiveBarriers
         this.remains = new ArrayList<>();
+        this.spellBoxes = new ArrayList<>();
+
 
         // Iterate through barriers to extract remains from ExplosiveBarriers
         for (Barrier barrier : barriers) {
@@ -48,6 +53,10 @@ public class Level {
             if (barrier instanceof ExplosiveBarrier) {
                 ExplosiveBarrier explosiveBarrier = (ExplosiveBarrier) barrier;
                 remains.add(explosiveBarrier.getRemain());
+            }
+            if (barrier instanceof GiftBarrier) {
+                GiftBarrier giftBarrier = (GiftBarrier) barrier;
+                spellBoxes.add(giftBarrier.getSpellBox());
             }
         }
 
@@ -118,6 +127,11 @@ public class Level {
 
     public void setHexs(List<Hex> hexs) {
         this.hexs = hexs;
+    }
+
+    public List<SpellBox> getSpellBoxes() {
+        // TODO Auto-generated method stub
+        return this.spellBoxes;
     }
 }
 

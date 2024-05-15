@@ -16,6 +16,7 @@ public class View {
         LANCE_EXTENSION,
         MISSING_TEXTURE,
         HEX,
+        SPELL_BOX
     }
 
     public static final Type FIREBALL = Type.FIREBALL;
@@ -28,6 +29,7 @@ public class View {
     public static final Type LANCE_EXTENSION = Type.LANCE_EXTENSION;
     public static final Type MISSING_TEXTURE = Type.MISSING_TEXTURE;
     public static final Type HEX = Type.HEX;
+    public static final Type SPELL_BOX = Type.SPELL_BOX;
 
     private static final String HEX_IMAGE_PATH = "/assets/fireball_image.png";
     private static final String FIREBALL_IMAGE_PATH = "/assets/fireball_image.png";
@@ -39,6 +41,7 @@ public class View {
     private static final String GIFTING_BARRIER_IMAGE_PATH = "/assets/gift_barrier.png";
     private static final String LANCE_EXTENSION_IMAGE_PATH = "/assets/lance_extension.png";
     private static final String MISSING_TEXTURE_IMAGE_PATH = "/assets/missing_texture.png";
+    private static final String SPELL_BOX_IMAGE_PATH = "/assets/spell_box.png";
 
     private BufferedImage defaultImage;
     private BufferedImage image;
@@ -69,6 +72,7 @@ public class View {
             case LANCE_EXTENSION -> new View(LANCE_EXTENSION_IMAGE_PATH);
             case MISSING_TEXTURE -> new View(MISSING_TEXTURE_IMAGE_PATH);
             case HEX -> new View(HEX_IMAGE_PATH);
+            case SPELL_BOX -> new View(SPELL_BOX_IMAGE_PATH);
         };
     }
 }

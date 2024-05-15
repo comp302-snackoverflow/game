@@ -1,4 +1,5 @@
 package tr.edu.ku.comp302.ui.panel;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
@@ -44,6 +45,8 @@ public class LevelPanel extends JPanel {
 
 
         levelHandler.renderHexs(g);
+
+        levelHandler.renderSpellBox(g);
     }
 
     // TODO: Handle this method later.
@@ -71,6 +74,11 @@ public class LevelPanel extends JPanel {
         levelHandler.getRemains().forEach(remain ->
             remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
                     (int) size.getWidth(), (int) size.getHeight()));
+
+        levelHandler.resizeSpellBoxImage();
+        levelHandler.getSpellBoxes().forEach(spellBox ->
+            spellBox.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
+                                (int) size.getWidth(), (int) size.getHeight()));
 
 
     }

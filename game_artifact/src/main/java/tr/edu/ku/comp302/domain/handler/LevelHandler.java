@@ -6,6 +6,7 @@ import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
@@ -24,6 +25,7 @@ public class LevelHandler {
     private BarrierRenderer barrierRenderer = new BarrierRenderer();
     private static final View remainView = View.of(View.REMAIN);
     private static final View hexView = View.of(View.HEX);
+    private static final View spellBoxView = View.of(View.SPELL_BOX);
     private final Logger logger = LogManager.getLogger(LevelHandler.class);
     private Level level;
 
@@ -39,6 +41,12 @@ public class LevelHandler {
 
     
     public void resizeHexImage() {
+    }
+
+    public void resizeSpellBoxImage(){
+        if (!getSpellBoxes().isEmpty()) {
+            spellBoxView.resizeImage(level.getSpellBoxes().getFirst().getSize(), level.getSpellBoxes().getFirst().getSize());
+        }
     }
 
     public void resizeFireBallImage() {
@@ -88,6 +96,18 @@ public class LevelHandler {
         barrierRenderer.renderBarriers(g, getBarriers());
     }
 
+    public void renderSpellBox(Graphics g){
+        List<SpellBox> spellBoxes = level.getSpellBoxes();
+        
+        // Output the number of remains for debugging purposes
+        //System.out.println(remains.size());
+        
+        // Iterate through the remains and render those that are marked as dropped
+        for (SpellBox spellBox : spellBoxes.stream().filter(SpellBox::isDropped).toList()) {
+            renderSpellBoxView(g, spellBox);
+        }
+    }
+
     /**
      * Renders the remains of destroyed ExplosiveBarriers on the game screen.
      * Retrieves the remains from the current level and renders them if they are marked as dropped.
@@ -131,6 +151,10 @@ public class LevelHandler {
         g.drawImage(remainView.getImage(), (int) remain.getXPosition(), (int) remain.getYPosition(), null);
     }
 
+    private void renderSpellBoxView(Graphics g, SpellBox spellBox) {
+        g.drawImage(spellBoxView.getImage(), (int) spellBox.getXPosition(), (int) spellBox.getYPosition(), null);
+    }
+
     public Level getLevel() {
         return level;
     }
@@ -153,6 +177,9 @@ public class LevelHandler {
 
     public Lance getLance() {
         return level.getLance();
+    }
+    public List<SpellBox> getSpellBoxes(){
+        return level.getSpellBoxes();
     }
 
 

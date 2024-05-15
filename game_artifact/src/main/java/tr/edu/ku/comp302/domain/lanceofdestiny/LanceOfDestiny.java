@@ -4,8 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 import tr.edu.ku.comp302.domain.entity.Remain;
-
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
@@ -255,6 +256,9 @@ public class LanceOfDestiny implements Runnable {
                 if (barrier instanceof ExplosiveBarrier b) {
                     b.dropRemains();
                 }
+                if (barrier instanceof GiftBarrier b) {
+                    b.dropSpellBox();
+                }
                 barriers.remove(barrier);
             }
         }
@@ -284,6 +288,16 @@ public class LanceOfDestiny implements Runnable {
             remain.move();
             if (remain.getYPosition() > screenHeight) {
                 remains.remove(remain);
+            }
+            //TODO: handle collision with lance, and also remove when it goes below the wall.
+        }
+
+        List<SpellBox> spellBoxes = levelHandler.getSpellBoxes();
+        for (SpellBox spellBox : spellBoxes.stream().filter(SpellBox::isDropped).toList()) {
+
+            spellBox.move();
+            if (spellBox.getYPosition() > screenHeight) {
+                spellBoxes.remove(spellBox);
             }
             //TODO: handle collision with lance, and also remove when it goes below the wall.
         }
