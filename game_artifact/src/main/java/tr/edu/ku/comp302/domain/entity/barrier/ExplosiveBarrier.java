@@ -1,7 +1,8 @@
 package tr.edu.ku.comp302.domain.entity.barrier;
 
 import tr.edu.ku.comp302.domain.entity.Remain;
-import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.HorizontalMovement;
+import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.CircularMovement;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 public class ExplosiveBarrier extends Barrier {
     public static final String TYPE = "explosive";
@@ -11,14 +12,10 @@ public class ExplosiveBarrier extends Barrier {
         super(xPosition, yPosition);
         remain = new Remain(0, 0);
         health = 1;
-        // FIXME: replace with circular movement once it is refactored
-        this.movementStrategy = new HorizontalMovement(); // new CircularMovement();
+        this.movementStrategy = new CircularMovement(this);
     }
 
     public void dropRemains() {
-        // barrier is removed then the asset remains added 
-        // starting from the x and y position fot he center of 
-        // the barrier that was destroyed the remains fall with constant speed
         remain.setXPosition(getXPosition() + getLength() / 2);
         remain.setYPosition(getYPosition() + getThickness() / 2);
         remain.drop();
@@ -26,5 +23,10 @@ public class ExplosiveBarrier extends Barrier {
 
     public Remain getRemain() {
         return remain;
+    }
+
+    @Override
+    public double getSpeed() {
+        return LanceOfDestiny.getScreenWidth() * 0.075 * Math.PI;
     }
 }

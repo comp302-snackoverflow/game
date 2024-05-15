@@ -26,7 +26,7 @@ import java.util.TimerTask;
 
 
 public class LanceOfDestiny implements Runnable {
-    private Logger logger = LogManager.getLogger(LanceOfDestiny.class);
+    private final Logger logger = LogManager.getLogger(LanceOfDestiny.class);
     private LevelPanel levelPanel;  // TODO: change this when we implement more than one level
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
@@ -273,8 +273,8 @@ public class LanceOfDestiny implements Runnable {
                 } else if (barrier.isMoving() && currentTime - barrier.getLastDiceRollTime() >= 3_000_000_000L) {
                     barrier.tryStop(currentTime);
                 }
-                barrier.move(barrier.getSpeed() / UPS_SET);
                 barrier.handleCloseCalls(levelHandler.getBarriers());
+                barrier.move(barrier.getSpeed() / UPS_SET);
             }
         }
 

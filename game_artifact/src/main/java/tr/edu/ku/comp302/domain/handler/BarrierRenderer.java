@@ -54,6 +54,14 @@ public class BarrierRenderer {
         if (image != null) {
             g.drawImage(image, (int) barrier.getXPosition(), (int) barrier.getYPosition(), null);
         }
+        // This can be used to draw the invisible ellipse hit boxes around the explosive barriers
+//        if (barrier instanceof ExplosiveBarrier b) {
+//            var strategy = b.getMovementStrategy();
+//            g.drawOval((int) (b.getXPosition() - strategy.getXPadding()),
+//                       (int) (b.getYPosition() - strategy.getYPadding()),
+//                       (int) (b.getLength() + 2 * strategy.getXPadding()),
+//                       (int) (b.getThickness() + 2 * b.getMovementStrategy().getYPadding()));
+//        }
     }
 
     private void renderFirmBarrier(Graphics g, Barrier barrier) {

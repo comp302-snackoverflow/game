@@ -4,12 +4,21 @@ import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 /**
  * This strategy class calculates the movements and collisions of the horizontal moving barriers
  */
 public class HorizontalMovement implements IMovementStrategy {
+    private final SecureRandom random;
+    private int direction;
+
+    public HorizontalMovement() {
+        direction = 0;
+        random = new SecureRandom();
+    }
+
     @Override
     public double getXPadding() {
         return LanceOfDestiny.getScreenWidth() / 52.0;
@@ -26,8 +35,13 @@ public class HorizontalMovement implements IMovementStrategy {
      */
     @Override
     public void move(Barrier barrier, double speed) {
-        barrier.setXPosition(barrier.getXPosition() + speed * barrier.getDirection());
-        barrier.getBoundingBox().setRect(barrier.getXPosition() + speed * barrier.getDirection(), barrier.getYPosition(), barrier.getLength(), barrier.getThickness());
+        barrier.setXPosition(barrier.getXPosition() + speed * direction);
+        barrier.getBoundingBox().setRect(barrier.getXPosition() + speed * direction, barrier.getYPosition(), barrier.getLength(), barrier.getThickness());
+    }
+
+    @Override
+    public void turnBack() {
+        direction = -direction;
     }
 
     @Override
@@ -36,10 +50,35 @@ public class HorizontalMovement implements IMovementStrategy {
                 getXPadding(), getYPadding()); // the bit order is `lbrt`
 
         if ((sides & 0b1010) == 0b1010) {
-            barrier.stop();
-        } else if ((barrier.getDirection() == 1 && (sides & 0b0010) != 0)
-                || (barrier.getDirection() == -1 && (sides & 0b1000) != 0)) {
-            barrier.goBack();
+            barrier.stopMoving();
+        } else if ((direction == 1 && (sides & 0b0010) != 0)
+                || (direction == -1 && (sides & 0b1000) != 0)) {
+            barrier.turnBack();
         }
+    }
+
+    @Override
+    public int getXDirection() {
+        return direction;
+    }
+
+    @Override
+    public int getYDirection() {
+        return 0;
+    }
+
+    @Override
+    public void stopMoving() {
+        direction = 0;
+    }
+
+    @Override
+    public void startMoving() {
+        direction = random.nextInt(2) * 2 - 1; // -1 if nextInt is 0 else 1.
+    }
+
+    @Override
+    public void adjustMovementParameters(Barrier barrier) {
+        // no need to adjust anything
     }
 }

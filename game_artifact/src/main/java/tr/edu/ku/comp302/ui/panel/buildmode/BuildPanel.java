@@ -51,7 +51,7 @@ public class BuildPanel extends JPanel {
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         add(controlsSection, gbc);
-
+        addBuildListeners();
         addSelectBarrierActions();
         addGenerateAction();
         addButtonsActions();
@@ -60,6 +60,8 @@ public class BuildPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        buildHandler.setOldWidth(buildSection.getWidth());
+        buildHandler.setOldHeight(buildSection.getHeight());
         buildHandler.paintPanel(g, buildSection.getWidth(), buildSection.getHeight());
     }
 
