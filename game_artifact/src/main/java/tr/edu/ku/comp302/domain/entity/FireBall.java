@@ -109,6 +109,7 @@ public class FireBall extends Entity {
     public void stopFireball() {
         moving = false;
         this.dy = 0;
+        this.speed = 2; // Set the speed back to 2 in case the game restarts.
     }
 
     public void increaseSpeed(double updateVal) {
