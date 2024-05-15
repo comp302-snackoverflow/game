@@ -11,57 +11,62 @@ import java.awt.event.MouseEvent;
 public class BuildPanel extends JPanel {
     private MainFrame mainFrame;
     private BuildHandler buildHandler;
-    private final JPanel buildSection;
+    private JPanel buildSection;
     private JPanel controlsSection;
     private BarriersPanel barriersPanel;
     private GeneratePanel generatePanel;
     private ButtonsPanel buttonsPanel;
 
-    public BuildPanel(MainFrame mainFrame) {
+    private BuildPanel(MainFrame mainFrame) {
         super();
         this.mainFrame = mainFrame;
-        buildHandler = new BuildHandler(this);
-        setLayout(new GridBagLayout());
+    }
+
+    public static BuildPanel createPanel(MainFrame mainFrame) {
+        BuildPanel self = new BuildPanel(mainFrame);
+        self.setMinimumSize(new Dimension(720, 540));
+        self.buildHandler = new BuildHandler(self);
+        self.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        buildSection = new JPanel();
-        buildSection.setBackground(new Color(0xA34E4E4E, true));
-        buildSection.setLayout(null); // TODO: see if a grid layout can be used and barriers can be put into it directly
+        self.buildSection = new JPanel();
+        self.buildSection.setBackground(new Color(0xA34E4E4E, true));
+        self.buildSection.setLayout(null); // TODO: see if a grid layout can be used and barriers can be put into it directly
         //  If it can be used, just a simple mouse listener can be used to
         //  add/remove barriers. Also would make drawing gridlines easier.
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.weightx = 1;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        add(buildSection, gbc);
+        self.add(self.buildSection, gbc);
 
 
-        controlsSection = new JPanel();
-        controlsSection.setLayout(new BorderLayout());
-        barriersPanel = new BarriersPanel();
-        generatePanel = new GeneratePanel();
-        buttonsPanel = new ButtonsPanel();
-        controlsSection.add(barriersPanel, BorderLayout.NORTH);
-        controlsSection.add(generatePanel, BorderLayout.CENTER);
-        controlsSection.add(buttonsPanel, BorderLayout.SOUTH);
+        self.controlsSection = new JPanel();
+        self.controlsSection.setLayout(new BorderLayout());
+        self.barriersPanel = new BarriersPanel();
+        self.generatePanel = new GeneratePanel();
+        self.buttonsPanel = new ButtonsPanel();
+        self.controlsSection.add(self.barriersPanel, BorderLayout.NORTH);
+        self.controlsSection.add(self.generatePanel, BorderLayout.CENTER);
+        self.controlsSection.add(self.buttonsPanel, BorderLayout.SOUTH);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 0;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        add(controlsSection, gbc);
-        addBuildListeners();
-        addSelectBarrierActions();
-        addGenerateAction();
-        addButtonsActions();
+        self.add(self.controlsSection, gbc);
+        self.addBuildListeners();
+        self.addSelectBarrierActions();
+        self.addGenerateAction();
+        self.addButtonsActions();
+
+        return self;
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        buildHandler.setOldWidth(buildSection.getWidth());
-        buildHandler.setOldHeight(buildSection.getHeight());
         buildHandler.paintPanel(g, buildSection.getWidth(), buildSection.getHeight());
     }
 
