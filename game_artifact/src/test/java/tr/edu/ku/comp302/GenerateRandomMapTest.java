@@ -13,12 +13,9 @@ import javax.swing.*;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class GenerateRandomMapTest {
-    private int screenWidth = 1280;
-    private int screenHeight = 800;
     private MainFrame mainFrame;
 
     private BuildHandler buildHandler;
@@ -83,6 +80,23 @@ public class GenerateRandomMapTest {
         Assertions.assertEquals(10, firmCount, "The method should generate the correct number of firm barriers.");
         Assertions.assertEquals(10, explosiveCount, "The method should generate the correct number of explosive barriers.");
         // Assertions.assertEquals(10, giftCount, "The method should generate the correct number of gift barriers."); //TODO: Uncomment this once we have gift barriers.
+
+    }
+
+    @Test
+    public void checkWindowBoundaries() {
+        boolean windowBoundaryPassed = false;
+        ArrayList<Barrier> generatedMap = buildHandler.generateRandomMapTest(100,30,30,40);
+        int buildSectionWidth = ((BuildPanel)mainFrame.getBuildPanel()).getBuildSection().getWidth();
+        int buildSectionHeight = ((BuildPanel)mainFrame.getBuildPanel()).getBuildSection().getHeight() * 4 / 8;
+        for (Barrier barrier: generatedMap) {
+            if (barrier.getYPosition() < 0 || barrier.getYPosition() > buildSectionHeight - 20 || barrier.getXPosition() < 0 || barrier.getXPosition() > buildSectionWidth - barrier.getLength() / 2) {
+                windowBoundaryPassed = true;
+                break;
+            }
+        }
+
+        Assertions.assertFalse(windowBoundaryPassed, "The barrier positions should not pass the window boundaries!");
 
     }
 }
