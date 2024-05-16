@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class LoadService {
     private static LoadService instance;
-    private final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
     private LoadService() {

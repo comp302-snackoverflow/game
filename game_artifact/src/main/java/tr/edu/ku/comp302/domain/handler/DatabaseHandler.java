@@ -1,5 +1,9 @@
 package tr.edu.ku.comp302.domain.handler;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
@@ -8,37 +12,34 @@ import tr.edu.ku.comp302.domain.services.save.FireballData;
 import tr.edu.ku.comp302.domain.services.save.GameData;
 import tr.edu.ku.comp302.domain.services.save.LanceData;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class DatabaseHandler {
     private static DatabaseHandler instance;
-    private final String DATABASE_URL;
-    private final String USER;
-    private final String PASSWORD;
-
-    private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
+    private final HikariDataSource dataSource;
+    private final LoadingCache<Integer, String> barrierTypeCache;
+    private final LoadingCache<String, Integer> barrierIdCache;
+    private final Logger logger = LogManager.getLogger(DatabaseHandler.class);
 
     private DatabaseHandler() {
-        Properties prop = new Properties();
+        barrierTypeCache =
+            Caffeine.newBuilder()
+                    .maximumSize(128)
+                    .weakValues()
+                    .build(this::getBarrierType);
+        barrierIdCache =
+            Caffeine.newBuilder()
+                    .maximumSize(128)
+                    .weakValues()
+                    .build(this::getBarrierFromType);
 
-        try (FileInputStream fis = new FileInputStream("./game_artifact/src/main/resources/database.config")) {
-            prop.load(fis);
-        } catch (IOException e) {
-            logger.error(e);
-        }
-
-        DATABASE_URL = prop.getProperty("url");
-        USER = prop.getProperty("username");
-        PASSWORD = prop.getProperty("password");
+        HikariConfig config = new HikariConfig("/hikari.properties");
+        dataSource = new HikariDataSource(config);
     }
 
     public static DatabaseHandler getInstance() {
@@ -47,11 +48,11 @@ public class DatabaseHandler {
         }
         return instance;
     }
+
     public Connection getConnection() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-        } catch (Exception e) {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
             logger.error(e);
             return null;
         }
@@ -161,7 +162,8 @@ public class DatabaseHandler {
 
     /**
      * Load barriers from the database from a save or a map
-     * @param id save_ref or map_ref
+     *
+     * @param id   save_ref or map_ref
      * @param type "save" or "map" depending on what you want to load
      * @return A list containing the barriers in the save or map
      */
@@ -291,8 +293,17 @@ public class DatabaseHandler {
                         ps.setInt(5, saveRef);          // but it is for clarity
                         ps.setNull(6, java.sql.Types.INTEGER);
                     }
-                    ps.executeUpdate();
+                    ps.addBatch();
                 }
+                int[] numUpdates = ps.executeBatch();
+                for (int i = 0; i < numUpdates.length; i++) {
+                    if (numUpdates[i] == -2) {
+                        logger.debug("Execution {}: unknown number of rows updated", i);
+                    } else {
+                        logger.debug("Execution {} successful: {} rows updated", i, numUpdates[i]);
+                    }
+                }
+
                 return true;
             }
         } catch (SQLException e) {
@@ -320,7 +331,7 @@ public class DatabaseHandler {
         return -1;
     }
 
-    public int getBarrierFromName(String type) {
+    private int getBarrierFromType(String type) {
         final String query = "SELECT id FROM BarrierType WHERE name = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -339,7 +350,7 @@ public class DatabaseHandler {
         return 1; // default to simple barrier
     }
 
-    public String getBarrierTypeFromId(int id) {
+    private String getBarrierType(int id) {
         final String query = "SELECT name FROM BarrierType WHERE id = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -357,4 +368,13 @@ public class DatabaseHandler {
         }
         return SimpleBarrier.TYPE; // default to simple barrier
     }
+
+    public String getBarrierTypeFromId(int id) {
+        return barrierTypeCache.get(id);
+    }
+
+    public int getBarrierIdFromType(String type) {
+        return barrierIdCache.get(type);
+    }
+
 }
