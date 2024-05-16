@@ -14,20 +14,28 @@ public class Level {
     private FireBall fireBall;
     private List<Barrier> barriers;
     private List<Remain> remains;
+    private double score;
+
     private static List<Level> levels = new ArrayList<>();
 
-    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers) {
+    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, double score) {
         this.lance = lance;
         this.fireBall = fireBall;
         this.barriers = barriers;
         this.remains = new ArrayList<>();
+        this.score = score;
 
         for (Barrier barrier : barriers) {
             if (barrier instanceof ExplosiveBarrier b) {
                 remains.add(b.getRemain());
             }
         }
+
         levels.add(this);
+    }
+
+    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers) {
+        this(lance, fireBall, barriers, 0);
     }
 
     public Level(Lance lance, FireBall fireBall) {

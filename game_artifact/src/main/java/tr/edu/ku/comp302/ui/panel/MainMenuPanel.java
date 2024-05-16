@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
+import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.save.LoadService;
 import tr.edu.ku.comp302.domain.services.save.SaveService;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
@@ -35,8 +36,8 @@ public class MainMenuPanel extends JPanel {
         });
         loadGameButton.addActionListener(e -> {
 
-            LevelPanel lp = LoadService.getInstance().loadMap(9, mainFrame);
-            mainFrame.setLevelPanel(lp);
+            Level level = LoadService.getInstance().loadMap(9);
+            mainFrame.setCurrentLevel(level);
             mainFrame.showLevelPanel();
 //            LanceOfDestiny.setCurrentGameState(GameState.LOAD_GAME);
             LanceOfDestiny.setCurrentGameState(GameState.PLAYING);

@@ -21,6 +21,11 @@ public class FireBall extends Entity {
         moving = false;
     }
 
+    public void adjustPositionAndSpeed(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+        updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
+        speed = speed * newWidth / oldWidth;
+    }
+
     // for handling reflections with steady surfaces
     // need to pass the surface angle
     public void handleReflection(double surfaceAngleDegrees) {

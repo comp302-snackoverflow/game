@@ -68,22 +68,7 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareLevelPanel() {
-        Lance lance = new Lance(576, 600);
-        FireBall fb = new FireBall(600, 560);
-        var barriers = App.generateBarriers(LanceOfDestiny.getScreenWidth(),
-                LanceOfDestiny.getScreenHeight(), new BuildPanelModel());
-
-        Level level = new Level(lance, fb, barriers);
-        levelPanel = new LevelPanel(new LevelHandler(level));
-        // levelPanel = new LevelPanel(level, lv); TODO: FIX THIS
-        // levelPanel = new LevelPanel(level, lv,
-        // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)));
-        // TODO: FIX THIS AS WELL
-
-        // BuildPanelModel randomModel = new BuildPanelModel();
-
-        // to demonstrate how the game works.
-       //(LevelPanel) levelPanel).setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()))
+        levelPanel = new LevelPanel(new LevelHandler(null), this);
         levelPanel.repaint();
         levelPanel.setFocusable(true);
         levelPanel.requestFocusInWindow();
@@ -168,11 +153,7 @@ public class MainFrame extends JFrame {
         return buildPanel;
     }
 
-    public void setLevelPanel(JPanel levelPanel) {
-        cards.remove(this.levelPanel);
-        this.levelPanel = levelPanel;
-        cards.add(this.levelPanel, LEVEL);
-        refresh();
-
+    public void setCurrentLevel(Level level) {
+        ((LevelPanel) levelPanel).getLevelHandler().setLevel(level);
     }
 }

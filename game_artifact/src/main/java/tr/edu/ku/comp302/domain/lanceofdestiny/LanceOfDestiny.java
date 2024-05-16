@@ -109,7 +109,7 @@ public class LanceOfDestiny implements Runnable {
 
         handleBarriersMovement(currentTime);
 
-        handleCollisionLogic(currentTime / 1_000_000.0);
+        handleCollisionLogic(currentTime);
     }
 
     private void render(){
@@ -224,8 +224,11 @@ public class LanceOfDestiny implements Runnable {
     }
 
 
-    private void handleCollisionLogic() {
-        CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
+    private void handleCollisionLogic(long currentTime) {
+        if (levelHandler.getLance().canCollide(currentTime)) {
+            CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
+        }
+
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
 
         List<Barrier> barriers = levelHandler.getBarriers();

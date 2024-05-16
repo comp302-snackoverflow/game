@@ -9,6 +9,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.util.List;
 
