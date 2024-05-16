@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.entity;
 
 
 import tr.edu.ku.comp302.domain.handler.collision.Collision;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.geom.Rectangle2D;
 
@@ -10,7 +11,7 @@ public class FireBall extends Entity {
     private int size = 16;
     private double dx = 0;
     private double dy = 0;
-    private double speed = 2; // Might change the speed later.
+    private double speed = 0.2 * LanceOfDestiny.getScreenWidth(); // in px/s
     //TODO: Add the player!
     private boolean moving;
 
@@ -40,11 +41,17 @@ public class FireBall extends Entity {
         double surfaceAngleRadians = Math.toRadians(surfaceAngleDegrees);
         double totalSpeedAngle = Math.atan2(dy, dx); //FireBall speed angle
         if (surfaceXSpeed != 0) { // if the lance is moving
-            if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
+            if (dx == 0 && surfaceAngleDegrees == 0) { // perpendicular collision
+                double dir = Math.signum(surfaceXSpeed);
+                dx = dir * dy / Math.sqrt(2);
+                dy = -dy * Math.sqrt(2);
+            }
+            else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
                 double currentSpeed = Math.sqrt(dx * dx + dy * dy);
                 double newSpeed = currentSpeed + 5; // increase total speed by 5
+//                double newSpeed = currentSpeed; // because permanent +5 speed boost looks bad
                 dx = newSpeed * Math.cos(totalSpeedAngle);
-                dy = newSpeed * Math.sin(totalSpeedAngle);
+                dy = -newSpeed * Math.sin(totalSpeedAngle);
             } else { // in the opposite direction
                 // mirror the movement of the FireBall
                 dx = -dx;
@@ -89,7 +96,7 @@ public class FireBall extends Entity {
         }
     }
 
-    public void move() {
+    public void move(double dx, double dy) {
         xPosition += dx;
         yPosition += dy;
         boundingBox.setRect(xPosition, yPosition, size, size);

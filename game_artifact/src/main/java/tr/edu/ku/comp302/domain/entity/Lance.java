@@ -8,12 +8,16 @@ import java.awt.geom.Rectangle2D;
 public class Lance extends Entity {
     public static final double rotationSpeed = 20.0;
     public static final double horizontalRecoverySpeed = 45.0;
+    private final long collisionCooldownInMillis = 50;
     private double length;
     private double speedWithHold;
     private double speedWithTap;
     private double thickness;
     private short direction;
     private double rotationAngle;
+    public static final double rotationSpeed = 20.0;
+    public static final double horizontalRecoverySpeed = 45.0;
+    private Double lastCollisionTimeInMillis;
 
     public Lance(double xPosition, double yPosition) {
         super(xPosition, yPosition);
@@ -23,6 +27,7 @@ public class Lance extends Entity {
         speedWithHold = 2 * length;
         speedWithTap = length;
         thickness = 20;
+        lastCollisionTimeInMillis = null;
     }
 
     public void incrementRotationAngle(double degrees) {
@@ -122,6 +127,10 @@ public class Lance extends Entity {
         this.direction = (short) direction;
     }
 
+    public short getDirection() {
+        return direction;
+    }
+
     // TODO: FINISH THIS METHOD
     public Polygon getActualHitbox() {
         double B = Math.toRadians(rotationAngle);
@@ -172,5 +181,18 @@ public class Lance extends Entity {
     @Override
     public Rectangle2D getBoundingBox() {
         return getActualHitbox().getBounds2D();
+    }
+
+    public boolean canCollide(double timeInMillis) {
+        return lastCollisionTimeInMillis == null
+                || timeInMillis - lastCollisionTimeInMillis >= collisionCooldownInMillis;
+    }
+
+    public void setLastCollisionTimeInMillis(double timeInMillis) {
+        lastCollisionTimeInMillis = timeInMillis;
+    }
+
+    public Double getLastCollisionTimeInMillis() {
+        return lastCollisionTimeInMillis;
     }
 }

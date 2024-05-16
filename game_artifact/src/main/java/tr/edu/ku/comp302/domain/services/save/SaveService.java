@@ -13,7 +13,7 @@ import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import java.util.List;
 
 public class SaveService {
-    private SaveService instance;
+    private static SaveService instance;
     private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
@@ -21,7 +21,7 @@ public class SaveService {
         dbHandler = DatabaseHandler.getInstance();
     }
 
-    public SaveService getInstance() {
+    public static SaveService getInstance() {
         if (instance == null) {
             instance = new SaveService();
         }
@@ -40,7 +40,7 @@ public class SaveService {
     }
 
     // TODO Save with the actual username
-    private boolean saveMap(List<Barrier> barriers, double windowWidth, double windowHeight) {
+    public boolean saveMap(List<Barrier> barriers, double windowWidth, double windowHeight) {
         List<BarrierData> barrierData = barriers.stream().map(
                 barrier -> getBarrierData(barrier, windowWidth, windowHeight)
         ).toList();

@@ -4,16 +4,20 @@ import javax.swing.*;
 import java.awt.*;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 public class PauseMenuPanel extends JPanel {
     protected JButton resumeGameButton;
     protected JButton optionsButton;
     protected JButton saveButton;
     protected JButton mainMenuButton;
-    public PauseMenuPanel() {
+
+    protected MainFrame mainFrame;
+    public PauseMenuPanel(MainFrame mainFrame) {
         GridBagLayout gridBagLayout = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         setLayout(gridBagLayout);
+        this.mainFrame = mainFrame;
 
         resumeGameButton = new JButton("Resume Game");
         optionsButton = new JButton("Options");
@@ -22,6 +26,8 @@ public class PauseMenuPanel extends JPanel {
 
         resumeGameButton.addActionListener(e -> {
             LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
+            mainFrame.showLevelPanel();
+
         });
         optionsButton.addActionListener(e -> {
             LanceOfDestiny.setCurrentGameState(GameState.OPTIONS);

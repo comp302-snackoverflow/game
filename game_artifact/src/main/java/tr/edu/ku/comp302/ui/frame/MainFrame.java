@@ -21,6 +21,7 @@ public class MainFrame extends JFrame {
     private static final String MAINMENU = "mainmenu";
     private static final String LEVEL = "level";
     private static final String BUILD = "build";
+    private static final String PAUSE = "pause";
 
     private final JPanel cards;
     private LoginPanel loginPanel;
@@ -28,6 +29,7 @@ public class MainFrame extends JFrame {
     private JPanel mainMenuPanel;
     private JPanel levelPanel;
     private JPanel buildPanel;
+    private JPanel pausePanel;
     private final CardLayout layout;
 
     private static final int frameWidth = 1280;
@@ -93,18 +95,26 @@ public class MainFrame extends JFrame {
         buildPanel.requestFocusInWindow();
     }
 
+    private void preparePausePanel() {
+        pausePanel = new PauseMenuPanel(this);
+        pausePanel.setBounds(0, 11, 804, 781);
+        pausePanel.requestFocusInWindow();
+    }
+
     public static MainFrame createMainFrame() {
         MainFrame self = new MainFrame();
         self.prepareLoginPanel();
         self.prepareRegisterPanel();
         self.prepareMainMenu();
-        // self.prepareLevelPanel();
         self.prepareBuildPanel();
+        self.prepareLevelPanel();
+        self.preparePausePanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
-        // self.cards.add(self.levelPanel, LEVEL);
+        self.cards.add(self.levelPanel, LEVEL);
         self.cards.add(self.buildPanel, BUILD);
+        self.cards.add(self.pausePanel, PAUSE);
         return self;
     }
 
@@ -136,6 +146,11 @@ public class MainFrame extends JFrame {
         refresh();
     }
 
+    public void showPausePanel() {
+        layout.show(cards, PAUSE);
+        refresh();
+    }
+
     private void refresh() {
         revalidate();
         repaint();
@@ -152,5 +167,12 @@ public class MainFrame extends JFrame {
     public JPanel getBuildPanel() {
         return buildPanel;
     }
-}
 
+    public void setLevelPanel(JPanel levelPanel) {
+        cards.remove(this.levelPanel);
+        this.levelPanel = levelPanel;
+        cards.add(this.levelPanel, LEVEL);
+        refresh();
+
+    }
+}

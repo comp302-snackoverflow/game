@@ -109,7 +109,7 @@ public class LanceOfDestiny implements Runnable {
 
         handleBarriersMovement(currentTime);
 
-        handleCollisionLogic();
+        handleCollisionLogic(currentTime / 1_000_000.0);
     }
 
     private void render(){
@@ -219,9 +219,10 @@ public class LanceOfDestiny implements Runnable {
                 fb.stickToLance(levelHandler.getLance());
             }
         }
-
-        fb.move();
+        // FIXME assumes this is called UPS_SET times per second
+        fb.move(fb.getDx() / UPS_SET, fb.getDy() / UPS_SET);
     }
+
 
     private void handleCollisionLogic() {
         CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
@@ -313,5 +314,4 @@ public class LanceOfDestiny implements Runnable {
     public static void setCurrentGameState(GameState gameState) {
         GameState.state = gameState;
     }
-
 }
