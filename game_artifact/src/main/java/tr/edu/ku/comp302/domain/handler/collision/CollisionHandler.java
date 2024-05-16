@@ -117,17 +117,6 @@ public class CollisionHandler {
 
             if (rect.intersects(box)) {
                 sides |= rectangleOutcode(rect, box.getCenterX(), box.getCenterY());
-
-//                if ((outcode & Rectangle2D.OUT_TOP) != 0) {
-//                    logger.warn("checkCloseCalls: Horizontal padded hit box top intersects");
-//                    logger.warn("Wider rect: " + wider);
-//                    logger.warn("Barrier: " + box);
-//                }
-//                if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
-//                    logger.warn("checkCloseCalls: Horizontal padded hit box bottom intersects");
-//                    logger.warn("Wider rect: " + wider);
-//                    logger.warn("Barrier: " + box);
-//                }
             }
         }
         return sides;
@@ -262,9 +251,9 @@ public class CollisionHandler {
 
     private static void resolveCollision(FireBall fireBall, Lance lance, Collision side) {
         switch (side) {
-            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle());
+            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(-lance.getRotationAngle());
             case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                    fireBall.handleCornerReflection(lance.getRotationAngle(), side);
+                    fireBall.handleCornerReflection(-lance.getRotationAngle(), side);
         }
     }
 
