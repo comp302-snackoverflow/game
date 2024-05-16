@@ -319,3 +319,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/eclipse,maven,intellij,visualstudiocode,java,windows,macos,linux
+
+game_artifact/src/main/resources/hikari.properties
