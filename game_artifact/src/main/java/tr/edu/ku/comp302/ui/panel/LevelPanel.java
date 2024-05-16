@@ -14,11 +14,9 @@ import java.awt.*;
 
 public class LevelPanel extends JPanel {
     private LevelHandler levelHandler;
-    private final MainFrame mainFrame;
-    private JButton pauseButton;
+    private final JButton pauseButton;
     public LevelPanel(LevelHandler levelHandler, MainFrame mainFrame) {
         this.levelHandler = levelHandler;
-        this.mainFrame = mainFrame;
         addKeyListener(new KeyboardHandler());
         setFocusable(true);
         pauseButton = new JButton("PAUSE");

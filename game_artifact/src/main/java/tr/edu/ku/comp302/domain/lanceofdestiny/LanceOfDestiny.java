@@ -27,26 +27,26 @@ public class LanceOfDestiny implements Runnable {
     private double deltaFrame = 0.0;
     private long updates = 0L;
     private long frames = 0L;
-    private GameState currentGameState;
-    private Thread gameThread;
+    private static GameState currentGameState;
     private Character lastMoving;
     private long lastMovingTime;
-    private long previousTime;
     private long[] arrowKeyPressTimes = new long[2];    // [rightArrowKeyPressTime, leftArrowKeyPressTime]
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private LevelHandler levelHandler;
     private Long pauseStartTime;
+    private long previousTime;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
-        levelHandler = levelPanel.getLevelHandler();    // TODO: Ğ
+        levelHandler = levelPanel.getLevelHandler();
         levelPanel.requestFocusInWindow();
-        currentGameState = GameState.PLAYING;   // for testing purposes.
+        currentGameState = GameState.NULL_STATE;
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
         pauseStartTime = null;
+        previousTime = 0;
 
         startGameLoop();
     }
@@ -55,14 +55,16 @@ public class LanceOfDestiny implements Runnable {
     public void run() {
         double timePerFrame = 1_000_000_000.0 / FPS_SET;
         double timePerUpdate = 1_000_000_000.0 / UPS_SET;
-        previousTime = System.nanoTime();
         // TODO: Change while loop condition
         while (true) {
-            if (currentGameState.isPlaying()){
+            if (levelHandler.getLevel() != null && currentGameState.isPlaying()){
                 long currentTime = System.nanoTime();
+                if (previousTime == 0) {
+                    previousTime = currentTime;
+                }
                 if (pauseStartTime != null) {
                     addPauseTime(currentTime - pauseStartTime);
-                    System.out.println("(currentTime - previousTime) = " + (currentTime - previousTime));
+                    System.out.println("(currentTime - previousTime) = " + (currentTime - previousTime) / 1e9);
                 }
                 deltaUpdate += (currentTime - previousTime) / timePerUpdate;
                 deltaFrame += (currentTime - previousTime) / timePerFrame;
@@ -102,7 +104,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleGameLogic(long currentTime){
-        Lance lance = levelPanel.getLevelHandler().getLance();
+        Lance lance = levelHandler.getLance();
         boolean moveLeft = KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed;
         boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
         double holdSpeed = lance.getSpeedWithHold();
@@ -139,7 +141,7 @@ public class LanceOfDestiny implements Runnable {
     // Copilot's thoughts about this function: "I'm not sure what you're trying to do here."
     // (It couldn't even suggest any reasonable code for this)
     private void handleLanceMovement(boolean leftPressed, boolean rightPressed, long[] arrowKeyPressTimes, long currentTime, double tapSpeed, double holdSpeed, double[] lanceMovementRemainder) {
-        Lance lance = levelPanel.getLevelHandler().getLance();
+        Lance lance = levelHandler.getLance();
         if (leftPressed != rightPressed) {
             int index = leftPressed ? 1 : 0;
             Character oldLastMoving = lastMoving;
@@ -205,7 +207,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleRotationLogic(boolean keyPressed, double angularSpeed) {
-        Lance lance = levelPanel.getLevelHandler().getLance();
+        Lance lance = levelHandler.getLance();
         if (keyPressed) {
             double angularChange = calculateAngularChangePerUpdate(angularSpeed);
             lance.incrementRotationAngle(angularChange);
@@ -213,7 +215,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleSteadyStateLogic(boolean keyPressed, double angularSpeed) {
-        Lance lance = levelPanel.getLevelHandler().getLance();
+        Lance lance = levelHandler.getLance();
         if (keyPressed) {
             double angularChange = calculateAngularChangePerUpdate(angularSpeed);
             lance.returnToHorizontalState(angularChange);
@@ -221,7 +223,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleFireballLogic() {
-        FireBall fb = levelPanel.getLevelHandler().getFireBall();
+        FireBall fb = levelHandler.getFireBall();
         if (!fb.isMoving()) {
             if (KeyboardHandler.buttonWPressed) {
                 fb.launchFireball();
@@ -304,7 +306,7 @@ public class LanceOfDestiny implements Runnable {
 
 
     private void startGameLoop() {
-        gameThread = new Thread(this);
+        Thread gameThread = new Thread(this);
         gameThread.start();
     }
 
@@ -312,26 +314,18 @@ public class LanceOfDestiny implements Runnable {
         return screenWidth;
     }
 
-    public static void setScreenWidth(int screenWidth) {
-        LanceOfDestiny.screenWidth = screenWidth;
-    }
-
     public static int getScreenHeight() {
         return screenHeight;
     }
 
-    public static void setScreenHeight(int screenHeight) {
-        LanceOfDestiny.screenHeight = screenHeight;
-    }
-
     public static void setCurrentGameState(GameState gameState) {
-        GameState.state = gameState;
+        currentGameState = gameState;
     }
 
     private void addPauseTime(long pauseDuration) {
         arrowKeyPressTimes[0] += pauseDuration;
         arrowKeyPressTimes[1] += pauseDuration;
-        previousTime += pauseDuration;
+//        previousTime += pauseDuration;
         lastMovingTime += pauseDuration;
         pauseStartTime = null;
     }

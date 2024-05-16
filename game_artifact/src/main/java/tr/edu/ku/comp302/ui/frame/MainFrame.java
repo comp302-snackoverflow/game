@@ -1,19 +1,15 @@
 package tr.edu.ku.comp302.ui.frame;
 
-import tr.edu.ku.comp302.App;
-import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
-import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.panel.*;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
-import tr.edu.ku.comp302.ui.view.View;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class MainFrame extends JFrame {
     private static final String LOGIN = "login";
@@ -22,14 +18,16 @@ public class MainFrame extends JFrame {
     private static final String LEVEL = "level";
     private static final String BUILD = "build";
     private static final String PAUSE = "pause";
+    private static final String SELECT_LEVEL = "select_level";
 
     private final JPanel cards;
     private LoginPanel loginPanel;
     private JPanel registerPanel;
     private JPanel mainMenuPanel;
-    private JPanel levelPanel;
+    private LevelPanel levelPanel;
     private JPanel buildPanel;
     private JPanel pausePanel;
+    private JPanel selectLevelPanel;
     private final CardLayout layout;
 
     private static final int frameWidth = 1280;
@@ -39,7 +37,6 @@ public class MainFrame extends JFrame {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // setResizable(false);
         pack();
         setSize(frameWidth, frameHeight);
         setLocationRelativeTo(null);
@@ -53,13 +50,11 @@ public class MainFrame extends JFrame {
     private void prepareLoginPanel() {
         loginPanel = new LoginPanel(this);
         loginPanel.setBounds(0, 11, 804, 781);
-        loginPanel.setLayout(null);
     }
 
     private void prepareRegisterPanel() {
         registerPanel = new RegisterPanel(this);
         registerPanel.setBounds(0, 11, 804, 781);
-        registerPanel.setLayout(null);
     }
 
     private void prepareMainMenu() {
@@ -69,6 +64,7 @@ public class MainFrame extends JFrame {
 
     private void prepareLevelPanel() {
         levelPanel = new LevelPanel(new LevelHandler(null), this);
+        new LanceOfDestiny(levelPanel);
         levelPanel.repaint();
         levelPanel.setFocusable(true);
         levelPanel.requestFocusInWindow();
@@ -86,6 +82,10 @@ public class MainFrame extends JFrame {
         pausePanel.requestFocusInWindow();
     }
 
+    private void prepareSelectLevelPanel() {
+        selectLevelPanel = new SelectLevelPanel(this);
+
+    }
     public static MainFrame createMainFrame() {
         MainFrame self = new MainFrame();
         self.prepareLoginPanel();
@@ -94,45 +94,57 @@ public class MainFrame extends JFrame {
         self.prepareBuildPanel();
         self.prepareLevelPanel();
         self.preparePausePanel();
+        self.prepareSelectLevelPanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
         self.cards.add(self.levelPanel, LEVEL);
         self.cards.add(self.buildPanel, BUILD);
         self.cards.add(self.pausePanel, PAUSE);
+        self.cards.add(self.selectLevelPanel, SELECT_LEVEL);
         return self;
     }
 
     public void showLoginPanel() {
         layout.show(cards, LOGIN);
+        LanceOfDestiny.setCurrentGameState(GameState.LOGIN_MENU);
         refresh();
     }
 
     public void showRegisterPanel() {
         layout.show(cards, REGISTER);
+        LanceOfDestiny.setCurrentGameState(GameState.REGISTER_MENU);
         refresh();
     }
 
     public void showMainMenuPanel() {
         layout.show(cards, MAINMENU);
+        LanceOfDestiny.setCurrentGameState(GameState.MAIN_MENU);
         refresh();
     }
 
     public void showLevelPanel() {
-        // TODO Level should be prepared here
-
         layout.show(cards, LEVEL);
+        levelPanel.requestFocusInWindow();
+        LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
         refresh();
-        new LanceOfDestiny((LevelPanel) levelPanel);
     }
 
     public void showBuildPanel() {
         layout.show(cards, BUILD);
+        LanceOfDestiny.setCurrentGameState(GameState.CREATE_CUSTOM_MAP);
         refresh();
     }
 
     public void showPausePanel() {
         layout.show(cards, PAUSE);
+        LanceOfDestiny.setCurrentGameState(GameState.PAUSE_MENU);
+        refresh();
+    }
+
+    public void showSelectLevelPanel() {
+        layout.show(cards, SELECT_LEVEL);
+        LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
         refresh();
     }
 
@@ -141,19 +153,11 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
-    public int getFrameWidth() {
-        return frameWidth;
-    }
-
-    public int getFrameHeight() {
-        return frameHeight;
-    }
-
     public JPanel getBuildPanel() {
         return buildPanel;
     }
 
     public void setCurrentLevel(Level level) {
-        ((LevelPanel) levelPanel).getLevelHandler().setLevel(level);
+        levelPanel.getLevelHandler().setLevel(level);
     }
 }

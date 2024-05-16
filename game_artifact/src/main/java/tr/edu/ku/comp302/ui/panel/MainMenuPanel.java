@@ -30,29 +30,25 @@ public class MainMenuPanel extends JPanel {
         quitButton = new JButton("Quit");
 
         newGameButton.addActionListener(e -> {
-            mainFrame.showLevelPanel();
-//            LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
-            LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
+            mainFrame.showSelectLevelPanel();
+            LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
         });
         loadGameButton.addActionListener(e -> {
 
             Level level = LoadService.getInstance().loadMap(9);
             mainFrame.setCurrentLevel(level);
             mainFrame.showLevelPanel();
-//            LanceOfDestiny.setCurrentGameState(GameState.LOAD_GAME);
-            LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
+
         });
         createCustomMapButton.addActionListener(e -> {
             mainFrame.showBuildPanel();
-            LanceOfDestiny.setCurrentGameState(GameState.CREATE_CUSTOM_MAP);
         });
         helpButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.HELP);
-
+//            mainFrame.showHelpPanel();
         });
         optionsButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.OPTIONS);
             System.out.println("Options");
+//            mainFrame.showOptionsPanel();
         });
         quitButton.addActionListener(e -> {
             System.exit(0);
