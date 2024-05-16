@@ -36,6 +36,7 @@ public class LanceOfDestiny implements Runnable {
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private LevelHandler levelHandler;
+    private Long pauseStartTime;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
@@ -45,6 +46,8 @@ public class LanceOfDestiny implements Runnable {
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
+        pauseStartTime = null;
+
         startGameLoop();
     }
 
@@ -57,12 +60,19 @@ public class LanceOfDestiny implements Runnable {
         while (true) {
             if (currentGameState.isPlaying()){
                 long currentTime = System.nanoTime();
+                if (pauseStartTime != null) {
+                    addPauseTime(currentTime - pauseStartTime);
+                    System.out.println("(currentTime - previousTime) = " + (currentTime - previousTime));
+                }
                 deltaUpdate += (currentTime - previousTime) / timePerUpdate;
                 deltaFrame += (currentTime - previousTime) / timePerFrame;
                 update(currentTime);
                 previousTime = currentTime;
             }else{  // TODO: Change this else statement whenever implemented other game states.
                 try{
+                    if (pauseStartTime == null) {
+                        pauseStartTime = System.nanoTime();
+                    }
                     Thread.sleep(1000 / UPS_SET);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -316,5 +326,13 @@ public class LanceOfDestiny implements Runnable {
 
     public static void setCurrentGameState(GameState gameState) {
         GameState.state = gameState;
+    }
+
+    private void addPauseTime(long pauseDuration) {
+        arrowKeyPressTimes[0] += pauseDuration;
+        arrowKeyPressTimes[1] += pauseDuration;
+        previousTime += pauseDuration;
+        lastMovingTime += pauseDuration;
+        pauseStartTime = null;
     }
 }
