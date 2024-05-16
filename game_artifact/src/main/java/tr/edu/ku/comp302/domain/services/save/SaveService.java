@@ -30,53 +30,49 @@ public class SaveService {
     }
 
     // TODO Save with the actual username and game score
-    public boolean saveGame(FireBall fireball, Lance lance,
-                            List<Barrier> barriers, double windowWidth, double windowHeight) {
-        FireballData fireballData = getFireballData(fireball, windowWidth, windowHeight);
-        LanceData lanceData = getLanceData(lance, windowWidth, windowHeight);
-        List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, windowWidth, windowHeight)).toList();
+    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers) {
+        FireballData fireballData = getFireballData(fireball);
+        LanceData lanceData = getLanceData(lance);
+        List<BarrierData> barrierData = barriers.stream().map(this::getBarrierData).toList();
         GameData data = new GameData(fireballData, lanceData, barrierData, 0.0);
 
         return dbHandler.saveGame("test", data);
     }
 
     // TODO Save with the actual username
-    public boolean saveMap(List<Barrier> barriers, double windowWidth, double windowHeight) {
-        List<BarrierData> barrierData = barriers.stream().map(
-                barrier -> getBarrierData(barrier, windowWidth, windowHeight)
-        ).toList();
+    public boolean saveMap(List<Barrier> barriers) {
+        List<BarrierData> barrierData = barriers.stream().map(this::getBarrierData).toList();
         return dbHandler.saveMap("test", barrierData);
     }
 
-    private FireballData getFireballData(FireBall fireball, double windowWidth, double windowHeight) {
-        double x = fireball.getXPosition() / windowWidth;
-        double y = fireball.getYPosition() / windowHeight;
-        double dx = fireball.getDx() / windowWidth;
-        double dy = fireball.getDy() / windowHeight;
+    private FireballData getFireballData(FireBall fireball) {
+        fireball.adjustPositionAndSpeed(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+        double x = fireball.getXPosition();
+        double y = fireball.getYPosition();
+        double dx = fireball.getDx();
+        double dy = fireball.getDy();
+        // Retrieve the old size in case the user resumes the game
+        fireball.adjustPositionAndSpeed(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         return new FireballData(x, y, dx, dy);
     }
 
-    private LanceData getLanceData(Lance lance, double windowWidth, double windowHeight) {
-        double x = lance.getXPosition() / windowWidth;
-        double y = lance.getYPosition() / windowHeight;
+    private LanceData getLanceData(Lance lance) {
+        lance.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+        double x = lance.getXPosition();
+        double y = lance.getYPosition();
         double angle = lance.getRotationAngle();
+        lance.adjustPositionAndSize(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         return new LanceData(x, y, angle);
     }
 
-    private BarrierData getBarrierData(Barrier barrier, double windowWidth, double windowHeight) {
-        double x = barrier.getXPosition() / windowWidth;
-        double y = barrier.getYPosition() / windowHeight;
+    private BarrierData getBarrierData(Barrier barrier) {
+        barrier.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+        double x = barrier.getXPosition();
+        double y = barrier.getYPosition();
         int health = barrier.getHealth();
-        String type = switch (barrier) {
-            case SimpleBarrier ignored -> SimpleBarrier.TYPE;
-            case FirmBarrier ignored -> FirmBarrier.TYPE;
-            case ExplosiveBarrier ignored -> ExplosiveBarrier.TYPE;
-            default -> {
-                logger.warn("Unknown barrier type: " + barrier.getClass().getName() + ". Saving as simple barrier.");
-                yield SimpleBarrier.TYPE; // Barriers of unknown type will be saved as simple barriers
-            }
-        };
+        String type = barrier.getClass().getSimpleName();
         int barrierID = dbHandler.getBarrierIdFromType(type);
+        barrier.adjustPositionAndSize(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         return new BarrierData(x, y, health, barrierID);
     }
 }

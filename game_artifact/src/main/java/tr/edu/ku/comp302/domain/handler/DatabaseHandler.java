@@ -366,7 +366,7 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             logger.error(e);
         }
-        return SimpleBarrier.TYPE; // default to simple barrier
+        return SimpleBarrier.class.getSimpleName(); // default to simple barrier
     }
 
     public String getBarrierTypeFromId(int id) {

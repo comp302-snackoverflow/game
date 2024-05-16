@@ -41,8 +41,7 @@ public class LoadService {
         FireBall fb = loadFireBall(data.fireballData());
         Lance lance = loadLance(data.lanceData());
         List<Barrier> barriers = loadBarriers(data.barriersData());
-        // TODO: score must be loaded into LanceOfDestiny (probably),
-        //  find a way to do it because its stupid to statically set it
+
         return new Level(lance, fb, barriers, data.score());
     }
 
@@ -51,7 +50,6 @@ public class LoadService {
          * FIXME: this works but has at least two issues:
          *  - barrier sizes are not consistent with the window size
          *  - the lance and fireball are positioned absolutely
-         *  - just for the demo adding MainFrame to parameters
          *  but at least it works so yay
          */
         List<BarrierData> barriersData = dbHandler.loadBarriers(mapId, "map");
@@ -62,30 +60,32 @@ public class LoadService {
         Lance lance = new Lance(576, 600);
 
         FireBall fireball = new FireBall(632, 560);
+
         List<Barrier> barriers =
             barriersData.stream()
                         .map(this::createBarrier)
                         .collect(Collectors.toCollection(ArrayList::new));
+
         return new Level(lance, fireball, barriers);
     }
 
     private Barrier createBarrier(BarrierData bd) {
-        double xPos = bd.x() * LanceOfDestiny.getScreenWidth();
-        double yPos = bd.y() * LanceOfDestiny.getScreenHeight();
+        double xPos = bd.x();
+        double yPos = bd.y();
         int health = bd.health();
         String type = dbHandler.getBarrierTypeFromId(bd.type());
-        Barrier barrier = switch (type) {
-            case SimpleBarrier.TYPE -> new SimpleBarrier(xPos, yPos);
+        Barrier barrier;
+        if (type.equals(SimpleBarrier.class.getSimpleName())) {
+            barrier = new SimpleBarrier(xPos, yPos);
+        } else if (type.equals(FirmBarrier.class.getSimpleName())) {
+            barrier = new FirmBarrier(xPos, yPos);
+        } else if (type.equals(ExplosiveBarrier.class.getSimpleName())) {
+            barrier = new ExplosiveBarrier(xPos, yPos);
+        } else {
+            barrier = new SimpleBarrier(xPos, yPos);
+            logger.warn("Unknown barrier type: {}, creating a simple barrier.", type);
+        }
 
-            case FirmBarrier.TYPE -> new FirmBarrier(xPos, yPos);
-
-            case ExplosiveBarrier.TYPE -> new ExplosiveBarrier(xPos, yPos);
-
-            default -> {
-                logger.warn("Unknown barrier type: {}, creating a simple barrier.", type);
-                yield new SimpleBarrier(xPos, yPos);
-            }
-        };
         barrier.setHealth(health);
         barrier.adjustPositionAndSize(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         return barrier;
