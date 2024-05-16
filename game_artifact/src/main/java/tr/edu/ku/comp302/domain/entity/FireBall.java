@@ -39,13 +39,14 @@ public class FireBall extends Entity {
     // need to pass the surface angle
     public void handleReflection(double surfaceAngleDegrees) {
         double surfaceAngle = Math.toRadians(surfaceAngleDegrees);
-        double totalSpeedAngle = Math.atan2(dy, dx);
+        double totalSpeedAngle = Math.atan2(-dy, dx);
 
         double newAngle = 2 * surfaceAngle - totalSpeedAngle;
 
         double totalSpeed = Math.sqrt(dx * dx + dy * dy);
+
         dx = totalSpeed * Math.cos(newAngle);
-        dy = totalSpeed * Math.sin(newAngle);
+        dy = totalSpeed * -Math.sin(newAngle);
     }
     // for handling reflections with moving surfaces
     // need to pass the surface angle and the surface speed
@@ -53,7 +54,7 @@ public class FireBall extends Entity {
     public void handleReflection(double surfaceAngleDegrees, double surfaceXSpeed) {
         /*
         double DX,myDX,DY,myDY;
-        System.out.println("BEFORE REFLECTION");
+        System.out.print("\nBEFORE REFLECTION: ");
         DX = dx * 1000;
         myDX = Math.round(DX);
         myDX = myDX / 1000;
@@ -64,19 +65,25 @@ public class FireBall extends Entity {
         */
 
         double surfaceAngleRadians = Math.toRadians(surfaceAngleDegrees);
-        double totalSpeedAngle = Math.atan2(dy, dx); //FireBall speed angle
+        double totalSpeedAngle = Math.atan2(-dy, dx); //FireBall speed angle
+        double newAngle = 2 * surfaceAngleRadians - totalSpeedAngle;
+
+        double totalSpeed = Math.sqrt(dx * dx + dy * dy);
+
+        //System.out.println("\n\n\nOLD ANGLE: " + 360*totalSpeedAngle/(2*Math.PI));
+        //System.out.println("SURFACE ANGLE: " + surfaceAngleDegrees);
+
         if (surfaceXSpeed != 0) { // if the lance is moving
-            if (dx == 0 && surfaceAngleDegrees == 0) { // perpendicular collision
+            if (Math.abs(dx) < 0.001 && Math.abs(surfaceAngleDegrees) < 0.001) { // perpendicular collision
                 double dir = Math.signum(surfaceXSpeed);
                 dx = dir * dy / Math.sqrt(2);
-                dy = -dy * Math.sqrt(2);
+                dy = -dy / Math.sqrt(2);
             }
             else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
-                double currentSpeed = Math.sqrt(dx * dx + dy * dy);
-                //double newSpeed = currentSpeed + 5; // increase total speed by 5
-                double newSpeed = currentSpeed; // because permanent +5 speed boost looks bad
-                dx = newSpeed * Math.cos(totalSpeedAngle);
-                dy = -newSpeed * Math.sin(totalSpeedAngle);
+                //double newSpeed = totalSpeed + 5; // increase total speed by 5
+                double newSpeed = totalSpeed; // because permanent +5 speed boost looks bad
+                dx = newSpeed * Math.cos(newAngle);
+                dy = newSpeed * -Math.sin(newAngle);
             } else { // in the opposite direction
                 // mirror the movement of the FireBall
                 dx = -dx;
@@ -84,14 +91,14 @@ public class FireBall extends Entity {
             }
         } else { // lance is not moving
             // calculate reflection normally
-            double newAngle = 2 * surfaceAngleRadians - totalSpeedAngle;
-            double newSpeed = Math.sqrt(dx * dx + dy * dy);
-            dx = newSpeed * Math.cos(newAngle);
-            dy = newSpeed * Math.sin(newAngle);
+            dx = totalSpeed * Math.cos(newAngle);
+            dy = totalSpeed * -Math.sin(newAngle);
+
+            //System.out.println("NEW ANGLE " + 360*newAngle/(2*Math.PI));
         }
 
         /*
-        System.out.println("AFTER REFLECTION");
+        System.out.print("AFTER REFLECTION: ");
         DX = dx * 1000;
         myDX = Math.round(DX);
         myDX = myDX / 1000;
