@@ -65,8 +65,8 @@ public class FireBall extends Entity {
                 dy = -dy / Math.sqrt(2);
             }
             else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
-                //double newSpeed = totalSpeed + 5; // increase total speed by 5
-                double newSpeed = totalSpeed; // because permanent +5 speed boost looks bad
+                double newSpeed = totalSpeed + 5; // increase total speed by 5
+                //double newSpeed = totalSpeed; // because permanent +5 speed boost looks bad
                 dx = newSpeed * Math.cos(newAngle);
                 dy = newSpeed * -Math.sin(newAngle);
             } else { // in the opposite direction
