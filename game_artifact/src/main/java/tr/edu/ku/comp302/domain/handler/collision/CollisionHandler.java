@@ -13,6 +13,8 @@ import java.awt.geom.RectangularShape;
 import java.awt.geom.Rectangle2D;
 
 public class CollisionHandler {
+
+    private static long lastCollisionTime = 0;
     /**
      * Tests if the fireball collides with the barrier.
      * Probably has some bugs (More like for sure)
@@ -147,10 +149,17 @@ public class CollisionHandler {
     }
 
     public static void checkCollisions(FireBallView fireBallView, LanceView lanceView) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastCollisionTime < 100) {
+            return;
+        }
+
         FireBall fireBall = fireBallView.getFireBall();
         Lance lance = lanceView.getLance();
         Rectangle2D fireBallBounds = fireBall.getBoundingBox();
         Rectangle lanceBounds = lance.getLanceBounds();
+        double surfaceAngle = -lance.getRotationAngle();
+        double surfaceSpeed = lance.getDirection();
 
         if (fireBallBounds.intersects(lanceBounds)) { // fireball is intersecting the bounding box of the lance
                 try {
@@ -158,12 +167,14 @@ public class CollisionHandler {
                     if (side == null) { // fireball is not intersecting the actual shape of the lance
                         return;
                     }
+                    lastCollisionTime = currentTime;
                     // uncomment for easier debugging regarding side detection
                     System.out.println(side);
                     switch (side) {
-                        case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(lance.getRotationAngle(), lance.getDirection());
+                        case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(surfaceAngle, surfaceSpeed);
                         case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                                fireBall.handleCornerReflection(lance.getRotationAngle(), lance.getDirection(), side);
+                                //fireBall.handleCornerReflection(surfaceAngle, surfaceSpeed, side);
+                                fireBall.handleReflection(surfaceAngle, surfaceSpeed);
                     }
                 } catch (CollisionError ignored) {}
         }
