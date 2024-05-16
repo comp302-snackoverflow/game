@@ -15,8 +15,6 @@ public class Lance extends Entity {
     private double thickness;
     private short direction;
     private double rotationAngle;
-    public static final double rotationSpeed = 20.0;
-    public static final double horizontalRecoverySpeed = 45.0;
     private Double lastCollisionTimeInMillis;
 
     public Lance(double xPosition, double yPosition) {
