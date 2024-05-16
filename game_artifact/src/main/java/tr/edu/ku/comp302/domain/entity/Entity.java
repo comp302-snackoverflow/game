@@ -13,7 +13,7 @@ public abstract class Entity {
         this.yPosition = yPosition;
     }
 
-    public void updatePositionRelativeToScreen(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+    public void updatePositionRelativeToScreen(double oldWidth, double oldHeight, double newWidth, double newHeight) {
         xPosition = xPosition * newWidth / oldWidth;
         yPosition = yPosition * newHeight / oldHeight;
         boundingBox.setRect(xPosition, yPosition, boundingBox.getWidth(), boundingBox.getHeight());

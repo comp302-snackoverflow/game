@@ -27,7 +27,7 @@ public abstract class Barrier extends Entity {
         lastDiceRollTimeNs = 0;
     }
 
-    public void adjustPositionAndSize(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+    public void adjustPositionAndSize(double oldWidth, double oldHeight, double newWidth, double newHeight) {
         updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
         setLength(newWidth / 50.); // changes other size-relative instances too.
         movementStrategy.adjustMovementParameters(this);

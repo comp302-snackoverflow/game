@@ -48,8 +48,7 @@ public class Lance extends Entity {
         }
     }
 
-    // TODO: set bounding box in these methods
-    public void adjustPositionAndSize(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+    public void adjustPositionAndSize(double oldWidth, double oldHeight, double newWidth, double newHeight) {
         updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
         setLength(newWidth / 10.);      // changes other size-relative instances too.
     }

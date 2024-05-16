@@ -21,7 +21,7 @@ public class FireBall extends Entity {
         moving = false;
     }
 
-    public void adjustPositionAndSpeed(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+    public void adjustPositionAndSpeed(double oldWidth, double oldHeight, double newWidth, double newHeight) {
         updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
         speed = speed * newWidth / oldWidth;
     }
