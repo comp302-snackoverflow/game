@@ -14,9 +14,14 @@ public abstract class Entity {
     }
 
     public void updatePositionRelativeToScreen(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-        xPosition = xPosition * newWidth / oldWidth;
-        yPosition = yPosition * newHeight / oldHeight;
-        boundingBox.setRect(xPosition, yPosition, boundingBox.getWidth(), boundingBox.getHeight());
+        if (oldWidth != 0 && oldHeight != 0){
+            xPosition = xPosition * newWidth / oldWidth;
+            yPosition = yPosition * newHeight / oldHeight;
+            boundingBox.setRect(xPosition, yPosition, boundingBox.getWidth(), boundingBox.getHeight());
+        }else{
+            // TODO: Add logger message.
+            return;
+        }
     }
 
     public double getXPosition() {
