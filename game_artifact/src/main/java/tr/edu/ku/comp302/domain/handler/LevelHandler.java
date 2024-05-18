@@ -3,8 +3,10 @@ package tr.edu.ku.comp302.domain.handler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
@@ -16,22 +18,35 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 
+
 public class LevelHandler {
     private static final View fireBallView = View.of(View.FIREBALL);
     private static final View lanceView = View.of(View.LANCE);
     private BarrierRenderer barrierRenderer = new BarrierRenderer();
     private static final View remainView = View.of(View.REMAIN);
+    private static final View hexView = View.of(View.HEX);
+    private static final View spellBoxView = View.of(View.SPELL_BOX);
     private final Logger logger = LogManager.getLogger(LevelHandler.class);
     private Level level;
 
+    /**
+     * Handling the render of the views of the objects of the level instance.
+     * (Use this with your own risk!!!)
+     * @param level
+     */
     public LevelHandler(Level level) {
         this.level = level;
     }
 
 
-    public void resizeLanceImage() {
-        Lance lance = getLance();
-        lanceView.resizeImage((int) lance.getLength(), (int) lance.getThickness());
+    
+    public void resizeHexImage() {
+    }
+
+    public void resizeSpellBoxImage(){
+        if (!getSpellBoxes().isEmpty()) {
+            spellBoxView.resizeImage(level.getSpellBoxes().getFirst().getSize(), level.getSpellBoxes().getFirst().getSize());
+        }
     }
 
     public void resizeFireBallImage() {
@@ -49,6 +64,11 @@ public class LevelHandler {
         }
     }
 
+    public void resizeLanceImage(){
+        Lance lance = level.getLance();
+        
+        lanceView.resizeImage((int) lance.getLength(), (int) lance.getThickness());
+    }
 
     public void renderLance(Graphics g) {
         Lance lance = level.getLance();
@@ -76,15 +96,63 @@ public class LevelHandler {
         barrierRenderer.renderBarriers(g, getBarriers());
     }
 
+    public void renderSpellBox(Graphics g){
+        List<SpellBox> spellBoxes = level.getSpellBoxes();
+        
+        // Output the number of remains for debugging purposes
+        //System.out.println(remains.size());
+        
+        // Iterate through the remains and render those that are marked as dropped
+        for (SpellBox spellBox : spellBoxes.stream().filter(SpellBox::isDropped).toList()) {
+            renderSpellBoxView(g, spellBox);
+        }
+    }
+
+    /**
+     * Renders the remains of destroyed ExplosiveBarriers on the game screen.
+     * Retrieves the remains from the current level and renders them if they are marked as dropped.
+     * 
+     * @param g The Graphics object used for rendering.
+     * 
+     * @see Level
+     * @see Remain
+     * @see Barrier
+     * @see ExplosiveBarrier
+     */
     public void renderRemains(Graphics g) {
+        // Retrieve the remains from the current level
         List<Remain> remains = level.getRemains();
+        
+        // Output the number of remains for debugging purposes
+        //System.out.println(remains.size());
+        
+        // Iterate through the remains and render those that are marked as dropped
         for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
             renderRemainView(g, remain);
         }
     }
 
+
+    public void renderHexs(Graphics g) {
+        // Retrieve the hexs from the current level
+        List<Hex> hexs = level.getHexs();
+        
+        
+        
+        if (hexs != null){
+            for (Hex hex : hexs) {
+                g.drawImage(hexView.getImage(), (int) hex.getXPosition(), (int) hex.getYPosition(), null);
+            }
+        }
+        
+    }
+
     private void renderRemainView(Graphics g, Remain remain) {
         g.drawImage(remainView.getImage(), (int) remain.getXPosition(), (int) remain.getYPosition(), null);
+    }
+
+    private void renderSpellBoxView(Graphics g, SpellBox spellBox) {
+        g.drawImage(spellBoxView.getImage(), (int) spellBox.getXPosition(), (int) spellBox.getYPosition(), null);
     }
 
     public Level getLevel() {
@@ -109,6 +177,22 @@ public class LevelHandler {
 
     public Lance getLance() {
         return level.getLance();
+    }
+    public List<SpellBox> getSpellBoxes(){
+        return level.getSpellBoxes();
+    }
+
+
+    public void createHex() {
+        double lanceXPosition = level.getLance().getXPosition();
+        double lanceYPosition = level.getLance().getYPosition();
+        Hex newHex = new Hex(lanceXPosition, lanceYPosition);
+        level.getHexs().add(newHex);
+    }
+
+
+    public List<Hex> getHexs(){
+        return level.getHexs();
     }
 
 }

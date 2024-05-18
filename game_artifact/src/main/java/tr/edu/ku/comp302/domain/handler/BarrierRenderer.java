@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.ui.view.View;
 
@@ -15,6 +16,7 @@ public class BarrierRenderer {
     protected static final View simpleBarrierView = View.of(View.SIMPLE_BARRIER);
     protected static final View firmBarrierView = View.of(View.FIRM_BARRIER);
     protected static final View explosiveBarrierView = View.of(View.EXPLOSIVE_BARRIER);
+    protected static final View giftBarrierView = View.of(View.GIFT_BARRIER);
 
     private final Logger logger = LogManager.getLogger(BarrierRenderer.class);  // TODO
 
@@ -27,6 +29,7 @@ public class BarrierRenderer {
             simpleBarrierView.resizeImage(length, thickness);
             firmBarrierView.resizeImage(length, thickness);
             explosiveBarrierView.resizeImage(length, thickness);
+            giftBarrierView.resizeImage(length, thickness);
         }
     }
 
@@ -44,6 +47,7 @@ public class BarrierRenderer {
                 yield null;
             }
             case ExplosiveBarrier ignored -> explosiveBarrierView.getImage();
+            case GiftBarrier ignored -> giftBarrierView.getImage();
             case Barrier ignored -> {
                 logger.warn("renderBarrier: Unknown barrier type");
                 yield View.of(View.MISSING_TEXTURE) // I hope this works

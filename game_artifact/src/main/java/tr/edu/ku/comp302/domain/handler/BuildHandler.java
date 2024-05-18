@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.domain.handler;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import tr.edu.ku.comp302.ui.view.View;
@@ -81,9 +82,8 @@ public class BuildHandler {
                 case SimpleBarrier ignored -> simpleBarrierCount++;
                 case FirmBarrier ignored -> firmBarrierCount++;
                 case ExplosiveBarrier ignored -> explosiveBarrierCount++;
-//                case GiftingBarrier ignored -> giftingBarrierCount++;
-                default -> {
-                }
+                case GiftBarrier ignored -> giftBarrierCount++;
+                default -> {}
             }
         }
     }
@@ -95,11 +95,12 @@ public class BuildHandler {
     public boolean countsSatisfied(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
         return simpleBarrierCount >= REQUIRED_SIMPLE_BARRIER_COUNT &&
                 firmBarrierCount >= REQUIRED_FIRM_BARRIER_COUNT &&
-                explosiveBarrierCount >= REQUIRED_EXPLOSIVE_BARRIER_COUNT /* &&
-                giftBarrierCount >= REQUIRED_GIFT_BARRIER_COUNT */ &&
+                explosiveBarrierCount >= REQUIRED_EXPLOSIVE_BARRIER_COUNT &&
+                giftBarrierCount >= REQUIRED_GIFT_BARRIER_COUNT &&
                 // FIXME: Decide on below constant later.
                 simpleBarrierCount + firmBarrierCount + explosiveBarrierCount + giftBarrierCount <= 200;
     }
+
 
     public void paintPanel(Graphics g, int panelWidth, int panelHeight) {
         double lanceLength = panelWidth / 10.;
@@ -114,6 +115,7 @@ public class BuildHandler {
     public void setSelection(int mode) {
         selectionMode = mode;
     }
+
 
     public void generateRandomMap(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
         clearMap();
@@ -160,7 +162,7 @@ public class BuildHandler {
             case SIMPLE_BARRIER -> barrier = new SimpleBarrier(x, y);
             case FIRM_BARRIER -> barrier = new FirmBarrier(x, y);
             case EXPLOSIVE_BARRIER -> barrier = new ExplosiveBarrier(x, y);
-            // case GIFT_BARRIER -> barrier = new GiftBarrier(x, y);
+            case GIFT_BARRIER -> barrier = new GiftBarrier(x, y);
             default -> barrier = new SimpleBarrier(x, y);
         }
         barrier.setLength(barrierWidth);
@@ -222,7 +224,7 @@ public class BuildHandler {
             case BuildHandler.SIMPLE_MODE -> barrier = new SimpleBarrier(x, y);
             case BuildHandler.FIRM_MODE -> barrier = new FirmBarrier(x, y);
             case BuildHandler.EXPLOSIVE_MODE -> barrier = new ExplosiveBarrier(x, y);
-            // case BuildHandler.GIFT_MODE -> barrier = new GiftBarrier(x, y);
+            case BuildHandler.GIFT_MODE -> barrier = new GiftBarrier(x, y);
             default -> barrier = new SimpleBarrier(x, y); // TODO: Add logger obj
         }
         barrier.setLength(width);

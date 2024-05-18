@@ -4,17 +4,28 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 import tr.edu.ku.comp302.domain.entity.Remain;
-
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
+import tr.edu.ku.comp302.domain.handler.SpellHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+
 
 public class LanceOfDestiny implements Runnable {
     private final Logger logger = LogManager.getLogger(LanceOfDestiny.class);
@@ -36,15 +47,18 @@ public class LanceOfDestiny implements Runnable {
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private LevelHandler levelHandler;
+    private SpellHandler spellHandler;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
+        levelPanel.setLanceOfDestiny(this);
         levelHandler = levelPanel.getLevelHandler();    // TODO: Ğ
         levelPanel.requestFocusInWindow();
         currentGameState = GameState.PLAYING;   // for testing purposes.
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
+        spellHandler = new SpellHandler(this);
         startGameLoop();
     }
 
@@ -92,7 +106,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleGameLogic(long currentTime){
-        Lance lance = levelPanel.getLevelHandler().getLance();
+        Lance lance = levelHandler.getLance();
         boolean moveLeft = KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed;
         boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
         double holdSpeed = lance.getSpeedWithHold();
@@ -106,11 +120,14 @@ public class LanceOfDestiny implements Runnable {
         handleSteadyStateLogic(!rotateCCW && !rotateCW, Lance.horizontalRecoverySpeed);
 
         handleFireballLogic();
-
         handleBarriersMovement(currentTime);
-
-        handleCollisionLogic();
+        handleCollisionLogic(currentTime);
+        handleHexMovement();
+        spellHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
+        handleChanceReductionLogic();
+        handleRemainLogic();
     }
+
 
     private void render(){
         int width = (int) levelPanel.getSize().getWidth();
@@ -194,6 +211,13 @@ public class LanceOfDestiny implements Runnable {
         }
     }
 
+
+
+    private void handleHexMovement() {
+        for (Hex hex: levelHandler.getHexs()){
+            hex.move();
+        }
+    }
     private void handleRotationLogic(boolean keyPressed, double angularSpeed) {
         Lance lance = levelPanel.getLevelHandler().getLance();
         if (keyPressed) {
@@ -223,7 +247,7 @@ public class LanceOfDestiny implements Runnable {
         fb.move();
     }
 
-    private void handleCollisionLogic() {
+    private void handleCollisionLogic(long currentTime) {
         CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
 
@@ -232,8 +256,12 @@ public class LanceOfDestiny implements Runnable {
 
         for (Barrier barrier : barriers.stream().toList()) {
             if (barrier.isDead()) {
+                handleScoreLogic(currentTime);
                 if (barrier instanceof ExplosiveBarrier b) {
                     b.dropRemains();
+                }
+                if (barrier instanceof GiftBarrier b) {
+                    b.dropSpellBox();
                 }
                 barriers.remove(barrier);
             }
@@ -265,8 +293,46 @@ public class LanceOfDestiny implements Runnable {
             if (remain.getYPosition() > screenHeight) {
                 remains.remove(remain);
             }
-            //TODO: handle collision with lance, and also remove when it goes below the wall.
         }
+
+        List<SpellBox> spellBoxes = levelHandler.getSpellBoxes();
+        for (SpellBox spellBox : spellBoxes.stream().filter(SpellBox::isDropped).toList()) {
+
+            spellBox.move();
+            if (spellBox.getYPosition() > screenHeight) {
+                spellBoxes.remove(spellBox);
+            }
+        }
+    }
+
+    private void handleChanceReductionLogic() {
+        FireBall fb = levelHandler.getFireBall();
+        if (fb.getYPosition() + fb.getSize() >= screenHeight) {
+            levelHandler.getLevel().decreaseChances();
+            //TODO: Stop the game if the chances become 0!
+            fb.stopFireball();
+            fb.stickToLance(levelHandler.getLance());
+        }
+    }
+
+    private void handleRemainLogic() {
+        List<Remain> remains = levelHandler.getLevel().getRemains();
+
+        for (Iterator<Remain> iterator = remains.iterator(); iterator.hasNext(); ) {
+            Remain remain = iterator.next();
+            if (CollisionHandler.checkRemainLanceCollisions(levelHandler.getLance(), remain)) {
+                levelHandler.getLevel().decreaseChances();
+                iterator.remove();
+            }
+        }
+    }
+
+    //TODO: Ask mert/meriç/ömer on how to implement the time. Since it's in miliseconds, the score is just zero all the time.
+    private void handleScoreLogic(long currentTime) {
+        Level level = levelHandler.getLevel();
+        long newScore = level.getScore() + 300 / (currentTime/1000);
+        level.setScore((int)newScore);
+        // newScore = oldScore + 300 / (currentTime - gameStartingTime) //TODO: is gameStartingTime needed ? Ask this to meriç/mert/ömer.
     }
 
     private double calculateAngularChangePerUpdate(double angularSpeed) {
@@ -287,6 +353,7 @@ public class LanceOfDestiny implements Runnable {
     private double getMsPerUpdate() {
         return 1000.0 / UPS_SET;
     }
+
 
 
     private void startGameLoop() {
@@ -313,5 +380,26 @@ public class LanceOfDestiny implements Runnable {
     public static void setCurrentGameState(GameState gameState) {
         GameState.state = gameState;
     }
+
+    public void extendLance() {
+        Lance lance = levelHandler.getLance();
+        
+        spellHandler.extendLance(lance);
+        levelHandler.resizeLanceImage();
+
+        TimerTask extendLanceTask = new TimerTask() {
+            @Override
+            public void run() {
+                spellHandler.shrinkLance(lance);
+                levelHandler.resizeLanceImage();
+
+            }
+        };
+
+        Timer timer = new Timer();
+        timer.schedule(extendLanceTask, 10000);
+
+    }
+
 
 }

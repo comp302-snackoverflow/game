@@ -1,10 +1,13 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +17,58 @@ public class Level {
     private FireBall fireBall;
     private List<Barrier> barriers;
     private List<Remain> remains;
+    private List<Hex> hexs = new ArrayList<>();
     private static List<Level> levels = new ArrayList<>();
+    private List<SpellBox> spellBoxes;
+    private int chances;
+    private int score;
 
-    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers) {
+
+
+    /**
+     * This class represents level information in the game.
+     * It holds the objects that are present in the level.
+     *
+     * @param lance     The lance object in the level.
+     * @param fireBall  The fireball object in the level.
+     * @param barriers  The list of barriers present in the level.
+     * 
+     * @see Lance
+     * @see FireBall
+     * @see Barrier
+     * @see ExplosiveBarrier
+     */
+    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, List<Hex> hexs) {
+        // Initialize the lance, fireball, and barriers for the level
         this.lance = lance;
         this.fireBall = fireBall;
         this.barriers = barriers;
+        this.score = 0;
+        this.chances = 3;
+        // Initialize the list of remains for ExplosiveBarriers
         this.remains = new ArrayList<>();
+        this.spellBoxes = new ArrayList<>();
 
+
+        // Iterate through barriers to extract remains from ExplosiveBarriers
         for (Barrier barrier : barriers) {
-            if (barrier instanceof ExplosiveBarrier b) {
-                remains.add(b.getRemain());
+            // If the barrier is an ExplosiveBarrier, add its remain to the list
+            if (barrier instanceof ExplosiveBarrier) {
+                ExplosiveBarrier explosiveBarrier = (ExplosiveBarrier) barrier;
+                remains.add(explosiveBarrier.getRemain());
+            }
+            if (barrier instanceof GiftBarrier) {
+                GiftBarrier giftBarrier = (GiftBarrier) barrier;
+                spellBoxes.add(giftBarrier.getSpellBox());
             }
         }
+
+        // Add this level instance to the levels list
         levels.add(this);
     }
 
     public Level(Lance lance, FireBall fireBall) {
-        this(lance, fireBall, new ArrayList<>());
+        this(lance, fireBall, new ArrayList<>(), new ArrayList<>());
     }
 
     public Level(){
@@ -85,6 +122,35 @@ public class Level {
 
     public static void setLevels(List<Level> levels) {
         Level.levels = levels;
+    }
+
+    public List<Hex> getHexs() {
+        return hexs;
+    }
+
+    public void setHexs(List<Hex> hexs) {
+        this.hexs = hexs;
+    }
+
+    public List<SpellBox> getSpellBoxes() {
+        // TODO Auto-generated method stub
+        return this.spellBoxes;
+    }
+
+    public void decreaseChances() {
+        this.chances--;
+    }
+
+    public int getChances() {
+        return chances;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getScore() {
+        return score;
     }
 }
 
