@@ -16,7 +16,9 @@ import tr.edu.ku.comp302.ui.view.View;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class LevelHandler {
@@ -194,5 +196,32 @@ public class LevelHandler {
     public List<Hex> getHexs(){
         return level.getHexs();
     }
+
+    public ArrayList<Barrier> eightRandomBarriers() {
+    ArrayList<Barrier> chosen = new ArrayList<>();
+    ArrayList<Barrier> allBarriers = (ArrayList)getBarriers();
+    int barrierCount = allBarriers.size();
+        //less than 8 barriers remain
+    if (barrierCount < 8) {
+        for(Barrier b : allBarriers){
+            b.setFrozen(true);
+        }
+        return allBarriers;
+    }
+
+    Random random = new Random();
+    while (chosen.size() < 8) {
+        int index = random.nextInt(barrierCount);
+        Barrier barrier = allBarriers.get(index);
+        //no duplicates
+        if (!chosen.contains(barrier)) {  
+            chosen.add(barrier);
+        }
+    }
+    for (Barrier b : chosen){
+        b.setFrozen(true);
+    }
+    return chosen;
+}
 
 }

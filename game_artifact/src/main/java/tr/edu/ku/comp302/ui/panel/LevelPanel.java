@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.entity.SpellBox;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
@@ -7,15 +8,20 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 
 import javax.swing.*;
+
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 
 public class LevelPanel extends JPanel {
     private LevelHandler levelHandler;
     private LanceOfDestiny lanceOfDestiny;
+    private Graphics levelG;
 
     public LevelPanel(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
@@ -50,6 +56,7 @@ public class LevelPanel extends JPanel {
 
         levelHandler.renderSpellBox(g);
         prepareHeartImage(g);
+        levelG = g;
 
     }
 
@@ -99,6 +106,7 @@ public class LevelPanel extends JPanel {
 
         this.add(createLanceExtensionButton());
         this.add(createHexPUButton());
+        this.add(createInfiniteVoidButton());
         
         //TODO: add more buttons for other spelss as overwhelming fireball, etc.
 
@@ -153,6 +161,27 @@ public class LevelPanel extends JPanel {
         return button;
     }
 
+    public JButton createInfiniteVoidButton() {
+        JButton button = new JButton("Infinite Void");
+        double screenWidth = LanceOfDestiny.getScreenWidth();
+        double screenHeight = LanceOfDestiny.getScreenHeight();
+        int buttonWidth = 200;
+        int buttonHeight = 40;
+        int buttonX = (int) (screenWidth / 2 + buttonWidth/2 + buttonWidth + 10); 
+        int buttonY = (int) (screenHeight * 0.8 - (2 * buttonHeight));
+        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //arraylist of the frozen barriers => changed their isfrozen to false after 15 seconds 
+                ArrayList<Barrier> chosen = levelHandler.eightRandomBarriers();
+                levelHandler.renderBarriers(levelG);
+                requestFocus();            
+            }
+        });
+        return button;
+    }
+
     //TODO: The heart is not resizing for some reason. Fix this when you can.
     public void prepareHeartImage(Graphics g) {
         BufferedImage heart = ImageHandler.getImageFromPath("/assets/heart_image.png");
@@ -170,4 +199,6 @@ public class LevelPanel extends JPanel {
     public void setLanceOfDestiny(LanceOfDestiny lanceOfDestiny) {
         this.lanceOfDestiny = lanceOfDestiny;
     }
+
+
 }

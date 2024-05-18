@@ -16,6 +16,7 @@ public abstract class Barrier extends Entity {
     private double length;
     private double thickness;
     private long lastDiceRollTimeNs;
+    private boolean isFrozen = false;
 
     public Barrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
@@ -48,6 +49,14 @@ public abstract class Barrier extends Entity {
 
     public double getThickness() {
         return thickness;
+    }
+
+    public boolean getFrozen() {
+        return isFrozen;
+    }
+
+    public void setFrozen(Boolean selected) {
+        isFrozen = selected;
     }
 
     public void setThickness(double thickness) {

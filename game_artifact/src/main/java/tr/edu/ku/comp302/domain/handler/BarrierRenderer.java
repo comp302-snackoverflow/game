@@ -18,6 +18,8 @@ public class BarrierRenderer {
     protected static final View explosiveBarrierView = View.of(View.EXPLOSIVE_BARRIER);
     protected static final View giftBarrierView = View.of(View.GIFT_BARRIER);
 
+    protected static final View frozenBarrierView = View.of(View.FROZEN_BARRIER);
+
     private final Logger logger = LogManager.getLogger(BarrierRenderer.class);  // TODO
 
 
@@ -30,6 +32,7 @@ public class BarrierRenderer {
             firmBarrierView.resizeImage(length, thickness);
             explosiveBarrierView.resizeImage(length, thickness);
             giftBarrierView.resizeImage(length, thickness);
+            frozenBarrierView.resizeImage(length, thickness);
         }
     }
 
@@ -40,7 +43,7 @@ public class BarrierRenderer {
     }
 
     private void renderBarrier(Graphics g, Barrier barrier) {
-        var image = switch (barrier) {
+        var image = barrier.getFrozen() ? frozenBarrierView.getImage() : switch (barrier) {
             case SimpleBarrier ignored -> simpleBarrierView.getImage();
             case FirmBarrier ignored -> {
                 renderFirmBarrier(g, barrier);

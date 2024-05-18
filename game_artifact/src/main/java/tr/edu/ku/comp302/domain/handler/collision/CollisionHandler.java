@@ -315,8 +315,9 @@ public class CollisionHandler {
             case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
                     fireBall.handleCornerReflection(0, barrier.getXDirection(), side);
         }
-
-        barrier.decreaseHealth();
+        if(!(barrier.getFrozen() && !fireBall.getOverwhelmed())){
+            barrier.decreaseHealth();
+        }
     }
 
     private static int ellipseOutcode(Ellipse2D ellipse, double centerX, double centerY) {
