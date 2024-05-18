@@ -13,11 +13,16 @@ import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.view.View;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Random;
 
 
@@ -30,6 +35,8 @@ public class LevelHandler {
     private static final View spellBoxView = View.of(View.SPELL_BOX);
     private final Logger logger = LogManager.getLogger(LevelHandler.class);
     private Level level;
+    private ScheduledExecutorService scheduler;
+    private SpellHandler spellHandler;
 
     /**
      * Handling the render of the views of the objects of the level instance.
@@ -38,6 +45,7 @@ public class LevelHandler {
      */
     public LevelHandler(Level level) {
         this.level = level;
+        spellHandler = new SpellHandler();
     }
 
 
@@ -185,43 +193,84 @@ public class LevelHandler {
     }
 
 
-    public void createHex() {
-        double lanceXPosition = level.getLance().getXPosition();
-        double lanceYPosition = level.getLance().getYPosition();
-        Hex newHex = new Hex(lanceXPosition, lanceYPosition);
-        level.getHexs().add(newHex);
-    }
+    /**
+     * Creates a new hex at a position relative to the lance.
+     */
+    
+    
 
+    public void startCreatingHex() {
+
+
+
+        scheduler = Executors.newScheduledThreadPool(1);
+        final Runnable createHexTask = level::createHex;
+
+        // Schedule the task to run every second
+        scheduler.scheduleAtFixedRate(createHexTask, 0, 1, TimeUnit.SECONDS);
+
+        
+
+        // Stop the scheduler after 10 seconds
+        scheduler.schedule(() -> scheduler.shutdown(), 10, TimeUnit.SECONDS);
+    }
 
     public List<Hex> getHexs(){
         return level.getHexs();
     }
 
+
     public ArrayList<Barrier> eightRandomBarriers() {
-    ArrayList<Barrier> chosen = new ArrayList<>();
-    ArrayList<Barrier> allBarriers = (ArrayList)getBarriers();
-    int barrierCount = allBarriers.size();
-        //less than 8 barriers remain
-    if (barrierCount < 8) {
-        for(Barrier b : allBarriers){
+        ArrayList<Barrier> chosen = new ArrayList<>();
+        ArrayList<Barrier> allBarriers = (ArrayList)getBarriers();
+        int barrierCount = allBarriers.size();
+            //less than 8 barriers remain
+        if (barrierCount < 8) {
+            for(Barrier b : allBarriers){
+                b.setFrozen(true);
+            }
+            return allBarriers;
+        }
+
+        Random random = new Random();
+        while (chosen.size() < 8) {
+            int index = random.nextInt(barrierCount);
+            Barrier barrier = allBarriers.get(index);
+            //no duplicates
+            if (!chosen.contains(barrier)) {  
+                chosen.add(barrier);
+            }
+        }
+        for (Barrier b : chosen){
             b.setFrozen(true);
         }
-        return allBarriers;
+        return chosen;
+
     }
 
-    Random random = new Random();
-    while (chosen.size() < 8) {
-        int index = random.nextInt(barrierCount);
-        Barrier barrier = allBarriers.get(index);
-        //no duplicates
-        if (!chosen.contains(barrier)) {  
-            chosen.add(barrier);
-        }
-    }
-    for (Barrier b : chosen){
-        b.setFrozen(true);
-    }
-    return chosen;
-}
 
+    public void extendLance() {
+        
+        
+        spellHandler.extendLance(getLance());
+        resizeLanceImage();
+
+        TimerTask extendLanceTask = new TimerTask() {
+            @Override
+            public void run() {
+                spellHandler.shrinkLance(getLance());
+                resizeLanceImage();
+
+            }
+        };
+
+        Timer timer = new Timer();
+        timer.schedule(extendLanceTask, 10000);
+
+    }
+
+    
+    public void collectSpell(char spell){
+        level.collectSpell(spell);
+    }
 }

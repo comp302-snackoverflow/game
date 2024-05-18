@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.Entity;
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.CircularMovement;
 import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.HorizontalMovement;
@@ -15,6 +17,7 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 import java.util.List;
 
 public class CollisionHandler {
@@ -28,6 +31,10 @@ public class CollisionHandler {
 
     public static boolean checkRemainLanceCollisions(Lance lance, Remain remain) {
         return remain.getBoundingBox().intersects(lance.getBoundingBox());
+    }
+
+    public static boolean checkSpellBoxLanceCollisions(Lance lance, SpellBox spellBox) {
+        return spellBox.getBoundingBox().intersects(lance.getBoundingBox());
     }
 
     /**
@@ -344,4 +351,29 @@ public class CollisionHandler {
 
         return out;
     }
+
+
+    public static void handleHexCollision(List<Hex> hexes, List<Barrier> barriers) {
+
+        if(hexes == null || barriers == null) {
+            throw new NullPointerException();
+            
+        }
+
+        
+        Iterator<Hex> hexIterator = hexes.iterator();
+        while (hexIterator.hasNext()) {
+            Hex currentHex = hexIterator.next();
+            for (Barrier barrier : barriers) {
+                if (currentHex.isCollidingWith(barrier)) {
+                    hexIterator.remove();
+                    barrier.decreaseHealth();
+
+                    System.out.println("Hex collided with barrier");
+                    break;
+                }
+            }
+        }
+    }
+
 }

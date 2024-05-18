@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 public class LevelPanel extends JPanel {
     private LevelHandler levelHandler;
-    private LanceOfDestiny lanceOfDestiny;
     private Graphics levelG;
 
     public LevelPanel(LevelHandler levelHandler) {
@@ -129,7 +128,7 @@ public class LevelPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                lanceOfDestiny.extendLance();
+                levelHandler.extendLance();
                 
                 requestFocus();
                 repaint();
@@ -152,7 +151,7 @@ public class LevelPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                levelHandler.createHex();
+                levelHandler.startCreatingHex();
                 
                 requestFocus();
                 repaint();
@@ -193,11 +192,6 @@ public class LevelPanel extends JPanel {
         g.setColor(Color.BLACK); // You can change the color as needed
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("x" + levelHandler.getLevel().getChances(), x + heart.getWidth() + 5, y + heart.getHeight() / 2 + 6);
-    }
-
-
-    public void setLanceOfDestiny(LanceOfDestiny lanceOfDestiny) {
-        this.lanceOfDestiny = lanceOfDestiny;
     }
 
 

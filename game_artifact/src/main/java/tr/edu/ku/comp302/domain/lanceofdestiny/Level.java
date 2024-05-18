@@ -23,6 +23,11 @@ public class Level {
     private int chances;
     private int score;
 
+    private boolean isHexSpellCollected = false;
+    private boolean isExtensionSpellCollected = false;
+    
+
+
 
 
     /**
@@ -151,6 +156,42 @@ public class Level {
 
     public int getScore() {
         return score;
+    }
+
+
+    public void collectSpell(char spell){
+
+        if (spell == SpellBox.HEX_SPELL) {
+            isHexSpellCollected = true;
+        } else if (spell == SpellBox.EXTENSION_SPELL) {
+            isExtensionSpellCollected = true;
+        }
+
+
+    }
+
+
+    public void createHex() {
+        double xPosition = lance.getActualHitbox().getBounds2D().getCenterX();
+        double yPosition = lance.getActualHitbox().getBounds2D().getCenterY();
+        double rotationAngle = lance.getRotationAngle();
+
+
+
+        double xOffset = Math.cos(Math.toRadians(rotationAngle)) * lance.getLength()/2;
+        double yOffset = Math.sin(Math.toRadians(rotationAngle)) * lance.getLength()/2;
+ 
+        double hex1X = xPosition + xOffset;
+        double hex1Y = yPosition + yOffset;
+
+        double hex2X = xPosition - xOffset;
+        double hex2Y = yPosition - yOffset;
+
+        Hex newHex1 = new Hex(hex1X, hex1Y, rotationAngle);
+        Hex newHex2 = new Hex(hex2X, hex2Y, rotationAngle);
+
+        hexs.add(newHex1);
+        hexs.add(newHex2);
     }
 }
 
