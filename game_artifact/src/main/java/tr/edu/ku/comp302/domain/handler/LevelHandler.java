@@ -274,7 +274,36 @@ public class LevelHandler {
 
     
     public void collectSpell(char spell){
-        level.collectSpell(spell);
+        switch(spell) {
+            case(SpellBox.EXTENSION_SPELL):
+                level.collectSpell(spell);
+                break;
+            case(SpellBox.OVERWHELMING_SPELL):
+                break; //TODO: add the overwhelming spell once it is done.
+            case(SpellBox.HEX_SPELL):
+                level.collectSpell(spell);
+                break;
+            case(SpellBox.FELIX_FELICIS_SPELL):
+                spellHandler.felixFelicis(level);
+                break;
+            default:
+                return;
+        }
+    }
+
+    public void useSpell(char spell) {
+        if (!level.inventoryHasSpell(spell)) return;
+        switch (spell) {
+            case(SpellBox.EXTENSION_SPELL):
+                extendLance();
+                level.removeSpell(spell);
+                break;
+            case(SpellBox.HEX_SPELL):
+                startCreatingHex();
+                break;
+            default:
+                return;
+        }
     }
 
     public void generateHollowBarriers(){

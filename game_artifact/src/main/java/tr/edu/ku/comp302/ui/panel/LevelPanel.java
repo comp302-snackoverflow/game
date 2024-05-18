@@ -78,12 +78,12 @@ public class LevelPanel extends JPanel {
 
     public void addButtons() {
         addCircularButton("/assets/lance_image.png", LanceOfDestiny.getScreenWidth()-100, 500, e -> {
-            levelHandler.extendLance();
+            levelHandler.useSpell(SpellBox.EXTENSION_SPELL);
             requestFocus();
             repaint();
         });
         addCircularButton("/assets/fireball_image.png", LanceOfDestiny.getScreenWidth()-200, 500, e -> {
-            levelHandler.startCreatingHex();
+            levelHandler.useSpell(SpellBox.HEX_SPELL);
             requestFocus();
             repaint();
         });

@@ -12,11 +12,12 @@ public class SpellBox extends Entity {
     public final static char EXTENSION_SPELL = 0;
     public final static char OVERWHELMING_SPELL = 1;
     public final static char HEX_SPELL = 2;
+    public final static char FELIX_FELICIS_SPELL = 3;
 
 
     public SpellBox(double xPosition, double yPosition) {
         super(xPosition, yPosition);
-        spell = (char) ((new Random()).nextInt(3) ) ;
+        spell = (char) ((new Random()).nextInt(4) ) ;
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
     }
     public double getSpeed() {

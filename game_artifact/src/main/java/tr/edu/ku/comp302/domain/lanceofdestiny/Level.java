@@ -25,6 +25,7 @@ public class Level {
 
     private boolean isHexSpellCollected = false;
     private boolean isExtensionSpellCollected = false;
+    private List<Character> spellInventory;
     
 
 
@@ -53,6 +54,7 @@ public class Level {
         // Initialize the list of remains for ExplosiveBarriers
         this.remains = new ArrayList<>();
         this.spellBoxes = new ArrayList<>();
+        this.spellInventory = new ArrayList<>();
 
 
         // Iterate through barriers to extract remains from ExplosiveBarriers
@@ -145,6 +147,7 @@ public class Level {
     public void decreaseChances() {
         this.chances--;
     }
+    public void increaseChances() {this.chances++;}
 
     public int getChances() {
         return chances;
@@ -160,14 +163,21 @@ public class Level {
 
 
     public void collectSpell(char spell){
-
         if (spell == SpellBox.HEX_SPELL) {
             isHexSpellCollected = true;
         } else if (spell == SpellBox.EXTENSION_SPELL) {
             isExtensionSpellCollected = true;
         }
+        spellInventory.add(spell);
+    }
 
+    public void removeSpell(char spell) {
+        if (!inventoryHasSpell(spell)) return;
+        spellInventory.remove(spell);
+    }
 
+    public boolean inventoryHasSpell(char spell) {
+        return spellInventory.contains(spell);
     }
 
 

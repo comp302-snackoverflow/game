@@ -167,6 +167,9 @@ public class FireBall extends Entity {
     public void setSpeed(double speed) {
         this.speed = speed;
     }
+    public void halfSpeed() {
+        this.speed = this.speed / 2;
+    }
 
     public boolean isMoving() {
         return moving;
