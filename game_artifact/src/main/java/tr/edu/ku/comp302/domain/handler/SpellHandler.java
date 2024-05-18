@@ -12,10 +12,10 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 public class SpellHandler {
 
-    LanceOfDestiny lanceOfDestiny;
+    
 
-    public SpellHandler(LanceOfDestiny lanceOfDestiny) {
-        this.lanceOfDestiny = lanceOfDestiny;
+    public SpellHandler() {
+        
     }
 
 
@@ -35,28 +35,7 @@ public class SpellHandler {
         
     }
 
-    public void handleHexCollision(List<Hex> hexes, List<Barrier> barriers) {
-
-        if(hexes == null || barriers == null) {
-            throw new NullPointerException();
-            
-        }
-
-        
-        Iterator<Hex> hexIterator = hexes.iterator();
-        while (hexIterator.hasNext()) {
-            Hex currentHex = hexIterator.next();
-            for (Barrier barrier : barriers) {
-                if (currentHex.isCollidingWith(barrier)) {
-                    hexIterator.remove();
-                    barrier.decreaseHealth();
-
-                    System.out.println("Hex collided with barrier");
-                    break;
-                }
-            }
-        }
-    }
+    
 
 
     

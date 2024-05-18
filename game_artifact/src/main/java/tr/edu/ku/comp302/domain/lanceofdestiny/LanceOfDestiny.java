@@ -47,18 +47,16 @@ public class LanceOfDestiny implements Runnable {
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private LevelHandler levelHandler;
-    private SpellHandler spellHandler;
+    
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
-        levelPanel.setLanceOfDestiny(this);
         levelHandler = levelPanel.getLevelHandler();    // TODO: Ğ
         levelPanel.requestFocusInWindow();
         currentGameState = GameState.PLAYING;   // for testing purposes.
         lastMoving = null;
         lastMovingTime = 0;
         tapMoving = false;
-        spellHandler = new SpellHandler(this);
         startGameLoop();
     }
 
@@ -123,9 +121,10 @@ public class LanceOfDestiny implements Runnable {
         handleBarriersMovement(currentTime);
         handleCollisionLogic(currentTime);
         handleHexMovement();
-        spellHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
+        
         handleChanceReductionLogic();
         handleRemainLogic();
+        handleSpellBoxLogic();
     }
 
 
@@ -250,7 +249,9 @@ public class LanceOfDestiny implements Runnable {
     private void handleCollisionLogic(long currentTime) {
         CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
-
+        CollisionHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
+        
+        
         List<Barrier> barriers = levelHandler.getBarriers();
         CollisionHandler.checkFireballBarriersCollisions(levelHandler.getFireBall(), barriers);
 
@@ -286,23 +287,28 @@ public class LanceOfDestiny implements Runnable {
             }
         }
 
-        List<Remain> remains = levelHandler.getRemains();
-        for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
+        
 
-            remain.move();
-            if (remain.getYPosition() > screenHeight) {
-                remains.remove(remain);
-            }
-        }
+    }
+
+
+    private void handleSpellBoxLogic() {
 
         List<SpellBox> spellBoxes = levelHandler.getSpellBoxes();
         for (SpellBox spellBox : spellBoxes.stream().filter(SpellBox::isDropped).toList()) {
 
             spellBox.move();
+
+            if (CollisionHandler.checkSpellBoxLanceCollisions(levelHandler.getLance(), spellBox)){
+                spellBoxes.remove(spellBox);
+                levelHandler.collectSpell(spellBox.getSpell());
+            }
+
             if (spellBox.getYPosition() > screenHeight) {
                 spellBoxes.remove(spellBox);
             }
         }
+        
     }
 
     private void handleChanceReductionLogic() {
@@ -316,7 +322,15 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleRemainLogic() {
-        List<Remain> remains = levelHandler.getLevel().getRemains();
+
+        List<Remain> remains = levelHandler.getRemains();
+        for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
+
+            remain.move();
+            if (remain.getYPosition() > screenHeight) {
+                remains.remove(remain);
+            }
+        }
 
         for (Iterator<Remain> iterator = remains.iterator(); iterator.hasNext(); ) {
             Remain remain = iterator.next();
@@ -381,25 +395,7 @@ public class LanceOfDestiny implements Runnable {
         GameState.state = gameState;
     }
 
-    public void extendLance() {
-        Lance lance = levelHandler.getLance();
-        
-        spellHandler.extendLance(lance);
-        levelHandler.resizeLanceImage();
-
-        TimerTask extendLanceTask = new TimerTask() {
-            @Override
-            public void run() {
-                spellHandler.shrinkLance(lance);
-                levelHandler.resizeLanceImage();
-
-            }
-        };
-
-        Timer timer = new Timer();
-        timer.schedule(extendLanceTask, 10000);
-
-    }
+    
 
 
 }

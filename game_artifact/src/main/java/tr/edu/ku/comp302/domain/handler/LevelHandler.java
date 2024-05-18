@@ -20,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class LevelHandler {
@@ -32,6 +34,7 @@ public class LevelHandler {
     private final Logger logger = LogManager.getLogger(LevelHandler.class);
     private Level level;
     private ScheduledExecutorService scheduler;
+    private SpellHandler spellHandler;
 
     /**
      * Handling the render of the views of the objects of the level instance.
@@ -40,6 +43,7 @@ public class LevelHandler {
      */
     public LevelHandler(Level level) {
         this.level = level;
+        spellHandler = new SpellHandler();
     }
 
 
@@ -190,35 +194,15 @@ public class LevelHandler {
     /**
      * Creates a new hex at a position relative to the lance.
      */
-    public void createHex() {
-        Lance lance = level.getLance();
-        double xPosition = lance.getActualHitbox().getBounds2D().getCenterX();
-        double yPosition = lance.getActualHitbox().getBounds2D().getCenterY();
-        double rotationAngle = lance.getRotationAngle();
-
-
-
-        double xOffset = Math.cos(Math.toRadians(rotationAngle)) * lance.getLength()/2;
-        double yOffset = Math.sin(Math.toRadians(rotationAngle)) * lance.getLength()/2;
- 
-        double hex1X = xPosition + xOffset;
-        double hex1Y = yPosition + yOffset;
-
-        double hex2X = xPosition - xOffset;
-        double hex2Y = yPosition - yOffset;
-
-        Hex newHex1 = new Hex(hex1X, hex1Y, rotationAngle);
-        Hex newHex2 = new Hex(hex2X, hex2Y, rotationAngle);
-
-        level.getHexs().add(newHex1);
-        level.getHexs().add(newHex2);
-    }
+    
     
 
     public void startCreatingHex() {
 
+
+
         scheduler = Executors.newScheduledThreadPool(1);
-        final Runnable createHexTask = this::createHex;
+        final Runnable createHexTask = level::createHex;
 
         // Schedule the task to run every second
         scheduler.scheduleAtFixedRate(createHexTask, 0, 1, TimeUnit.SECONDS);
@@ -233,4 +217,29 @@ public class LevelHandler {
         return level.getHexs();
     }
 
+
+    public void extendLance() {
+        
+        
+        spellHandler.extendLance(getLance());
+        resizeLanceImage();
+
+        TimerTask extendLanceTask = new TimerTask() {
+            @Override
+            public void run() {
+                spellHandler.shrinkLance(getLance());
+                resizeLanceImage();
+
+            }
+        };
+
+        Timer timer = new Timer();
+        timer.schedule(extendLanceTask, 10000);
+
+    }
+
+    
+    public void collectSpell(char spell){
+        level.collectSpell(spell);
+    }
 }

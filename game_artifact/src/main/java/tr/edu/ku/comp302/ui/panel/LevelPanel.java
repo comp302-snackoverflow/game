@@ -1,5 +1,4 @@
 package tr.edu.ku.comp302.ui.panel;
-import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
@@ -15,7 +14,7 @@ import java.awt.image.BufferedImage;
 
 public class LevelPanel extends JPanel {
     private LevelHandler levelHandler;
-    private LanceOfDestiny lanceOfDestiny;
+    
 
     public LevelPanel(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
@@ -121,7 +120,7 @@ public class LevelPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                lanceOfDestiny.extendLance();
+                levelHandler.extendLance();
                 
                 requestFocus();
                 repaint();
@@ -167,7 +166,4 @@ public class LevelPanel extends JPanel {
     }
 
 
-    public void setLanceOfDestiny(LanceOfDestiny lanceOfDestiny) {
-        this.lanceOfDestiny = lanceOfDestiny;
-    }
 }
