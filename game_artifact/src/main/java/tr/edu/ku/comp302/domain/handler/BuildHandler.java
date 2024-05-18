@@ -4,6 +4,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
@@ -24,8 +25,9 @@ public class BuildHandler {
         SIMPLE_BARRIER,
         EXPLOSIVE_BARRIER,
         FIRM_BARRIER,
-        GIFT_BARRIER
-    }
+        GIFT_BARRIER,
+        HOLLOW_BARRIER
+    } 
 
     private int oldWidth;
     private int oldHeight;
@@ -148,7 +150,7 @@ public class BuildHandler {
 
 
 
-    private void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom){
+    public void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom){
         int buildSectionWidth = buildPanel.getBuildSection().getWidth();
         int buildSectionHeight = buildPanel.getBuildSection().getHeight() * 4 / 8; // TODO: Change ratio later to a constant value
         boolean collided;
@@ -170,6 +172,7 @@ public class BuildHandler {
             case FIRM_BARRIER -> barrier = new FirmBarrier(x, y);
             case EXPLOSIVE_BARRIER -> barrier = new ExplosiveBarrier(x, y);
             case GIFT_BARRIER -> barrier = new GiftBarrier(x, y);
+            case HOLLOW_BARRIER -> barrier = new HollowBarrier(x, y);
             default -> barrier = new SimpleBarrier(x, y);
         }
         barrier.setLength(barrierWidth);

@@ -106,6 +106,7 @@ public class LevelPanel extends JPanel {
         this.add(createLanceExtensionButton());
         this.add(createHexPUButton());
         this.add(createInfiniteVoidButton());
+        this.add(createHollowPurpleButton());
         
         //TODO: add more buttons for other spelss as overwhelming fireball, etc.
 
@@ -166,8 +167,8 @@ public class LevelPanel extends JPanel {
         double screenHeight = LanceOfDestiny.getScreenHeight();
         int buttonWidth = 200;
         int buttonHeight = 40;
-        int buttonX = (int) (screenWidth / 2 + buttonWidth/2 + buttonWidth + 10); 
-        int buttonY = (int) (screenHeight * 0.8 - (2 * buttonHeight));
+        int buttonX = (int) (screenWidth / 2 + buttonWidth/2); 
+        int buttonY = (int) (screenHeight * 0.8 - (buttonHeight));
         button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
         button.addActionListener(new ActionListener() {
             @Override
@@ -176,6 +177,25 @@ public class LevelPanel extends JPanel {
                 ArrayList<Barrier> chosen = levelHandler.eightRandomBarriers();
                 levelHandler.renderBarriers(levelG);
                 requestFocus();            
+            }
+        });
+        return button;
+    }
+
+    public JButton createHollowPurpleButton() {
+        JButton button = new JButton("Hollow Purple");
+        double screenWidth = LanceOfDestiny.getScreenWidth();
+        double screenHeight = LanceOfDestiny.getScreenHeight();
+        int buttonWidth = 200;
+        int buttonHeight = 40;
+        int buttonX = (int) (screenWidth / 2 - buttonWidth/2); 
+        int buttonY = (int) (screenHeight * 0.8 - (buttonHeight));
+        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) { 
+                levelHandler.generateHollowBarriers();
+                requestFocus();  
             }
         });
         return button;
@@ -193,6 +213,5 @@ public class LevelPanel extends JPanel {
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("x" + levelHandler.getLevel().getChances(), x + heart.getWidth() + 5, y + heart.getHeight() / 2 + 6);
     }
-
 
 }

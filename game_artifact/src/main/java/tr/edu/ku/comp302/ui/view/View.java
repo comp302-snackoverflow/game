@@ -17,7 +17,8 @@ public class View {
         MISSING_TEXTURE,
         HEX,
         SPELL_BOX,
-        FROZEN_BARRIER
+        FROZEN_BARRIER,
+        HOLLOW_BARRIER
     }
 
     public static final Type FIREBALL = Type.FIREBALL;
@@ -32,6 +33,7 @@ public class View {
     public static final Type HEX = Type.HEX;
     public static final Type SPELL_BOX = Type.SPELL_BOX;
     public static final Type FROZEN_BARRIER = Type.FROZEN_BARRIER;
+    public static final Type HOLLOW_BARRIER = Type.HOLLOW_BARRIER;
 
     private static final String HEX_IMAGE_PATH = "/assets/fireball_image.png";
     private static final String FIREBALL_IMAGE_PATH = "/assets/fireball_image.png";
@@ -45,6 +47,7 @@ public class View {
     private static final String MISSING_TEXTURE_IMAGE_PATH = "/assets/missing_texture.png";
     private static final String SPELL_BOX_IMAGE_PATH = "/assets/spell_box.png";
     private static final String FROZEN_BARRIER_PATH = "/assets/frozen_barrier.png";
+    private static final String HOLLOW_BARRIER_PATH = "/assets/hollow_barrier.png";
 
     private BufferedImage defaultImage;
     private BufferedImage image;
@@ -77,6 +80,7 @@ public class View {
             case HEX -> new View(HEX_IMAGE_PATH);
             case SPELL_BOX -> new View(SPELL_BOX_IMAGE_PATH);
             case FROZEN_BARRIER -> new View(FROZEN_BARRIER_PATH);
+            case HOLLOW_BARRIER -> new View(HOLLOW_BARRIER_PATH);
         };
     }
 }

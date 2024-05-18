@@ -10,15 +10,23 @@ import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.handler.BuildHandler.BarrierType;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import tr.edu.ku.comp302.ui.view.View;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JPanel;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -273,4 +281,56 @@ public class LevelHandler {
     public void collectSpell(char spell){
         level.collectSpell(spell);
     }
+
+    public void generateHollowBarriers(){
+        SecureRandom secureRandom = new SecureRandom();
+        for(int i = 0; i<8; i++){
+            List<Barrier> barriers = getBarriers();
+            double width = barriers.get(0).getLength();
+            generateRandomBarrier(width, BarrierType.HOLLOW_BARRIER, secureRandom);
+        }
+    }
+
+    //temporarily replicated in this class
+    public void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom){
+        int buildSectionWidth = LanceOfDestiny.getScreenWidth()/2;
+        int buildSectionHeight = LanceOfDestiny.getScreenHeight()/2; // TODO: Change ratio later to a constant value
+        boolean collided;
+        int x, y;
+        Barrier randomBarrier;
+        do{
+            x = (int)barrierWidth / 2 + secureRandom.nextInt(buildSectionWidth - (int) barrierWidth - (int) barrierWidth / 2);
+            y = 20 + secureRandom.nextInt(buildSectionHeight - 40);  // -20 barrier -20 padding
+            randomBarrier = createBarrier(barrierType, x, y, barrierWidth);
+            collided = checkBarrierCollisionWithBarriers(randomBarrier);
+        }while(collided);
+        getBarriers().add(randomBarrier);
+    }
+
+    private Barrier createBarrier(BarrierType barrierType, int x, int y, double barrierWidth){
+        Barrier barrier;
+        switch (barrierType) {
+            case SIMPLE_BARRIER -> barrier = new SimpleBarrier(x, y);
+            case FIRM_BARRIER -> barrier = new FirmBarrier(x, y);
+            case EXPLOSIVE_BARRIER -> barrier = new ExplosiveBarrier(x, y);
+            case GIFT_BARRIER -> barrier = new GiftBarrier(x, y);
+            case HOLLOW_BARRIER -> barrier = new HollowBarrier(x, y);
+            default -> barrier = new SimpleBarrier(x, y);
+        }
+        barrier.setLength(barrierWidth);
+        return barrier;
+    }
+
+    public boolean checkBarrierCollisionWithBarriers(Barrier barrier){
+        for (Barrier b : getBarriers()) {
+            if (b != barrier && checkBarrierCollision(b, barrier)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean checkBarrierCollision(Barrier b1, Barrier b2){
+        return b1.getBoundingBox().intersects(b2.getBoundingBox());
+    }
+
 }

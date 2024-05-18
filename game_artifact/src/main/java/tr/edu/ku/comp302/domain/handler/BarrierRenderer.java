@@ -6,6 +6,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.ui.view.View;
 
@@ -17,8 +18,8 @@ public class BarrierRenderer {
     protected static final View firmBarrierView = View.of(View.FIRM_BARRIER);
     protected static final View explosiveBarrierView = View.of(View.EXPLOSIVE_BARRIER);
     protected static final View giftBarrierView = View.of(View.GIFT_BARRIER);
-
     protected static final View frozenBarrierView = View.of(View.FROZEN_BARRIER);
+    protected static final View hollowBarrierView = View.of(View.HOLLOW_BARRIER);
 
     private final Logger logger = LogManager.getLogger(BarrierRenderer.class);  // TODO
 
@@ -33,6 +34,7 @@ public class BarrierRenderer {
             explosiveBarrierView.resizeImage(length, thickness);
             giftBarrierView.resizeImage(length, thickness);
             frozenBarrierView.resizeImage(length, thickness);
+            hollowBarrierView.resizeImage(length, thickness);
         }
     }
 
@@ -49,6 +51,7 @@ public class BarrierRenderer {
                 renderFirmBarrier(g, barrier);
                 yield null;
             }
+            case HollowBarrier ignored -> hollowBarrierView.getImage();
             case ExplosiveBarrier ignored -> explosiveBarrierView.getImage();
             case GiftBarrier ignored -> giftBarrierView.getImage();
             case Barrier ignored -> {
