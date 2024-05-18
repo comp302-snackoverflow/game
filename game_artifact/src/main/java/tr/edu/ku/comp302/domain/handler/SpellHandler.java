@@ -42,7 +42,7 @@ public class SpellHandler {
             
         }
 
-        System.out.println("some one called me");
+        
         Iterator<Hex> hexIterator = hexes.iterator();
         while (hexIterator.hasNext()) {
             Hex currentHex = hexIterator.next();

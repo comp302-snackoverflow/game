@@ -183,11 +183,31 @@ public class LevelHandler {
     }
 
 
+    /**
+     * Creates a new hex at a position relative to the lance.
+     */
     public void createHex() {
-        double lanceXPosition = level.getLance().getXPosition();
-        double lanceYPosition = level.getLance().getYPosition();
-        Hex newHex = new Hex(lanceXPosition, lanceYPosition);
-        level.getHexs().add(newHex);
+        Lance lance = level.getLance();
+        double xPosition = lance.getActualHitbox().getBounds2D().getCenterX();
+        double yPosition = lance.getActualHitbox().getBounds2D().getCenterY();
+        double rotationAngle = lance.getRotationAngle();
+
+
+
+        double xOffset = Math.cos(Math.toRadians(rotationAngle)) * lance.getLength()/2;
+        double yOffset = Math.sin(Math.toRadians(rotationAngle)) * lance.getLength()/2;
+ 
+        double hex1X = xPosition + xOffset;
+        double hex1Y = yPosition + yOffset;
+
+        double hex2X = xPosition - xOffset;
+        double hex2Y = yPosition - yOffset;
+
+        Hex newHex1 = new Hex(hex1X, hex1Y, rotationAngle);
+        Hex newHex2 = new Hex(hex2X, hex2Y, rotationAngle);
+
+        level.getHexs().add(newHex1);
+        level.getHexs().add(newHex2);
     }
 
 
