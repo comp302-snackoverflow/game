@@ -61,8 +61,8 @@ public abstract class Entity {
         // EFFECTS: Returns true if the representation invariant of the Entity class holds true,
         // otherwise returns false.
         if (this.xPosition < 0 || this.yPosition < 0) return false;
-        if (this.boundingBox == null) return false;
-        if (this.boundingBox.getX() != this.xPosition || this.boundingBox.getY() != this.yPosition) return false;
+        if (this.getBoundingBox() == null) return false;
+        if (this.getBoundingBox().getX() != this.xPosition || this.getBoundingBox().getY() != this.yPosition) return false;
 
         return true;
     }
