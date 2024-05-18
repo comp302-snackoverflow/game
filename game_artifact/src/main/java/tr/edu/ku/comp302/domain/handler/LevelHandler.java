@@ -13,7 +13,6 @@ import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.threads.PausableThread;
-import tr.edu.ku.comp302.domain.services.threads.ThreadFactory;
 import tr.edu.ku.comp302.ui.view.View;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -204,8 +203,6 @@ public class LevelHandler {
 
     public void startCreatingHex() {
 
-
-
         PausableThread pausableThread = new PausableThread(level::createHex, 10000,1000);
         pausableThreads.add(pausableThread);
     }
@@ -226,7 +223,7 @@ public class LevelHandler {
             }
             return allBarriers;
         }
-
+        
         Random random = new Random();
         while (chosen.size() < 8) {
             int index = random.nextInt(barrierCount);
@@ -250,17 +247,20 @@ public class LevelHandler {
         spellHandler.extendLance(getLance());
         resizeLanceImage();
 
-        TimerTask extendLanceTask = new TimerTask() {
+        Runnable shrinkLanceTask = new Runnable() {
+
             @Override
             public void run() {
+                // TODO Auto-generated method stub
+                
                 spellHandler.shrinkLance(getLance());
                 resizeLanceImage();
-
             }
         };
 
-        Timer timer = new Timer();
-        timer.schedule(extendLanceTask, 10000);
+        PausableThread pausableThread = new PausableThread(() -> {}, shrinkLanceTask, 10000);
+        pausableThreads.add(pausableThread);
+
 
     }
 
