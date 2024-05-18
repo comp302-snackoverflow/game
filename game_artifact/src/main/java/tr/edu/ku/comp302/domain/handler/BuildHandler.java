@@ -244,6 +244,12 @@ public class BuildHandler {
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
 
+    // @@REQUIRES: simpleBarrierCount >= 75, firmBarrierCount >= 10, explosiveBarrierCount >= 5,
+    // giftBarrierCount >= 10, and the total number of barriers should not exceed 200.
+    // EFFECTS: A map that places the game's barriers, with the data types generated
+    // according to the user-specified number. The barriers are all placed in random spots
+    // on the map.
+
     public ArrayList<Barrier> generateRandomMapTest(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
         clearMap();
         JPanel buildSection = buildPanel.getBuildSection();

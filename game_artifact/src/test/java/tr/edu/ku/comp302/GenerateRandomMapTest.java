@@ -1,10 +1,7 @@
 package tr.edu.ku.comp302;
 
 import org.junit.jupiter.api.*;
-import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
-import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.*;
 import tr.edu.ku.comp302.domain.handler.BuildHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
@@ -20,9 +17,10 @@ public class GenerateRandomMapTest {
 
     private BuildHandler buildHandler;
 
-//TODO: ADD COMMENTS TO THE TESTS!!
 
 
+    // The set up creates a main frame, and opens the build panel. Since the visuals are
+    // not needed for testing, the visibility is off.
     @BeforeEach
     public void setUp() {
         mainFrame = MainFrame.createMainFrame();
@@ -30,15 +28,19 @@ public class GenerateRandomMapTest {
         mainFrame.showBuildPanel();
     }
 
+    // A black box testing method to check whether or not the generated map is null.
     @Test
     public void mapNotNullTest() {
         Assertions.assertNotNull(buildHandler.generateRandomMapTest(75,10,10,10), "If more than 0 barriers were specified, the generated map cannot be null.");
     }
 
+    // A black box testing method to check if the generated map contains the correct number of barriers. The edge cases
+    // are when the barrier number is 100, and when the barrier number is 200. We can also check another
+    // test case in the middle, which is 160 barriers.
     @Test
     public void barrierCountTest() {
-        ArrayList<Barrier> generatedMap = buildHandler.generateRandomMapTest(75,10,10,10);
-        Assertions.assertEquals(105, generatedMap.size(), "The method should generate the correct number of barriers.");
+        ArrayList<Barrier> generatedMap = buildHandler.generateRandomMapTest(75,10,5,10);
+        Assertions.assertEquals(100, generatedMap.size(), "The method should generate the correct number of barriers.");
 
         ArrayList<Barrier> otherGeneratedMap = buildHandler.generateRandomMapTest(100,20,20,20);
         Assertions.assertEquals(160, otherGeneratedMap.size(), "The method should generate the correct number of barriers.");
@@ -47,6 +49,9 @@ public class GenerateRandomMapTest {
         Assertions.assertEquals(200, lastGeneratedMap.size(), "The method should generate the correct number of barriers.");
     }
 
+    // A black box test to check if the generated number of barrier types are correct.
+    // We thought that if a single test case works, all the rest would work as well,
+    // since this process is very straightforward.
     @Test
     public void barrierDataTypeCountTest() {
         ArrayList<Barrier> generatedMap = buildHandler.generateRandomMapTest(75,10,10,10);
@@ -66,22 +71,23 @@ public class GenerateRandomMapTest {
                 firmCount++;
             }
 
-            /*
             else if (barrier instanceof GiftBarrier) {
                 giftCount++;
             }
-            */ //TODO: Uncomment this once we have gift barriers!
 
         }
 
-        // 85 for now, since gift barriers are generated as simple barriers.
-        Assertions.assertEquals(85, simpleCount, "The method should generate the correct number of simple barriers.");
+        Assertions.assertEquals(75, simpleCount, "The method should generate the correct number of simple barriers.");
         Assertions.assertEquals(10, firmCount, "The method should generate the correct number of firm barriers.");
         Assertions.assertEquals(10, explosiveCount, "The method should generate the correct number of explosive barriers.");
-        // Assertions.assertEquals(10, giftCount, "The method should generate the correct number of gift barriers."); //TODO: Uncomment this once we have gift barriers.
+        Assertions.assertEquals(10, giftCount, "The method should generate the correct number of gift barriers."); //TODO: Uncomment this once we have gift barriers.
 
     }
 
+    // This test case creates 200 barriers, the most possible, and checks whether the barriers
+    // pass the window boundaries or not. In the build mode, they should not be less than 0, and they should
+    // not pass the build section's height/width with added paddings. Since this test case
+    // creates the most barriers, if this test case works, all the others must work as well.
     @Test
     public void checkWindowBoundaries() {
         boolean windowBoundaryPassed = false;
@@ -99,6 +105,9 @@ public class GenerateRandomMapTest {
 
     }
 
+    // Creates the highest possible amount of barriers, 200, and checks if there are any collisions between
+    // them. Since 200 barriers is the edge case and the highest case, if there are no collisions between
+    // 200 barriers, there would be no collisions in any other case.
     @Test
     public void checkCollisions() {
         boolean collisionDetected = false;
