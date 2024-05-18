@@ -16,6 +16,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.BuildHandler.BarrierType;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.domain.services.threads.PausableThread;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import tr.edu.ku.comp302.ui.view.View;
 import java.util.concurrent.Executors;
@@ -45,6 +46,7 @@ public class LevelHandler {
     private Level level;
     private ScheduledExecutorService scheduler;
     private SpellHandler spellHandler;
+    private List<PausableThread> pausableThreads= new ArrayList<>();
 
     /**
      * Handling the render of the views of the objects of the level instance.
@@ -209,18 +211,8 @@ public class LevelHandler {
 
     public void startCreatingHex() {
 
-
-
-        scheduler = Executors.newScheduledThreadPool(1);
-        final Runnable createHexTask = level::createHex;
-
-        // Schedule the task to run every second
-        scheduler.scheduleAtFixedRate(createHexTask, 0, 1, TimeUnit.SECONDS);
-
-        
-
-        // Stop the scheduler after 10 seconds
-        scheduler.schedule(() -> scheduler.shutdown(), 10, TimeUnit.SECONDS);
+        PausableThread pausableThread = new PausableThread(level::createHex, 10000,1000);
+        pausableThreads.add(pausableThread);
     }
 
     public List<Hex> getHexs(){
@@ -230,7 +222,7 @@ public class LevelHandler {
 
     public ArrayList<Barrier> eightRandomBarriers() {
         ArrayList<Barrier> chosen = new ArrayList<>();
-        ArrayList<Barrier> allBarriers = (ArrayList)getBarriers();
+        ArrayList<Barrier> allBarriers = (ArrayList) getBarriers();
         int barrierCount = allBarriers.size();
             //less than 8 barriers remain
         if (barrierCount < 8) {
@@ -239,7 +231,7 @@ public class LevelHandler {
             }
             return allBarriers;
         }
-
+        
         Random random = new Random();
         while (chosen.size() < 8) {
             int index = random.nextInt(barrierCount);
@@ -263,17 +255,20 @@ public class LevelHandler {
         spellHandler.extendLance(getLance());
         resizeLanceImage();
 
-        TimerTask extendLanceTask = new TimerTask() {
+        Runnable shrinkLanceTask = new Runnable() {
+
             @Override
             public void run() {
+                // TODO Auto-generated method stub
+                
                 spellHandler.shrinkLance(getLance());
                 resizeLanceImage();
-
             }
         };
 
-        Timer timer = new Timer();
-        timer.schedule(extendLanceTask, 10000);
+        PausableThread pausableThread = new PausableThread(() -> {}, shrinkLanceTask, 10000);
+        pausableThreads.add(pausableThread);
+
 
     }
 
@@ -333,4 +328,14 @@ public class LevelHandler {
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
 
+
+
+
+    public List<PausableThread> getPausableThreads() {
+        return pausableThreads;
+    }
+
+
+
+    
 }

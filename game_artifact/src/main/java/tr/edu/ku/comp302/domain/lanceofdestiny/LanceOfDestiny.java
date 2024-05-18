@@ -15,11 +15,13 @@ import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.handler.SpellHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
+import tr.edu.ku.comp302.domain.services.threads.PausableThread;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -47,6 +49,7 @@ public class LanceOfDestiny implements Runnable {
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private LevelHandler levelHandler;
+    
     
 
     public LanceOfDestiny(LevelPanel levelPanel) {
@@ -125,6 +128,8 @@ public class LanceOfDestiny implements Runnable {
         handleChanceReductionLogic();
         handleRemainLogic();
         handleSpellBoxLogic();
+        
+        managePausableThreads();
     }
 
 
@@ -348,6 +353,24 @@ public class LanceOfDestiny implements Runnable {
         level.setScore((int)newScore);
         // newScore = oldScore + 300 / (currentTime - gameStartingTime) //TODO: is gameStartingTime needed ? Ask this to meriç/mert/ömer.
     }
+
+
+    private void managePausableThreads() {
+        List<PausableThread> pausableThreads = levelHandler.getPausableThreads();
+        List<PausableThread> threadsToRemove = new ArrayList<>();
+        for (PausableThread thread : pausableThreads) {
+            if (thread.isScheduled()) {
+                thread.checkRateState(System.currentTimeMillis());
+            }
+            if (thread.checkFinishState(System.currentTimeMillis())) {
+                threadsToRemove.add(thread);
+            }
+        }
+        pausableThreads.removeAll(threadsToRemove);
+    }
+
+    // Cleaned up the code by using a list to store threads to remove, and then removing all of them at once.
+    // Removed the unnecessary comments. Also improved the readability of the code by breaking it up into smaller statements.
 
     private double calculateAngularChangePerUpdate(double angularSpeed) {
         return angularSpeed * getMsPerUpdate() / 1000.0;
