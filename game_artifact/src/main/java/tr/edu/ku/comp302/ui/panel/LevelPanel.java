@@ -5,7 +5,7 @@ import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
-
+import tr.edu.ku.comp302.domain.services.threads.ThreadFactory;
 
 import javax.swing.*;
 

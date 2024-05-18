@@ -12,6 +12,8 @@ import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.domain.services.threads.PausableThread;
+import tr.edu.ku.comp302.domain.services.threads.ThreadFactory;
 import tr.edu.ku.comp302.ui.view.View;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,6 +39,7 @@ public class LevelHandler {
     private Level level;
     private ScheduledExecutorService scheduler;
     private SpellHandler spellHandler;
+    private List<PausableThread> pausableThreads= new ArrayList<>();
 
     /**
      * Handling the render of the views of the objects of the level instance.
@@ -203,16 +206,8 @@ public class LevelHandler {
 
 
 
-        scheduler = Executors.newScheduledThreadPool(1);
-        final Runnable createHexTask = level::createHex;
-
-        // Schedule the task to run every second
-        scheduler.scheduleAtFixedRate(createHexTask, 0, 1, TimeUnit.SECONDS);
-
-        
-
-        // Stop the scheduler after 10 seconds
-        scheduler.schedule(() -> scheduler.shutdown(), 10, TimeUnit.SECONDS);
+        PausableThread pausableThread = new PausableThread(level::createHex, 10000,1000);
+        pausableThreads.add(pausableThread);
     }
 
     public List<Hex> getHexs(){
@@ -222,7 +217,7 @@ public class LevelHandler {
 
     public ArrayList<Barrier> eightRandomBarriers() {
         ArrayList<Barrier> chosen = new ArrayList<>();
-        ArrayList<Barrier> allBarriers = (ArrayList)getBarriers();
+        ArrayList<Barrier> allBarriers = (ArrayList) getBarriers();
         int barrierCount = allBarriers.size();
             //less than 8 barriers remain
         if (barrierCount < 8) {
@@ -273,4 +268,14 @@ public class LevelHandler {
     public void collectSpell(char spell){
         level.collectSpell(spell);
     }
+
+
+
+    public List<PausableThread> getPausableThreads() {
+        return pausableThreads;
+    }
+
+
+
+    
 }
