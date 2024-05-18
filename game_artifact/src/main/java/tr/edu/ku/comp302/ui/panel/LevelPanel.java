@@ -1,22 +1,19 @@
 package tr.edu.ku.comp302.ui.panel;
+
 import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
-
+import tr.edu.ku.comp302.ui.CircularButton;
 
 import javax.swing.*;
-
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
 
 public class LevelPanel extends JPanel {
     private LevelHandler levelHandler;
@@ -24,49 +21,29 @@ public class LevelPanel extends JPanel {
 
     public LevelPanel(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
+        setLayout(null); // Use null layout for manual positioning
         addKeyListener(new KeyboardHandler());
         addButtons();
     }
 
-    /**
-     * Overrides the paintComponent method from JPanel to render the components
-     * in the levelHandler.
-     *
-     * @param g The Graphics object used for rendering.
-     */
-    public void paintComponent(Graphics g){
-        // Call the paintComponent method of the superclass
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        // Render the lance using the levelHandler
         levelHandler.renderLance(g);
-
-        // Render the fireball using the levelHandler
         levelHandler.renderFireBall(g);
-
-        // Render the barriers using the levelHandler
         levelHandler.renderBarriers(g);
-
-        // Render the remains of destroyed ExplosiveBarriers using the levelHandler
         levelHandler.renderRemains(g);
-
-
         levelHandler.renderHexs(g);
-
         levelHandler.renderSpellBox(g);
         prepareHeartImage(g);
         levelG = g;
-
     }
 
-    // TODO: Handle this method later.
-    public void setPanelSize(Dimension size){
+    public void setPanelSize(Dimension size) {
         System.out.println("Setting panel size: " + size);
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
-        
-        // TODO: Add other entities
+
         levelHandler.getLance().adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
                 (int) size.getWidth(), (int) size.getHeight());
         levelHandler.resizeLanceImage();
@@ -88,9 +65,7 @@ public class LevelPanel extends JPanel {
         levelHandler.resizeSpellBoxImage();
         levelHandler.getSpellBoxes().forEach(spellBox ->
             spellBox.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
-                                (int) size.getWidth(), (int) size.getHeight()));
-
-
+                    (int) size.getWidth(), (int) size.getHeight()));
     }
 
     public LevelHandler getLevelHandler() {
@@ -101,117 +76,63 @@ public class LevelPanel extends JPanel {
         this.levelHandler = levelHandler;
     }
 
-    public void addButtons(){
-
-        this.add(createLanceExtensionButton());
-        this.add(createHexPUButton());
-        this.add(createInfiniteVoidButton());
-        this.add(createHollowPurpleButton());
-        
-        //TODO: add more buttons for other spelss as overwhelming fireball, etc.
-
-        
-
-    
-
-    }
-
-    public JButton createLanceExtensionButton() {
-        JButton button = new JButton("Lance Extension");
-        double screenWidth = LanceOfDestiny.getScreenWidth();
-        double screenHeight = LanceOfDestiny.getScreenHeight();
-        int buttonWidth = 200;
-        int buttonHeight = 40;
-        int buttonX = (int) (screenWidth / 2 - buttonWidth / 2);
-        int buttonY = (int) (screenHeight * 0.8 - (2 * buttonHeight) );
-        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                levelHandler.extendLance();
-                
-                requestFocus();
-                repaint();
-            }
+    public void addButtons() {
+        addCircularButton("/assets/lance_image.png", LanceOfDestiny.getScreenWidth()-100, 500, e -> {
+            levelHandler.extendLance();
+            requestFocus();
+            repaint();
         });
-        return button;
-    }
-
-
-    public JButton createHexPUButton() {
-        JButton button = new JButton("Use Hex Extension");
-        double screenWidth = LanceOfDestiny.getScreenWidth();
-        double screenHeight = LanceOfDestiny.getScreenHeight();
-        int buttonWidth = 200;
-        int buttonHeight = 40;
-        int buttonX = (int) (screenWidth / 2 + buttonWidth / 2);
-        int buttonY = (int) (screenHeight * 0.8 - (2 * buttonHeight) );
-        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                levelHandler.startCreatingHex();
-                
-                requestFocus();
-                repaint();
-            }
+        addCircularButton("/assets/fireball_image.png", LanceOfDestiny.getScreenWidth()-200, 500, e -> {
+            levelHandler.startCreatingHex();
+            requestFocus();
+            repaint();
         });
-        return button;
-    }
-
-    public JButton createInfiniteVoidButton() {
-        JButton button = new JButton("Infinite Void");
-        double screenWidth = LanceOfDestiny.getScreenWidth();
-        double screenHeight = LanceOfDestiny.getScreenHeight();
-        int buttonWidth = 200;
-        int buttonHeight = 40;
-        int buttonX = (int) (screenWidth / 2 + buttonWidth/2); 
-        int buttonY = (int) (screenHeight * 0.8 - (buttonHeight));
-        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //arraylist of the frozen barriers => changed their isfrozen to false after 15 seconds 
-                ArrayList<Barrier> chosen = levelHandler.eightRandomBarriers();
-                levelHandler.renderBarriers(levelG);
-                requestFocus();            
-            }
+        addCircularButton("/assets/frozen_barrier.png", LanceOfDestiny.getScreenWidth()-300, 500, e -> {
+            ArrayList<Barrier> chosen = levelHandler.eightRandomBarriers();
+            levelHandler.renderBarriers(levelG);
+            requestFocus();
         });
-        return button;
-    }
-
-    public JButton createHollowPurpleButton() {
-        JButton button = new JButton("Hollow Purple");
-        double screenWidth = LanceOfDestiny.getScreenWidth();
-        double screenHeight = LanceOfDestiny.getScreenHeight();
-        int buttonWidth = 200;
-        int buttonHeight = 40;
-        int buttonX = (int) (screenWidth / 2 - buttonWidth/2); 
-        int buttonY = (int) (screenHeight * 0.8 - (buttonHeight));
-        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) { 
-                levelHandler.generateHollowBarriers();
-                requestFocus();  
-            }
+        addCircularButton("/assets/hollow_barrier.png",LanceOfDestiny.getScreenWidth()-400, 500, e -> {
+            levelHandler.generateHollowBarriers();
+            requestFocus();
         });
-        return button;
+
+        revalidate();
+        repaint();
     }
 
-    //TODO: The heart is not resizing for some reason. Fix this when you can.
+    private void addCircularButton(String iconPath, int x, int y, ActionListener action) {
+        BufferedImage icon = ImageHandler.getImageFromPath(iconPath);
+        if (icon == null) {
+            System.err.println("Icon not found: " + iconPath);
+            return;
+        }
+        CircularButton button = new CircularButton(icon);
+        button.setBounds(x, y, 50, 50); // Set position and size
+        button.addActionListener(action);
+        add(button);
+    }
+
     public void prepareHeartImage(Graphics g) {
         BufferedImage heart = ImageHandler.getImageFromPath("/assets/heart_image.png");
-        assert heart != null;
-        ImageHandler.resizeImage(heart, LanceOfDestiny.getScreenWidth()/100,10);
-        int x = getWidth() - heart.getWidth() - 40;
-        int y = 5;
-        g.drawImage(heart, x, y, null);
-        g.setColor(Color.BLACK); // You can change the color as needed
+        if (heart == null) {
+            System.err.println("Heart image not found");
+            return;
+        }
+    
+        // Resize the heart image
+        int heartWidth = 20;  // Adjust the width as needed
+        int heartHeight = 20; // Adjust the height as needed
+        BufferedImage resizedHeart = ImageHandler.resizeImage(heart, heartWidth, heartHeight);
+    
+        // Position the heart image at the bottom-left corner of the screen
+        int x = 20; // Distance from the left edge
+        int y = getHeight() - heartHeight - 20; // Distance from the bottom edge
+    
+        g.drawImage(resizedHeart, x, y, null);
+        g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 18));
-        g.drawString("x" + levelHandler.getLevel().getChances(), x + heart.getWidth() + 5, y + heart.getHeight() / 2 + 6);
+        g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 5, y + heartHeight / 2 + 6);
     }
-
+    
 }
