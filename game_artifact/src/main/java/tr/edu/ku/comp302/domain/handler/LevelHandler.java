@@ -13,6 +13,9 @@ import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.view.View;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -28,6 +31,7 @@ public class LevelHandler {
     private static final View spellBoxView = View.of(View.SPELL_BOX);
     private final Logger logger = LogManager.getLogger(LevelHandler.class);
     private Level level;
+    private ScheduledExecutorService scheduler;
 
     /**
      * Handling the render of the views of the objects of the level instance.
@@ -209,7 +213,21 @@ public class LevelHandler {
         level.getHexs().add(newHex1);
         level.getHexs().add(newHex2);
     }
+    
 
+    public void startCreatingHex() {
+
+        scheduler = Executors.newScheduledThreadPool(1);
+        final Runnable createHexTask = this::createHex;
+
+        // Schedule the task to run every second
+        scheduler.scheduleAtFixedRate(createHexTask, 0, 1, TimeUnit.SECONDS);
+
+        
+
+        // Stop the scheduler after 10 seconds
+        scheduler.schedule(() -> scheduler.shutdown(), 10, TimeUnit.SECONDS);
+    }
 
     public List<Hex> getHexs(){
         return level.getHexs();

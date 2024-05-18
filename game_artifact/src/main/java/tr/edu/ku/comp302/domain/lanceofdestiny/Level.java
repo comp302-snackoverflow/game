@@ -23,6 +23,11 @@ public class Level {
     private int chances;
     private int score;
 
+    private boolean isHexSpellCollected = false;
+    private boolean isExtensionSpellCollected = false;
+    
+
+
 
 
     /**

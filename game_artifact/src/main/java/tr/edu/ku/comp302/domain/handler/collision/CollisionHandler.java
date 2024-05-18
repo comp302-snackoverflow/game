@@ -6,6 +6,7 @@ import tr.edu.ku.comp302.domain.entity.Entity;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.CircularMovement;
 import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.HorizontalMovement;
@@ -28,6 +29,10 @@ public class CollisionHandler {
 
     public static boolean checkRemainLanceCollisions(Lance lance, Remain remain) {
         return remain.getBoundingBox().intersects(lance.getBoundingBox());
+    }
+
+    public static boolean checkSpellBoxLanceCollisions(Lance lance, SpellBox spellBox) {
+        return spellBox.getBoundingBox().intersects(lance.getBoundingBox());
     }
 
     /**

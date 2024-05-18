@@ -144,7 +144,7 @@ public class LevelPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                levelHandler.createHex();
+                levelHandler.startCreatingHex();
                 
                 requestFocus();
                 repaint();
