@@ -17,6 +17,7 @@ public class Hex extends Entity {
 
     public void move(){
         setYPosition(yPosition-1);
+        boundingBox.setRect(xPosition, yPosition, size, size);
     }
     
 

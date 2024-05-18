@@ -37,6 +37,11 @@ public class SpellHandler {
 
     public void handleHexCollision(List<Hex> hexes, List<Barrier> barriers) {
 
+        if(hexes == null || barriers == null) {
+            throw new NullPointerException();
+            
+        }
+
         System.out.println("some one called me");
         Iterator<Hex> hexIterator = hexes.iterator();
         while (hexIterator.hasNext()) {
@@ -52,4 +57,7 @@ public class SpellHandler {
             }
         }
     }
+
+
+    
 }
