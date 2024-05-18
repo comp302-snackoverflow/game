@@ -141,6 +141,8 @@ public class Level {
         this.chances--;
     }
 
+    public void increaseChances() {this.chances++;}
+
     public int getChances() {
         return chances;
     }

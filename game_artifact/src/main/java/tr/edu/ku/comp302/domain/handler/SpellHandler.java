@@ -9,6 +9,7 @@ import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 
 public class SpellHandler {
 
@@ -51,5 +52,14 @@ public class SpellHandler {
                 }
             }
         }
+    }
+
+    public void felixFelicis(Level level) {
+        level.increaseChances();
+    }
+
+    //TODO: Note to Eren: This spell lasts for 15 seconds.
+    public void doubleAccel(Level level) {
+        level.getFireBall().halfSpeed();
     }
 }

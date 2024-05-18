@@ -134,6 +134,10 @@ public class FireBall extends Entity {
         this.size = size;
     }
 
+    public void halfSpeed() {
+        this.speed = this.speed / 2;
+    }
+
     public boolean getOverwhelmed() {
         return isOverwhelmed;
     }
