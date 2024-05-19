@@ -272,6 +272,38 @@ public class LevelHandler {
 
     }
 
+    /**
+     * Applies the Overwhelming Spell. This spell creates a massive fireball that
+     * travels across the screen, damaging and destroying barriers in its path.
+     */
+    public void applyOverwhelmingSpell() {
+        // Create a thread that will run the code to apply the Overwhelming Spell
+        Runnable overwhelmingSpellTask = new Runnable() {
+            @Override
+            public void run() {
+                // Call the method in the SpellHandler to apply the Overwhelming Spell
+                spellHandler.overwhelmingSpell(level);
+            }
+        };
+
+        // Create a thread that will run the code to normalize the fireball after the
+        // Overwhelming Spell has finished
+        Runnable normalizeFireball = new Runnable() {
+            @Override
+            public void run() {
+                // Call the method in the SpellHandler to normalize the fireball
+                spellHandler.endOverwhelmingBall(level);
+            }
+        };
+
+        // Create a PausableThread that will run the two tasks in sequence
+        PausableThread pausableThread = new PausableThread(overwhelmingSpellTask, normalizeFireball, 10000);
+        // Add the thread to the list of pausable threads
+        pausableThreads.add(pausableThread);
+    }
+    
+
+
     
     public void collectSpell(char spell){
         switch(spell) {
@@ -279,6 +311,7 @@ public class LevelHandler {
                 level.collectSpell(spell);
                 break;
             case(SpellBox.OVERWHELMING_SPELL):
+                applyOverwhelmingSpell();
                 break; //TODO: add the overwhelming spell once it is done.
             case(SpellBox.HEX_SPELL):
                 level.collectSpell(spell);
@@ -300,6 +333,9 @@ public class LevelHandler {
                 break;
             case(SpellBox.HEX_SPELL):
                 startCreatingHex();
+                break;
+            case(SpellBox.OVERWHELMING_SPELL):
+                applyOverwhelmingSpell();
                 break;
             default:
                 return;

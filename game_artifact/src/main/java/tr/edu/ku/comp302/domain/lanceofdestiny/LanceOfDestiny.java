@@ -255,8 +255,6 @@ public class LanceOfDestiny implements Runnable {
         CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
         CollisionHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
-        
-        
         List<Barrier> barriers = levelHandler.getBarriers();
         CollisionHandler.checkFireballBarriersCollisions(levelHandler.getFireBall(), barriers);
 

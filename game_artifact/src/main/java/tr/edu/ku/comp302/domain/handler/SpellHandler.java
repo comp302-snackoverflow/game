@@ -4,7 +4,7 @@ package tr.edu.ku.comp302.domain.handler;
 import java.util.Iterator;
 import java.util.List;
 
-
+import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
@@ -43,6 +43,24 @@ public class SpellHandler {
     //TODO: Note to Eren: This spell lasts for 15 seconds.
     public void doubleAccel(Level level) {
         level.getFireBall().halfSpeed();
+    }
+
+
+    public void overwhelmingSpell(Level level) {
+
+        FireBall fireBall = level.getFireBall();
+
+        fireBall.setOverwhelming(true);
+        
+
+    }
+
+    public void endOverwhelmingBall(Level level){
+
+        FireBall fireBall = level.getFireBall();
+
+        fireBall.setOverwhelming(false);
+        
     }
 
 

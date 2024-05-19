@@ -209,6 +209,7 @@ public class CollisionHandler {
                     try {
                         Collision side = hitBoxCollision(fireBall, barrier);
                         if (side != null) {
+
                             resolveCollision(fireBall, barrier, side);
                         }
                     } catch (CollisionError ignored) {
@@ -317,12 +318,18 @@ public class CollisionHandler {
     private static void resolveCollision(FireBall fireBall, Barrier barrier, Collision side) {
         // FIXME surface speed should be barrier.getYDirection when collision side is left or right
         //  think about the corner collision cases. @Omer-Burak-Duran
-        switch (side) {
-            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(0, barrier.getXDirection());
-            case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                    fireBall.handleCornerReflection(0, barrier.getXDirection(), side);
+        //if fireball is ovewhelming do not reflect it
+        if (!fireBall.isOverwhelming()){
+
+            switch (side) {
+                case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(0, barrier.getXDirection());
+                case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
+                        fireBall.handleCornerReflection(0, barrier.getXDirection(), side);
+            }
+
         }
-        if(!(barrier.getFrozen() && !fireBall.getOverwhelmed())){
+        
+        if(!(barrier.getFrozen() && !fireBall.isOverwhelming())){
             barrier.decreaseHealth();
         }
     }

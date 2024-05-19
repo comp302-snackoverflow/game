@@ -80,11 +80,11 @@ public class Level {
 
     public Level(){
         // Keeping this just just in case.
-//        double xPosLance = LanceOfDestiny.getScreenWidth() / 2. + LanceOfDestiny.getScreenWidth() / 20.;
-//        double yPosLance = LanceOfDestiny.getScreenHeight() * 8 / 10.;
-//        Lance lance = new Lance(xPosLance, yPosLance);
-//        FireBall fireBall = new FireBall(0, 0);
-//        fireBall.stickToLance(lance);
+        //double xPosLance = LanceOfDestiny.getScreenWidth() / 2. + LanceOfDestiny.getScreenWidth() / 20.;
+        //double yPosLance = LanceOfDestiny.getScreenHeight() * 8 / 10.;
+        //Lance lance = new Lance(xPosLance, yPosLance);
+        //FireBall fireBall = new FireBall(0, 0);
+        //fireBall.stickToLance(lance);
         this(
             new Lance(LanceOfDestiny.getScreenWidth() / 2.0 + LanceOfDestiny.getScreenWidth() / 20.0,
                 LanceOfDestiny.getScreenHeight() * 0.8),

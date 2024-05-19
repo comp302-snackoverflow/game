@@ -14,6 +14,7 @@ public class Lance extends Entity {
     private double thickness;
     private short direction;
     private double rotationAngle;
+    
 
     public Lance(double xPosition, double yPosition) {
         super(xPosition, yPosition);
@@ -173,4 +174,9 @@ public class Lance extends Entity {
     public Rectangle2D getBoundingBox() {
         return getActualHitbox().getBounds2D();
     }
+
+    
+
+    
+
 }

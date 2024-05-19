@@ -6,13 +6,13 @@ import tr.edu.ku.comp302.domain.handler.collision.Collision;
 import java.awt.geom.Rectangle2D;
 
 public class FireBall extends Entity {
-    private boolean isOverwhelmed = false;
     private int size = 16;
     private double dx = 0;
     private double dy = 0;
     private double speed = 2; // Might change the speed later.
     //TODO: Add the player!
     private boolean moving;
+    private boolean isOverwhelming = false;
 
     public FireBall(double xPosition, double yPosition) {
         super(xPosition, yPosition);
@@ -134,14 +134,6 @@ public class FireBall extends Entity {
         this.size = size;
     }
 
-    public boolean getOverwhelmed() {
-        return isOverwhelmed;
-    }
-
-    public void setOverwhelmed(boolean isOverwhelmed) {
-        this.isOverwhelmed = isOverwhelmed;
-    }
-
     public double getDx() {
         return dx;
     }
@@ -173,5 +165,14 @@ public class FireBall extends Entity {
 
     public boolean isMoving() {
         return moving;
+    }
+
+
+    public boolean isOverwhelming() {
+        return isOverwhelming;
+    }
+
+    public void setOverwhelming(boolean isOverwhelming) {
+        this.isOverwhelming = isOverwhelming;
     }
 }

@@ -96,6 +96,11 @@ public class LevelPanel extends JPanel {
             levelHandler.generateHollowBarriers();
             requestFocus();
         });
+        addCircularButton("/assets/hollow_barrier.png",LanceOfDestiny.getScreenWidth()-500, 500, e -> {
+            System.out.println("I am pressed");
+            levelHandler.useSpell(SpellBox.OVERWHELMING_SPELL);
+            requestFocus();
+        });
 
         revalidate();
         repaint();
