@@ -14,11 +14,11 @@ public class CircularMovement implements IMovementStrategy {
     private static final double INITIAL_ANGLE = Math.PI / 2;
     private final Logger logger = LogManager.getLogger(CircularMovement.class);
     private final SecureRandom random;
-    private Direction direction = Direction.STIFF;
+    public Direction direction = Direction.STIFF;
     private double angle;
-    private double radius;
-    private double centerX;
-    private double centerY;
+    public double radius;
+    public double centerX;
+    public double centerY;
 
     public CircularMovement(Barrier barrier) {
         this(barrier, INITIAL_ANGLE);
@@ -42,6 +42,26 @@ public class CircularMovement implements IMovementStrategy {
         return LanceOfDestiny.getScreenHeight() / 20.0;
     }
 
+    /**
+     * Moves the barrier in a circular path determined by the current direction and speed.
+     *
+     * Requires:
+     *  - The barrier instance should not be null.
+     *  - Speed should be set to a non-negative value.
+     *
+     * Modifies:
+     *  - The position of the barrier (its x and y coordinates).
+     *  - The bounding box of the barrier.
+     *  - The internal angle representing the position on the circular path.
+     *
+     * Effects:
+     *  - If the direction is STIFF, the barrier does not move.
+     *  - If the direction is CLOCKWISE, the angle decreases based on the given speed.
+     *  - If the direction is COUNTER_CLOCKWISE, the angle increases based on the given speed.
+     *  - The angle is normalized to be within the range [0, 2 * PI).
+     *  - The x and y positions of the barrier are updated based on the new angle.
+     *  - The bounding box of the barrier is updated to reflect the new position.
+     */
     @Override
     public void move(Barrier barrier, double speed) {
         if (direction == Direction.STIFF) {
@@ -217,9 +237,26 @@ public class CircularMovement implements IMovementStrategy {
         centerY = barrier.getYPosition() + barrier.getThickness() / 2 + radius * Math.sin(angle);
     }
 
-    private enum Direction {
+    public enum Direction {
         CLOCKWISE,
         STIFF,
         COUNTER_CLOCKWISE
     }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
+    
 }
