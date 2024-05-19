@@ -77,17 +77,21 @@ public class LevelPanel extends JPanel {
     }
 
     public void addButtons() {
-        addCircularButton("/assets/lance_image.png", LanceOfDestiny.getScreenWidth()-100, 500, e -> {
+        addCircularButton("/assets/lance_extension.png", LanceOfDestiny.getScreenWidth()-100, 500, e -> {
             levelHandler.extendLance();
             requestFocus();
             repaint();
         });
-        addCircularButton("/assets/fireball_image.png", LanceOfDestiny.getScreenWidth()-200, 500, e -> {
+        addCircularButton("/assets/hex.png", LanceOfDestiny.getScreenWidth()-100, 500 +50, e -> {
             levelHandler.startCreatingHex();
             requestFocus();
             repaint();
         });
-        addCircularButton("/assets/frozen_barrier.png", LanceOfDestiny.getScreenWidth()-300, 500, e -> {
+
+
+        //Only hex lance extension and overwhelming fireball can bu used by the player the calls to these functions will be implemented in the Ymir Class
+
+        /*addCircularButton("/assets/frozen_barrier.png", LanceOfDestiny.getScreenWidth()-300, 500, e -> {
             ArrayList<Barrier> chosen = levelHandler.eightRandomBarriers();
             levelHandler.renderBarriers(levelG);
             requestFocus();
@@ -96,7 +100,7 @@ public class LevelPanel extends JPanel {
             levelHandler.generateHollowBarriers();
             requestFocus();
         });
-
+        */
         revalidate();
         repaint();
     }
@@ -107,11 +111,15 @@ public class LevelPanel extends JPanel {
             System.err.println("Icon not found: " + iconPath);
             return;
         }
-        CircularButton button = new CircularButton(icon);
-        button.setBounds(x, y, 50, 50); // Set position and size
+        int iconSize = 40;
+        BufferedImage resizedIcon = ImageHandler.resizeImage(icon, iconSize, iconSize);
+    
+        CircularButton button = new CircularButton(resizedIcon);
+        button.setBounds(x, y, iconSize, iconSize); 
         button.addActionListener(action);
         add(button);
     }
+    
 
     public void prepareHeartImage(Graphics g) {
         BufferedImage heart = ImageHandler.getImageFromPath("/assets/heart_image.png");

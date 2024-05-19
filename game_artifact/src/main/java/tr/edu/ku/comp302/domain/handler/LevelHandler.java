@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -222,14 +223,14 @@ public class LevelHandler {
 
     public ArrayList<Barrier> eightRandomBarriers() {
         ArrayList<Barrier> chosen = new ArrayList<>();
-        ArrayList<Barrier> allBarriers = (ArrayList) getBarriers();
+        List<Barrier> allBarriers = Collections.synchronizedList((ArrayList) getBarriers());
         int barrierCount = allBarriers.size();
             //less than 8 barriers remain
         if (barrierCount < 8) {
             for(Barrier b : allBarriers){
                 b.setFrozen(true);
             }
-            return allBarriers;
+            return (ArrayList)allBarriers;
         }
         
         Random random = new Random();
