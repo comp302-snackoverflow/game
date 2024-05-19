@@ -17,6 +17,7 @@ import tr.edu.ku.comp302.domain.handler.BuildHandler.BarrierType;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.threads.PausableThread;
+import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import tr.edu.ku.comp302.ui.view.View;
 import java.util.concurrent.Executors;
@@ -29,6 +30,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,6 +49,7 @@ public class LevelHandler {
     private ScheduledExecutorService scheduler;
     private SpellHandler spellHandler;
     private List<PausableThread> pausableThreads= new ArrayList<>();
+    private LevelPanel levelPanel;
 
     /**
      * Handling the render of the views of the objects of the level instance.
@@ -222,14 +225,14 @@ public class LevelHandler {
 
     public ArrayList<Barrier> eightRandomBarriers() {
         ArrayList<Barrier> chosen = new ArrayList<>();
-        ArrayList<Barrier> allBarriers = (ArrayList) getBarriers();
+        List<Barrier> allBarriers = Collections.synchronizedList((ArrayList) getBarriers());
         int barrierCount = allBarriers.size();
             //less than 8 barriers remain
         if (barrierCount < 8) {
             for(Barrier b : allBarriers){
                 b.setFrozen(true);
             }
-            return allBarriers;
+            return (ArrayList)allBarriers;
         }
         
         Random random = new Random();
@@ -306,6 +309,7 @@ public class LevelHandler {
 
     
     public void collectSpell(char spell){
+        SpellBox.incrementSpellCount(spell);
         switch(spell) {
             case(SpellBox.EXTENSION_SPELL):
                 level.collectSpell(spell);
@@ -322,25 +326,38 @@ public class LevelHandler {
             default:
                 return;
         }
-    }
-
-    public void useSpell(char spell) {
-        if (!level.inventoryHasSpell(spell)) return;
-        switch (spell) {
-            case(SpellBox.EXTENSION_SPELL):
-                extendLance();
-                level.removeSpell(spell);
-                break;
-            case(SpellBox.HEX_SPELL):
-                startCreatingHex();
-                break;
-            case(SpellBox.OVERWHELMING_SPELL):
-                applyOverwhelmingSpell();
-                break;
-            default:
-                return;
+        if (levelPanel != null) {
+            levelPanel.updateSpellCounts();
         }
     }
+    public void useSpell(char spell) {
+        if (!level.inventoryHasSpell(spell)) return;
+        
+        if (SpellBox.decrementSpellCount(spell)) {
+            switch (spell) {
+                case SpellBox.EXTENSION_SPELL:
+                    extendLance();
+                    //level.removeSpell(spell);
+                    break;
+                case SpellBox.HEX_SPELL:
+                    startCreatingHex();
+                    break;
+                case SpellBox.OVERWHELMING_SPELL:
+                    applyOverwhelmingSpell();
+                    break;
+                default:
+                    return;
+            }
+            // Update the spell counts in the LevelPanel
+            if (levelPanel != null) {
+                levelPanel.updateSpellCounts();
+            }
+        } else {
+            // Handle the case where there are no more spells left
+            System.out.println("No more spells left of type: " + spell);
+        }
+    }
+
 
     public void generateHollowBarriers(){
         SecureRandom secureRandom = new SecureRandom();
@@ -389,6 +406,7 @@ public class LevelHandler {
         }
         return false;
     }
+
     private boolean checkBarrierCollision(Barrier b1, Barrier b2){
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
@@ -400,6 +418,9 @@ public class LevelHandler {
         return pausableThreads;
     }
 
+    public void setLevelPanel(LevelPanel levelPanel) {
+        this.levelPanel = levelPanel;
+    }
 
 
     

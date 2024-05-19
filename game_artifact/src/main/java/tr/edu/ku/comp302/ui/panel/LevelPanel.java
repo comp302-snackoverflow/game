@@ -18,9 +18,13 @@ import java.util.ArrayList;
 public class LevelPanel extends JPanel {
     private LevelHandler levelHandler;
     private Graphics levelG;
+    private JLabel extensionSpellLabel;
+    private JLabel hexSpellLabel;
+    private JLabel overwhelmingSpellLabel;
 
     public LevelPanel(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
+        this.levelHandler.setLevelPanel(this);
         setLayout(null); // Use null layout for manual positioning
         addKeyListener(new KeyboardHandler());
         addButtons();
@@ -77,17 +81,30 @@ public class LevelPanel extends JPanel {
     }
 
     public void addButtons() {
-        addCircularButton("/assets/lance_image.png", LanceOfDestiny.getScreenWidth()-100, 500, e -> {
+        extensionSpellLabel = addCircularButtonWithLabel("/assets/lance_extension.png", LanceOfDestiny.getScreenWidth() - 100, 500, e -> {
             levelHandler.useSpell(SpellBox.EXTENSION_SPELL);
+            updateSpellCounts();
             requestFocus();
             repaint();
         });
-        addCircularButton("/assets/fireball_image.png", LanceOfDestiny.getScreenWidth()-200, 500, e -> {
+
+        hexSpellLabel = addCircularButtonWithLabel("/assets/hex.png", LanceOfDestiny.getScreenWidth() - 100, 500 + 50, e -> {
             levelHandler.useSpell(SpellBox.HEX_SPELL);
+            updateSpellCounts();
             requestFocus();
             repaint();
         });
-        addCircularButton("/assets/frozen_barrier.png", LanceOfDestiny.getScreenWidth()-300, 500, e -> {
+
+        overwhelmingSpellLabel = addCircularButtonWithLabel("/assets/overwhelming_fireball.png", LanceOfDestiny.getScreenWidth() - 100, 500 + 100, e -> {
+            levelHandler.useSpell(SpellBox.OVERWHELMING_SPELL);
+            updateSpellCounts();
+            requestFocus();
+            repaint();
+        });
+
+        //Only hex lance extension and overwhelming fireball can bu used by the player the calls to these functions will be implemented in the Ymir Class
+
+        /*addCircularButton("/assets/frozen_barrier.png", LanceOfDestiny.getScreenWidth()-300, 500, e -> {
             ArrayList<Barrier> chosen = levelHandler.eightRandomBarriers();
             levelHandler.renderBarriers(levelG);
             requestFocus();
@@ -100,23 +117,48 @@ public class LevelPanel extends JPanel {
             System.out.println("I am pressed");
             levelHandler.useSpell(SpellBox.OVERWHELMING_SPELL);
             requestFocus();
-        });
+        });*/
 
         revalidate();
         repaint();
     }
 
-    private void addCircularButton(String iconPath, int x, int y, ActionListener action) {
+    private JLabel addCircularButtonWithLabel(String iconPath, int x, int y, ActionListener action) {
         BufferedImage icon = ImageHandler.getImageFromPath(iconPath);
         if (icon == null) {
             System.err.println("Icon not found: " + iconPath);
-            return;
+            return null;
         }
-        CircularButton button = new CircularButton(icon);
-        button.setBounds(x, y, 50, 50); // Set position and size
+
+        // Resize the icon
+        int iconSize = 40; // Adjust size as needed
+        BufferedImage resizedIcon = ImageHandler.resizeImage(icon, iconSize, iconSize);
+
+        CircularButton button = new CircularButton(resizedIcon);
+        button.setBounds(0, 0, 50, 50); // Set position and size
         button.addActionListener(action);
-        add(button);
+
+        JLabel label = new JLabel("0");
+        label.setBounds(60, 15, 30, 20); // Adjust position relative to button
+
+        JPanel panel = new JPanel(null); // Use null layout for custom positioning
+        panel.setBounds(x, y, 100, 50); // Set panel size to fit button and label
+        panel.add(button);
+        panel.add(label);
+
+        add(panel);
+
+        return label;
     }
+
+
+    public void updateSpellCounts() {
+        int[] counts = SpellBox.getSpellCounts();
+        extensionSpellLabel.setText(String.valueOf(counts[SpellBox.EXTENSION_SPELL]));
+        hexSpellLabel.setText(String.valueOf(counts[SpellBox.HEX_SPELL]));
+        overwhelmingSpellLabel.setText(String.valueOf(counts[SpellBox.OVERWHELMING_SPELL]));
+    }
+    
 
     public void prepareHeartImage(Graphics g) {
         BufferedImage heart = ImageHandler.getImageFromPath("/assets/heart_image.png");
