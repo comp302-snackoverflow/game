@@ -21,12 +21,14 @@ public class TestDatabase {
     private DatabaseHandler dbHandler;
     private SecureRandom random;
 
+    // Sets up the database handler and the RNG for each test.
     @BeforeEach
     public void setUp() {
         dbHandler = DatabaseHandler.getInstance();
         random = new SecureRandom();
     }
 
+    // Blackbox test: Test if the database handler can establish a connection
     @Test
     public void TestConnection() {
         dbHandler = DatabaseHandler.getInstance();
@@ -34,6 +36,7 @@ public class TestDatabase {
         Assertions.assertNotNull(conn);
     }
 
+    // Glass box test: Test if the singleton pattern is implemented correctly
     @Test
     public void testInstancesEqual() {
         DatabaseHandler dbHandler2 = DatabaseHandler.getInstance();
@@ -42,6 +45,7 @@ public class TestDatabase {
         Assertions.assertEquals(dbHandler, dbHandler2);
     }
 
+    // Blackbox test: Test if the database handler can properly check if a username is unique
     @Test
     public void testIsUsernameUnique() {
         for (int i = 0; i < 10; i++) {
@@ -49,6 +53,7 @@ public class TestDatabase {
         }
     }
 
+    // Blackbox test: Test if the database handler can load a saved map without extra/lost data
     @Test
     public void testSaveLoadMapConsistency() {
         for (int i = 0; i < 4; i++) {
@@ -56,6 +61,7 @@ public class TestDatabase {
         }
     }
 
+    // Blackbox test: Test if the database handler can load a saved game without extra/lost data
     @Test
     public void testSaveLoadGameConsistency() {
         for (int i = 0; i < 4; i++) {
@@ -63,6 +69,8 @@ public class TestDatabase {
         }
     }
 
+    // Part of the blackbox test for testIsUsernameUnique.
+    // Creates a random username, checks if it is unique, creates a user with that username, and checks if it is unique again.
     private void _testIsUsernameUnique() {
         String username = randomUsername();
         Assertions.assertTrue(dbHandler.isUsernameUnique(username));
@@ -73,6 +81,8 @@ public class TestDatabase {
     }
 
 
+    // Part of the blackbox test for testSaveLoadGameConsistency.
+    // Creates a random username, saves a game with random data, and loads it back to check if the data is consistent.
     private void _testSaveLoadGameConsistency() {
         String username = randomUsername();
         dbHandler.createUser(username, "", "");
@@ -103,7 +113,8 @@ public class TestDatabase {
 
     }
 
-
+    // Part of the blackbox test for testSaveLoadMapConsistency.
+    // Creates a random username, saves a map with random data, and loads it back to check if the data is consistent.
     private void _testSaveLoadMapConsistency() {
         String username = randomUsername();
         dbHandler.createUser(username, "", "");

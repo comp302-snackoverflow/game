@@ -43,6 +43,8 @@ public class DatabaseHandler {
     }
 
     public static DatabaseHandler getInstance() {
+        // @modifies instance to be equal to a new DatabaseHandler object if it is null
+        // @effects returns the instance of the DatabaseHandler that is always the same
         if (instance == null) {
             instance = new DatabaseHandler();
         }
@@ -50,6 +52,7 @@ public class DatabaseHandler {
     }
 
     public Connection getConnection() {
+        // @effects returns a connection to the database, or null if the connection fails
         try {
             return dataSource.getConnection();
         } catch (SQLException e) {
@@ -97,6 +100,8 @@ public class DatabaseHandler {
     }
 
     public boolean isUsernameUnique(String username) {
+        // @requires a non-null username
+        // @effects returns true if the username is not in the database, false otherwise
         final String query = "SELECT * FROM Player WHERE username = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
@@ -115,6 +120,9 @@ public class DatabaseHandler {
 
     /// This method assumes that the person who checked it already verified that the username is unique !!!
     public boolean createUser(String username, String password, String salt) {
+        // @requires a non-null username, password, and salt
+        // @modifies the Player table in the database
+        // @effects returns true if the user is created successfully, false otherwise
         final String query = "INSERT INTO Player (username, password, salt) VALUES (?, ?, ?)";
 
         try (Connection connection = getConnection()) {
@@ -134,6 +142,9 @@ public class DatabaseHandler {
     }
 
     public boolean saveMap(String username, List<BarrierData> barriers) {
+        // @requires a non-null username and a list of barriers
+        // @modifies the Map and Barrier tables in the database
+        // @effects returns true if the map is saved successfully, false otherwise
         final String saveMap = "INSERT INTO Map (owner) VALUES (?);";
         int uid = getUidFromUsername(username);
         if (uid == -1) {
@@ -168,6 +179,8 @@ public class DatabaseHandler {
      * @return A list containing the barriers in the save or map
      */
     public List<BarrierData> loadBarriers(int id, String type) {
+        // @requires an ID and a non-null type
+        // @effects returns a list of BarrierData objects from the database
         final String query = switch (type) {
             case "save" -> "SELECT * FROM Barrier WHERE save_ref = ? AND map_ref IS NULL";
             case "map" -> "SELECT * FROM Barrier WHERE map_ref = ? AND save_ref IS NULL";
@@ -202,6 +215,9 @@ public class DatabaseHandler {
     }
 
     public boolean saveGame(String username, GameData data) {
+        // @requires a non-null username and a non-null GameData object with non-null data
+        // @modifies the Save and Barrier tables in the database
+        // @effects returns true if the game is saved successfully, false otherwise
         FireballData fireball = data.fireballData();
         LanceData lance = data.lanceData();
         List<BarrierData> barriers = data.barriersData();
@@ -244,6 +260,8 @@ public class DatabaseHandler {
     }
 
     public GameData loadGame(int saveId) {
+        // @requires a saveId
+        // @effects returns a GameData object with the data from the save with the given id or GameData with null fields if the save does not exist
         String query = "SELECT * FROM Save WHERE id = ?";
         FireballData fireball = null;
         LanceData lance = null;
