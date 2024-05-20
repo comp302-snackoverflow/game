@@ -30,7 +30,7 @@ public class TestDatabase {
 
     // Blackbox test: Test if the database handler can establish a connection
     @Test
-    public void TestConnection() {
+    public void testConnection() {
         dbHandler = DatabaseHandler.getInstance();
         Connection conn = dbHandler.getConnection();
         Assertions.assertNotNull(conn);
