@@ -77,7 +77,6 @@ public class Lance extends Entity {
     }
 
     public void setLength(double length) {
-        if (length < 0) length = 0;
         this.length = length;
         speedWithHold = length * 2;
         speedWithTap = length;
