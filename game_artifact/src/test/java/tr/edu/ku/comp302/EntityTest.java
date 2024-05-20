@@ -23,6 +23,7 @@ public class EntityTest {
     }
 
 
+    // This test is a black box test which checks if the rep invariant holds true when all the Entity objects are initialized.
     @Test
     public void constructorsTest() {
         Assertions.assertTrue(lance.repOk(), "The lance's rep invariant should hold when it's initialized!");
@@ -30,6 +31,9 @@ public class EntityTest {
         Assertions.assertTrue(explosiveBarrier.repOk(), "The explosive barrier's rep invariant should hold when it's initialized!");
         Assertions.assertTrue(simpleBarrier.repOk(), "The simple barrier's rep invariant should hold when it's initialized!");
     }
+
+    // This test is a black box test which checks if the rep invariant of the Lance is satisfied
+    // when it moves to the left and to the right.
     @Test
     public void lanceMovementTest() {
         lance.setDirection(1);
@@ -46,6 +50,8 @@ public class EntityTest {
 
     }
 
+    // This test is a black box test to check if the rep invariant of the FireBall is satisfied
+    // when it moves for a while.
     @Test
     public void fireballMovementTest() {
         fireball.launchFireball();
@@ -55,6 +61,8 @@ public class EntityTest {
         }
     }
 
+    // This test is a black box test to check if the rep invariant of the Barrier objects is satisfied
+    // when it moves for a while, using both Barrier strategies.
     @Test
     public void barrierMovementTest() {
         for (int i = 0; i<300; i++) {
@@ -68,6 +76,8 @@ public class EntityTest {
         }
     }
 
+    // This test is a black box test to check if the rep invariant of the FireBall object is satisfied when
+    // it is put on a map with a Barrier and forced to collide a few times.
     @Test
     public void collisionsTest() {
         simpleBarrier.setXPosition(4);
