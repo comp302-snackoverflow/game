@@ -31,10 +31,12 @@ import java.awt.geom.AffineTransform;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Random;
+import java.util.Set;
 
 
 public class LevelHandler {
@@ -222,34 +224,35 @@ public class LevelHandler {
         return level.getHexs();
     }
 
-
     public ArrayList<Barrier> eightRandomBarriers() {
         ArrayList<Barrier> chosen = new ArrayList<>();
-        List<Barrier> allBarriers = Collections.synchronizedList((ArrayList) getBarriers());
+        List<Barrier> allBarriers = Collections.synchronizedList(new ArrayList<>(getBarriers()));
         int barrierCount = allBarriers.size();
-            //less than 8 barriers remain
+
+        // Less than 8 barriers remain
         if (barrierCount < 8) {
-            for(Barrier b : allBarriers){
+            for (Barrier b : allBarriers) {
                 b.setFrozen(true);
             }
-            return (ArrayList)allBarriers;
+            return new ArrayList<>(allBarriers);
         }
-        
+
         Random random = new Random();
-        while (chosen.size() < 8) {
+        Set<Integer> chosenIndices = new HashSet<>();
+        while (chosenIndices.size() < 8) {
             int index = random.nextInt(barrierCount);
-            Barrier barrier = allBarriers.get(index);
-            //no duplicates
-            if (!chosen.contains(barrier)) {  
-                chosen.add(barrier);
+            if (chosenIndices.add(index)) {
+                chosen.add(allBarriers.get(index));
             }
         }
-        for (Barrier b : chosen){
+
+        for (Barrier b : chosen) {
             b.setFrozen(true);
         }
-        return chosen;
 
+        return chosen;
     }
+
 
 
     public void extendLance() {

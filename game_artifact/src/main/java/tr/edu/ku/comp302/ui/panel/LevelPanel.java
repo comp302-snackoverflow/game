@@ -102,6 +102,13 @@ public class LevelPanel extends JPanel {
             repaint();
         });
 
+        overwhelmingSpellLabel = addCircularButtonWithLabel("/assets/hollow_barrier.png", LanceOfDestiny.getScreenWidth() - 100, 500 + 150, e -> {
+            levelHandler.generateHollowBarriers();
+            updateSpellCounts();
+            requestFocus();
+            repaint();
+        });
+
         //Only hex lance extension and overwhelming fireball can bu used by the player the calls to these functions will be implemented in the Ymir Class
 
         /*addCircularButton("/assets/frozen_barrier.png", LanceOfDestiny.getScreenWidth()-300, 500, e -> {
@@ -109,11 +116,12 @@ public class LevelPanel extends JPanel {
             levelHandler.renderBarriers(levelG);
             requestFocus();
         });
+
         addCircularButton("/assets/hollow_barrier.png",LanceOfDestiny.getScreenWidth()-400, 500, e -> {
             levelHandler.generateHollowBarriers();
             requestFocus();
         });
-        addCircularButton("/assets/hollow_barrier.png",LanceOfDestiny.getScreenWidth()-500, 500, e -> {
+        /*addCircularButton("/assets/hollow_barrier.png",LanceOfDestiny.getScreenWidth()-500, 500, e -> {
             System.out.println("I am pressed");
             levelHandler.useSpell(SpellBox.OVERWHELMING_SPELL);
             requestFocus();
