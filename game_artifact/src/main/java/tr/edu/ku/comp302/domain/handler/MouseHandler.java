@@ -3,10 +3,9 @@ package tr.edu.ku.comp302.domain.handler;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-
-public class MouseHandler implements MouseListener{
-
+public class MouseHandler implements MouseListener {
     public static boolean mouseClicked = false;
+
     @Override
     public void mouseClicked(MouseEvent arg0) {
     }
@@ -30,5 +29,4 @@ public class MouseHandler implements MouseListener{
         // TODO Auto-generated method stub
         mouseClicked = false;
     }
-    
 }

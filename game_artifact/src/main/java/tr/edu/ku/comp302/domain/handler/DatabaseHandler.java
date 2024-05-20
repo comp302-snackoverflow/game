@@ -21,23 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHandler {
+    private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
     private static DatabaseHandler instance;
     private final HikariDataSource dataSource;
     private final LoadingCache<Integer, String> barrierTypeCache;
     private final LoadingCache<String, Integer> barrierIdCache;
-    private final Logger logger = LogManager.getLogger(DatabaseHandler.class);
 
     private DatabaseHandler() {
-        barrierTypeCache =
-            Caffeine.newBuilder()
-                    .maximumSize(128)
-                    .weakValues()
-                    .build(this::getBarrierType);
-        barrierIdCache =
-            Caffeine.newBuilder()
-                    .maximumSize(128)
-                    .weakValues()
-                    .build(this::getBarrierFromType);
+        barrierTypeCache = Caffeine.newBuilder().maximumSize(128).weakValues().build(this::getBarrierType);
+        barrierIdCache = Caffeine.newBuilder().maximumSize(128).weakValues().build(this::getBarrierFromType);
 
         HikariConfig config = new HikariConfig("/hikari.properties");
         dataSource = new HikariDataSource(config);
@@ -61,6 +53,7 @@ public class DatabaseHandler {
 
     /**
      * Get a connection from the connection pool. Used for extra rigidity
+     *
      * @param retries Number of retries left
      * @return A connection from the connection pool, or null if retries are exhausted
      * @throws SQLException If the connection cannot be established
@@ -99,6 +92,7 @@ public class DatabaseHandler {
 
     /**
      * Returns the user id if a user with the given username and password exists
+     *
      * @param username The username of the user
      * @param password The password of the user
      * @return The user id if the user exists, null otherwise
@@ -255,10 +249,7 @@ public class DatabaseHandler {
         List<BarrierData> barriers = data.barriersData();
         double score = data.score();
 
-        final String saveGame = "INSERT INTO Save " +
-                "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " +
-                "lance_x, lance_y, lance_angle, score) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String saveGame = "INSERT INTO Save " + "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " + "lance_x, lance_y, lance_angle, score) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Integer uid = (Integer) SessionManager.getSession().getSessionData("userID");
         if (uid == null) {
@@ -303,13 +294,8 @@ public class DatabaseHandler {
                 ps.setInt(1, saveId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        fireball = new FireballData(rs.getDouble("fireball_x"),
-                                rs.getDouble("fireball_y"),
-                                rs.getDouble("fireball_dx"),
-                                rs.getDouble("fireball_dy"));
-                        lance = new LanceData(rs.getDouble("lance_x"),
-                                rs.getDouble("lance_y"),
-                                rs.getDouble("lance_angle"));
+                        fireball = new FireballData(rs.getDouble("fireball_x"), rs.getDouble("fireball_y"), rs.getDouble("fireball_dx"), rs.getDouble("fireball_dy"));
+                        lance = new LanceData(rs.getDouble("lance_x"), rs.getDouble("lance_y"), rs.getDouble("lance_angle"));
                         score = rs.getDouble("score");
                     }
                 }
@@ -425,5 +411,4 @@ public class DatabaseHandler {
     public int getBarrierIdFromType(String type) {
         return barrierIdCache.get(type);
     }
-
 }

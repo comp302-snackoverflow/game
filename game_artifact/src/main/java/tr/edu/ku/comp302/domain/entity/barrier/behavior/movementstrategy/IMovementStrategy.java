@@ -8,6 +8,7 @@ public interface IMovementStrategy {
     /**
      * Returns the padding in x-axis for the barrier. This makes up the horizontal part of the barrier's
      * invisible hit box in barrier-barrier collisions
+     *
      * @return the padding in x-axis
      */
     double getXPadding();
@@ -15,6 +16,7 @@ public interface IMovementStrategy {
     /**
      * Returns the padding in y-axis for the barrier. This makes up the vertical part of the barrier's
      * invisible hit box in barrier-barrier collisions
+     *
      * @return the padding in y-axis
      */
     double getYPadding();
@@ -37,12 +39,14 @@ public interface IMovementStrategy {
 
     /**
      * Returns the direction of the barrier in x-axis.
+     *
      * @return -1 if the horizontal movement of the barrier is to the left, 1 if it is to the right, 0 otherwise.
      */
     int getXDirection();
 
     /**
      * Returns the direction of the barrier in y-axis. y-axis is inverted due to Swing's coordinate system.
+     *
      * @return -1 if the vertical movement of the barrier is to the bottom, 1 if it is to the up, 0 otherwise.
      */
     int getYDirection();
@@ -65,6 +69,7 @@ public interface IMovementStrategy {
     /**
      * Adjusts the movement parameters of the barrier according to the given barrier.
      * Used in case the screen is resized.
+     *
      * @param barrier the barrier to take reference from
      */
     void adjustMovementParameters(Barrier barrier);

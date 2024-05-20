@@ -5,11 +5,10 @@ import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class LoginPanel extends JPanel {
-
     private final MainFrame mainFrame;
     protected JPasswordField pwdField;
     protected JTextField usernameTextField;
@@ -52,7 +51,7 @@ public class LoginPanel extends JPanel {
             String username = usernameTextField.getText();
             String password = new String(pwdField.getPassword());
             int response = LoginHandler.getInstance().login(username, password);
-            switch(response) {
+            switch (response) {
                 case LoginHandler.SUCCESS:
                     JOptionPane.showMessageDialog(null, "Successfully logged in.", "Success", JOptionPane.INFORMATION_MESSAGE);
                     clearInputs();
@@ -120,7 +119,7 @@ public class LoginPanel extends JPanel {
         this.usernameTextField = usernameTextField;
     }
 
-    private void clearInputs(){
+    private void clearInputs() {
         usernameTextField.setText("");
         pwdField.setText("");
         errorTextArea.setText("");

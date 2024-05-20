@@ -1,25 +1,20 @@
 package tr.edu.ku.comp302.ui.panel;
 
-
 import tr.edu.ku.comp302.domain.handler.RegisterHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
-import java.awt.Font;
-import java.awt.Component;
-
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.Color;
+import java.awt.event.ActionListener;
 
 public class RegisterPanel extends JPanel {
-
     private final MainFrame mainFrame;
-    private JLabel confirmPwdLabel;
     protected JTextField usernameTextField;
     protected JPasswordField pwdField;
     protected JPasswordField confirmPwdField;
     protected JTextArea errorTextArea;
+    private JLabel confirmPwdLabel;
 
     public RegisterPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -80,7 +75,7 @@ public class RegisterPanel extends JPanel {
             String passwordRepeat = new String(confirmPwdField.getPassword());
             int response = RegisterHandler.getInstance().register(username, password, passwordRepeat);
 
-            switch(response) {
+            switch (response) {
                 case RegisterHandler.SUCCESS:
                     // TODO: Create user object
                     JOptionPane.showMessageDialog(null, "Account created", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -168,7 +163,7 @@ public class RegisterPanel extends JPanel {
         this.confirmPwdField = confirmPwdField;
     }
 
-    private void clearInputs(){
+    private void clearInputs() {
         usernameTextField.setText("");
         pwdField.setText("");
         confirmPwdField.setText("");

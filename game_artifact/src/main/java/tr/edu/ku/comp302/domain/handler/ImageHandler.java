@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302.domain.handler;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ImageHandler {
-    private static Logger logger = LogManager.getLogger(ImageHandler.class);
+    private static final Logger logger = LogManager.getLogger(ImageHandler.class);
 
     public static BufferedImage createCustomImage(String pathStr, int widthNew, int heightNew) {
         BufferedImage image = getImageFromPath(pathStr);

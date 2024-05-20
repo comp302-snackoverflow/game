@@ -5,8 +5,6 @@ import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.services.Hash;
 
 public class RegisterHandler {
-    private static RegisterHandler instance;
-    private final DatabaseHandler dbHandler;
     public static final int SUCCESS = 0;
     public static final int USERNAME_TOO_SHORT = 1;
     public static final int USERNAME_TOO_LONG = 2;
@@ -15,9 +13,19 @@ public class RegisterHandler {
     public static final int PASSWORD_TOO_LONG = 5;
     public static final int PASSWORDS_DO_NOT_MATCH = 6;
     public static final int WOMP_WOMP = -1;
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(RegisterHandler.class);
+    private static RegisterHandler instance;
+    private final DatabaseHandler dbHandler;
+
     private RegisterHandler() {
         dbHandler = DatabaseHandler.getInstance();
+    }
+
+    public static RegisterHandler getInstance() {
+        if (instance == null) {
+            instance = new RegisterHandler();
+        }
+        return instance;
     }
 
     public int register(String username, String password, String passwordRepeat) {
@@ -40,13 +48,6 @@ public class RegisterHandler {
         }
         logger.fatal("Womp Womp Fatal Error");
         return WOMP_WOMP;
-    }
-
-    public static RegisterHandler getInstance() {
-        if (instance == null) {
-            instance = new RegisterHandler();
-        }
-        return instance;
     }
 
     private int validateInput(String uname, String password, String repeat) {
@@ -73,4 +74,3 @@ public class RegisterHandler {
         return SUCCESS;
     }
 }
-

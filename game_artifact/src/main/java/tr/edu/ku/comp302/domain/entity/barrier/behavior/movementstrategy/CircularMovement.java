@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
@@ -12,7 +11,7 @@ import java.util.List;
 
 public class CircularMovement implements IMovementStrategy {
     private static final double INITIAL_ANGLE = Math.PI / 2;
-    private final Logger logger = LogManager.getLogger(CircularMovement.class);
+    private static final Logger logger = LogManager.getLogger(CircularMovement.class);
     private final SecureRandom random;
     private Direction direction = Direction.STIFF;
     private double angle;
@@ -126,8 +125,7 @@ public class CircularMovement implements IMovementStrategy {
 
     @Override
     public void handleCloseCalls(Barrier barrier, List<Barrier> barriers) {
-        int sides = CollisionHandler.checkCloseCalls(barrier, barriers,
-                getXPadding(), getYPadding());
+        int sides = CollisionHandler.checkCloseCalls(barrier, barriers, getXPadding(), getYPadding());
 
         if (isStuck(sides)) {
             barrier.stopMoving();
@@ -161,9 +159,7 @@ public class CircularMovement implements IMovementStrategy {
     }
 
     private boolean shouldTurnBack(int sides) {
-        return !(direction == Direction.STIFF)
-                && (direction == Direction.CLOCKWISE && !canGoClockwise(sides))
-                || (direction == Direction.COUNTER_CLOCKWISE && !canGoCounterClockwise(sides));
+        return !(direction == Direction.STIFF) && (direction == Direction.CLOCKWISE && !canGoClockwise(sides)) || (direction == Direction.COUNTER_CLOCKWISE && !canGoCounterClockwise(sides));
     }
 
     private boolean canGoClockwise(int sides) { // sides = `lbrt`
@@ -218,8 +214,6 @@ public class CircularMovement implements IMovementStrategy {
     }
 
     private enum Direction {
-        CLOCKWISE,
-        STIFF,
-        COUNTER_CLOCKWISE
+        CLOCKWISE, STIFF, COUNTER_CLOCKWISE
     }
 }

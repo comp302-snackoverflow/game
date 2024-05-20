@@ -18,7 +18,7 @@ public class KeyboardHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()){
+        switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
                 rightArrowPressed = true;
                 break;
@@ -39,7 +39,7 @@ public class KeyboardHandler implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()){
+        switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
                 rightArrowPressed = false;
                 break;

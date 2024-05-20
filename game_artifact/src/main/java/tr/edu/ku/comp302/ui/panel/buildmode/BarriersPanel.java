@@ -9,6 +9,7 @@ public class BarriersPanel extends JPanel {
     protected final JButton explosiveBarrierButton;
     protected final JButton giftingBarrierButton;
     protected final JButton deleteButton;
+
     public BarriersPanel() {
         setLayout(new GridBagLayout());
         simpleBarrierButton = new JButton("Simple Barrier");

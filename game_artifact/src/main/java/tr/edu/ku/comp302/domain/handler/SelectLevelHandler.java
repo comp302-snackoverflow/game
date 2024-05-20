@@ -2,7 +2,6 @@ package tr.edu.ku.comp302.domain.handler;
 
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.save.LoadService;
-import tr.edu.ku.comp302.ui.panel.SelectLevelPanel;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -10,10 +9,8 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class SelectLevelHandler {
     private static SelectLevelHandler instance;

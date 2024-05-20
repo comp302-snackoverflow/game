@@ -6,16 +6,23 @@ import tr.edu.ku.comp302.domain.services.Hash;
 import tr.edu.ku.comp302.domain.services.SessionManager;
 
 public class LoginHandler {
-    private static LoginHandler instance;
-    private final DatabaseHandler dbHandler;
     public static final int SUCCESS = 0;
     public static final int USERNAME_EMPTY = 1;
     public static final int PASSWORD_EMPTY = 2;
     public static final int USER_NOT_FOUND = 3;
+    private static final Logger logger = LogManager.getLogger(LoginHandler.class);
+    private static LoginHandler instance;
+    private final DatabaseHandler dbHandler;
 
-    private static final Logger logger = LogManager.getLogger();
     private LoginHandler() {
         dbHandler = DatabaseHandler.getInstance();
+    }
+
+    public static LoginHandler getInstance() {
+        if (instance == null) {
+            instance = new LoginHandler();
+        }
+        return instance;
     }
 
     public int login(String username, String password) {
@@ -38,13 +45,6 @@ public class LoginHandler {
         }
         logger.debug(String.format("User with username %s not found", username));
         return USER_NOT_FOUND;
-    }
-
-    public static LoginHandler getInstance() {
-        if (instance == null) {
-            instance = new LoginHandler();
-        }
-        return instance;
     }
 
     private int validateInput(String uname, String password) {

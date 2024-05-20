@@ -1,13 +1,13 @@
 package tr.edu.ku.comp302.domain.services;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SessionManager {
-    private static SessionManager instance;
     private static final Object lock = new Object();
-
+    private static SessionManager instance;
     private final Map<String, Object> sessionData;
+
     private SessionManager() {
         sessionData = new HashMap<>();
     }
@@ -36,5 +36,4 @@ public class SessionManager {
     public void clear() {
         sessionData.clear();
     }
-
 }

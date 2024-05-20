@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302.domain.entity;
 
-
 import tr.edu.ku.comp302.domain.handler.collision.Collision;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
@@ -12,7 +11,6 @@ public class FireBall extends Entity {
     private double dx = 0;
     private double dy = 0;
     private double speed = 0.2 * LanceOfDestiny.getScreenWidth(); // in px/s
-    //TODO: Add the player!
     private boolean moving;
 
     public FireBall(double xPosition, double yPosition) {
@@ -50,8 +48,7 @@ public class FireBall extends Entity {
                 double dir = Math.signum(surfaceXSpeed);
                 dx = dir * dy / Math.sqrt(2);
                 dy = -dy * Math.sqrt(2);
-            }
-            else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
+            } else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
                 double currentSpeed = Math.sqrt(dx * dx + dy * dy);
                 double newSpeed = currentSpeed + 5; // increase total speed by 5
 //                double newSpeed = currentSpeed; // because permanent +5 speed boost looks bad

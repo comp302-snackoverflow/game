@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LoadService {
+    private static final Logger logger = LogManager.getLogger(LoadService.class);
     private static LoadService instance;
-    private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
     private LoadService() {
@@ -61,14 +61,10 @@ public class LoadService {
 
         FireBall fireball = new FireBall(632, 560);
 
-        List<Barrier> barriers =
-            barriersData.stream()
-                        .map(this::createBarrier)
-                        .collect(Collectors.toCollection(ArrayList::new));
+        List<Barrier> barriers = barriersData.stream().map(this::createBarrier).collect(Collectors.toCollection(ArrayList::new));
 
         return new Level(lance, fireball, barriers);
     }
-
 
 
     private Barrier createBarrier(BarrierData bd) {

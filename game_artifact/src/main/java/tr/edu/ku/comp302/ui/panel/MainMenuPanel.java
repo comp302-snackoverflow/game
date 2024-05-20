@@ -1,11 +1,12 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import javax.swing.*;
-import java.awt.*;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.services.SessionManager;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class MainMenuPanel extends JPanel {
     protected JButton newGameButton;

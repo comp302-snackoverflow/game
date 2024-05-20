@@ -7,7 +7,6 @@ public abstract class Entity {
     protected double yPosition;
     protected Rectangle2D boundingBox;
 
-    // TODO: screen size something
     public Entity(double xPosition, double yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
@@ -38,6 +37,5 @@ public abstract class Entity {
     public Rectangle2D getBoundingBox() {
         return boundingBox;
     }
-
 }
 

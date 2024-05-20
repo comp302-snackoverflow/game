@@ -7,9 +7,6 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import java.security.SecureRandom;
 import java.util.List;
 
-/**
- * This strategy class calculates the movements and collisions of the horizontal moving barriers
- */
 public class HorizontalMovement implements IMovementStrategy {
     private final SecureRandom random;
     private int direction;
@@ -46,13 +43,11 @@ public class HorizontalMovement implements IMovementStrategy {
 
     @Override
     public void handleCloseCalls(Barrier barrier, List<Barrier> barriers) {
-        int sides = CollisionHandler.checkCloseCalls(barrier, barriers,
-                getXPadding(), getYPadding()); // the bit order is `lbrt`
+        int sides = CollisionHandler.checkCloseCalls(barrier, barriers, getXPadding(), getYPadding()); // the bit order is `lbrt`
 
         if ((sides & 0b1010) == 0b1010) {
             barrier.stopMoving();
-        } else if ((direction == 1 && (sides & 0b0010) != 0)
-                || (direction == -1 && (sides & 0b1000) != 0)) {
+        } else if ((direction == 1 && (sides & 0b0010) != 0) || (direction == -1 && (sides & 0b1000) != 0)) {
             barrier.turnBack();
         }
     }

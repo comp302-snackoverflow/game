@@ -6,9 +6,6 @@ import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
-import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.view.View;
 
@@ -19,15 +16,14 @@ import java.util.List;
 public class LevelHandler {
     private static final View fireBallView = View.of(View.FIREBALL);
     private static final View lanceView = View.of(View.LANCE);
-    private BarrierRenderer barrierRenderer = new BarrierRenderer();
     private static final View remainView = View.of(View.REMAIN);
-    private final Logger logger = LogManager.getLogger(LevelHandler.class);
+    private static final Logger logger = LogManager.getLogger(LevelHandler.class);
+    private final BarrierRenderer barrierRenderer = new BarrierRenderer();
     private Level level;
 
     public LevelHandler(Level level) {
         this.level = level;
     }
-
 
     public void resizeLanceImage() {
         Lance lance = getLance();
@@ -49,7 +45,6 @@ public class LevelHandler {
         }
     }
 
-
     public void renderLance(Graphics g) {
         Lance lance = level.getLance();
         Graphics2D g2d = (Graphics2D) g;
@@ -70,7 +65,6 @@ public class LevelHandler {
         // uncomment the below line to see FireBall hit box
         // g.drawRect((int) fireBall.getXPosition(), (int) fireBall.getYPosition(), fireBall.getSize(), fireBall.getSize());
     }
-
 
     public void renderBarriers(Graphics g) {
         barrierRenderer.renderBarriers(g, getBarriers());
@@ -110,5 +104,4 @@ public class LevelHandler {
     public Lance getLance() {
         return level.getLance();
     }
-
 }

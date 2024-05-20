@@ -5,18 +5,6 @@ import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import java.awt.image.BufferedImage;
 
 public class View {
-    public enum Type {
-        FIREBALL,
-        LANCE,
-        SIMPLE_BARRIER,
-        FIRM_BARRIER,
-        EXPLOSIVE_BARRIER,
-        REMAIN,
-        GIFT_BARRIER,
-        LANCE_EXTENSION,
-        MISSING_TEXTURE,
-    }
-
     public static final Type FIREBALL = Type.FIREBALL;
     public static final Type LANCE = Type.LANCE;
     public static final Type SIMPLE_BARRIER = Type.SIMPLE_BARRIER;
@@ -37,21 +25,12 @@ public class View {
     private static final String LANCE_EXTENSION_IMAGE_PATH = "/assets/lance_extension.png";
     private static final String MISSING_TEXTURE_IMAGE_PATH = "/assets/missing_texture.png";
 
-    private BufferedImage defaultImage;
+    private final BufferedImage defaultImage;
     private BufferedImage image;
 
     private View(String imagePath) {
         defaultImage = ImageHandler.getImageFromPath(imagePath);
         image = defaultImage;
-    }
-
-    public BufferedImage resizeImage(int width, int height) {
-        image = ImageHandler.resizeImage(defaultImage, width, height);
-        return image;
-    }
-
-    public BufferedImage getImage() {
-        return image;
     }
 
     public static View of(Type type) {
@@ -66,5 +45,18 @@ public class View {
             case LANCE_EXTENSION -> new View(LANCE_EXTENSION_IMAGE_PATH);
             case MISSING_TEXTURE -> new View(MISSING_TEXTURE_IMAGE_PATH);
         };
+    }
+
+    public BufferedImage resizeImage(int width, int height) {
+        image = ImageHandler.resizeImage(defaultImage, width, height);
+        return image;
+    }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public enum Type {
+        FIREBALL, LANCE, SIMPLE_BARRIER, FIRM_BARRIER, EXPLOSIVE_BARRIER, REMAIN, GIFT_BARRIER, LANCE_EXTENSION, MISSING_TEXTURE,
     }
 }

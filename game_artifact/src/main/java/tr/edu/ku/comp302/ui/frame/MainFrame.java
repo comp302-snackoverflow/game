@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302.ui.frame;
 
-import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
@@ -19,8 +18,10 @@ public class MainFrame extends JFrame {
     private static final String BUILD = "build";
     private static final String PAUSE = "pause";
     private static final String SELECT_LEVEL = "select_level";
-
+    private static final int frameWidth = 1280;
+    private static final int frameHeight = 720;
     private final JPanel cards;
+    private final CardLayout layout;
     private LoginPanel loginPanel;
     private JPanel registerPanel;
     private JPanel mainMenuPanel;
@@ -28,10 +29,6 @@ public class MainFrame extends JFrame {
     private JPanel buildPanel;
     private JPanel pausePanel;
     private SelectLevelPanel selectLevelPanel;
-    private final CardLayout layout;
-
-    private static final int frameWidth = 1280;
-    private static final int frameHeight = 720;
 
     private MainFrame() {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
@@ -45,6 +42,25 @@ public class MainFrame extends JFrame {
         cards = new JPanel(layout);
         add(cards);
 
+    }
+
+    public static MainFrame createMainFrame() {
+        MainFrame self = new MainFrame();
+        self.prepareLoginPanel();
+        self.prepareRegisterPanel();
+        self.prepareMainMenu();
+        self.prepareBuildPanel();
+        self.prepareLevelPanel();
+        self.preparePausePanel();
+        self.prepareSelectLevelPanel();
+        self.cards.add(self.loginPanel, LOGIN);
+        self.cards.add(self.registerPanel, REGISTER);
+        self.cards.add(self.mainMenuPanel, MAINMENU);
+        self.cards.add(self.levelPanel, LEVEL);
+        self.cards.add(self.buildPanel, BUILD);
+        self.cards.add(self.pausePanel, PAUSE);
+        self.cards.add(self.selectLevelPanel, SELECT_LEVEL);
+        return self;
     }
 
     private void prepareLoginPanel() {
@@ -85,24 +101,6 @@ public class MainFrame extends JFrame {
     private void prepareSelectLevelPanel() {
         selectLevelPanel = new SelectLevelPanel(this);
 
-    }
-    public static MainFrame createMainFrame() {
-        MainFrame self = new MainFrame();
-        self.prepareLoginPanel();
-        self.prepareRegisterPanel();
-        self.prepareMainMenu();
-        self.prepareBuildPanel();
-        self.prepareLevelPanel();
-        self.preparePausePanel();
-        self.prepareSelectLevelPanel();
-        self.cards.add(self.loginPanel, LOGIN);
-        self.cards.add(self.registerPanel, REGISTER);
-        self.cards.add(self.mainMenuPanel, MAINMENU);
-        self.cards.add(self.levelPanel, LEVEL);
-        self.cards.add(self.buildPanel, BUILD);
-        self.cards.add(self.pausePanel, PAUSE);
-        self.cards.add(self.selectLevelPanel, SELECT_LEVEL);
-        return self;
     }
 
     public void showLoginPanel() {
@@ -158,6 +156,7 @@ public class MainFrame extends JFrame {
         return buildPanel;
     }
 
+    // FIXME: bad practice. Find a way to set the level without passing it to the UI
     public void setCurrentLevel(Level level) {
         levelPanel.getLevelHandler().setLevel(level);
     }

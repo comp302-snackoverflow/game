@@ -39,15 +39,12 @@ public class CollisionHandler {
     public static int checkCloseCalls(Barrier target, List<Barrier> barriers, double padX, double padY) {
         switch (target.getMovementStrategy()) {
             case HorizontalMovement ignored -> {
-                Rectangle2D wider = new Rectangle2D.Double(target.getXPosition() - padX, target.getYPosition(),
-                        target.getLength() + 2 * padX, target.getThickness());
-                Rectangle2D taller = new Rectangle2D.Double(target.getXPosition(), target.getYPosition() - padY,
-                        target.getLength(), target.getThickness() + 2 * padY);
+                Rectangle2D wider = new Rectangle2D.Double(target.getXPosition() - padX, target.getYPosition(), target.getLength() + 2 * padX, target.getThickness());
+                Rectangle2D taller = new Rectangle2D.Double(target.getXPosition(), target.getYPosition() - padY, target.getLength(), target.getThickness() + 2 * padY);
                 return checkCloseCalls(target, barriers, wider, taller);
             }
             case CircularMovement ignored -> {
-                Ellipse2D ellipse = new Ellipse2D.Double(target.getXPosition() - padX, target.getYPosition() - padY,
-                        target.getLength() + 2 * padX, target.getThickness() + 2 * padY);
+                Ellipse2D ellipse = new Ellipse2D.Double(target.getXPosition() - padX, target.getYPosition() - padY, target.getLength() + 2 * padX, target.getThickness() + 2 * padY);
 
                 return checkCloseCalls(target, barriers, ellipse);
             }
@@ -168,12 +165,10 @@ public class CollisionHandler {
     }
 
     public static void checkFireBallBorderCollisions(FireBall fireBall, int frameWidth, int frameHeight) {
-        if (fireBall.getXPosition() <= 0 ||
-                fireBall.getXPosition() + fireBall.getSize() >= frameWidth) {
+        if (fireBall.getXPosition() <= 0 || fireBall.getXPosition() + fireBall.getSize() >= frameWidth) {
             fireBall.bounceOffVerticalSurface();
         }
-        if (fireBall.getYPosition() <= 0 ||
-                fireBall.getYPosition() + fireBall.getSize() >= frameHeight) {
+        if (fireBall.getYPosition() <= 0 || fireBall.getYPosition() + fireBall.getSize() >= frameHeight) {
             fireBall.bounceOffHorizontalSurface();
         }
     }
@@ -207,8 +202,7 @@ public class CollisionHandler {
         }
     }
 
-    private static int findCollisions(FireBall fireBall, Point topLeft, Point topRight,
-                                      Point bottomRight, Point bottomLeft) {
+    private static int findCollisions(FireBall fireBall, Point topLeft, Point topRight, Point bottomRight, Point bottomLeft) {
         int collision = 0;
         if (fireballIntersectsLine(fireBall, topLeft, topRight)) {
             collision |= 0b0001;  // top segment

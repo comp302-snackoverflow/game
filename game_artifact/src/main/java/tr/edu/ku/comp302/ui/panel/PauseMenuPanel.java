@@ -1,10 +1,11 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
+
 import javax.swing.*;
 import java.awt.*;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
-import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
-import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 public class PauseMenuPanel extends JPanel {
     protected JButton resumeGameButton;
@@ -13,6 +14,7 @@ public class PauseMenuPanel extends JPanel {
     protected JButton mainMenuButton;
 
     protected MainFrame mainFrame;
+
     public PauseMenuPanel(MainFrame mainFrame) {
         GridBagLayout gridBagLayout = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -75,5 +77,4 @@ public class PauseMenuPanel extends JPanel {
         gbc.gridwidth = 3;
         this.add(mainMenuButton, gbc);
     }
-
 }

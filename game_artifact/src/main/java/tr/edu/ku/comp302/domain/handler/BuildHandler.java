@@ -6,7 +6,6 @@ import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.save.SaveService;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
@@ -22,27 +21,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BuildHandler {
-    private static final Logger logger = LogManager.getLogger(BuildHandler.class);
     public static final int NOTHING_SELECTED_MODE = -2;
     public static final int DELETE_MODE = -1;
     public static final int SIMPLE_MODE = 1;
     public static final int FIRM_MODE = 2;
     public static final int EXPLOSIVE_MODE = 3;
     public static final int GIFT_MODE = 4;
+    private static final Logger logger = LogManager.getLogger(BuildHandler.class);
     private static final int REQUIRED_SIMPLE_BARRIER_COUNT = 75;
     private static final int REQUIRED_FIRM_BARRIER_COUNT = 10;
     private static final int REQUIRED_EXPLOSIVE_BARRIER_COUNT = 5;
     private static final int REQUIRED_GIFT_BARRIER_COUNT = 10;
+    private final List<Barrier> barriersOnMap = new ArrayList<>();
+    private final BuildPanel buildPanel;
+    private final BarrierRenderer barrierRenderer = new BarrierRenderer();
     private int oldWidth;
     private int oldHeight;
-    private final List<Barrier> barriersOnMap = new ArrayList<>();
     private int simpleBarrierCount;
     private int firmBarrierCount;
     private int explosiveBarrierCount;
     private int giftBarrierCount;
     private int selectionMode;
-    private final BuildPanel buildPanel;
-    private final BarrierRenderer barrierRenderer = new BarrierRenderer();
+
     public BuildHandler(BuildPanel panel) {
         buildPanel = panel;
         oldWidth = panel.getWidth();
@@ -98,9 +98,7 @@ public class BuildHandler {
     }
 
     public boolean countsSatisfied(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
-        return simpleBarrierCount >= REQUIRED_SIMPLE_BARRIER_COUNT &&
-                firmBarrierCount >= REQUIRED_FIRM_BARRIER_COUNT &&
-                explosiveBarrierCount >= REQUIRED_EXPLOSIVE_BARRIER_COUNT /* &&
+        return simpleBarrierCount >= REQUIRED_SIMPLE_BARRIER_COUNT && firmBarrierCount >= REQUIRED_FIRM_BARRIER_COUNT && explosiveBarrierCount >= REQUIRED_EXPLOSIVE_BARRIER_COUNT /* &&
                 giftBarrierCount >= REQUIRED_GIFT_BARRIER_COUNT */ &&
                 // FIXME: Decide on below constant later.
                 simpleBarrierCount + firmBarrierCount + explosiveBarrierCount + giftBarrierCount <= 200;
@@ -177,13 +175,10 @@ public class BuildHandler {
         level.setBarriers(new ArrayList<>(barriersOnMap));
         // FIXME: Resizing is wrong: Barriers overlap with each other
         //  It is still buggy without this and I think its about vertical positioning.
-        level.getBarriers().forEach(barrier -> barrier.adjustPositionAndSize(
-                buildPanel.getBuildSection().getWidth(),
-                buildPanel.getBuildSection().getHeight(),
-                buildPanel.getWidth(),
-                buildPanel.getHeight()));
+        level.getBarriers().forEach(barrier -> barrier.adjustPositionAndSize(buildPanel.getBuildSection().getWidth(), buildPanel.getBuildSection().getHeight(), buildPanel.getWidth(), buildPanel.getHeight()));
         return level;
     }
+
     public void saveMap() {
         if (SaveService.getInstance().saveMap(barriersOnMap)) {
             logger.info("Saved map successfully.");
@@ -285,9 +280,6 @@ public class BuildHandler {
     }
 
     private enum BarrierType {
-        SIMPLE_BARRIER,
-        EXPLOSIVE_BARRIER,
-        FIRM_BARRIER,
-        GIFT_BARRIER
+        SIMPLE_BARRIER, EXPLOSIVE_BARRIER, FIRM_BARRIER, GIFT_BARRIER
     }
 }
