@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
     private LevelPanel levelPanel;
     private JPanel buildPanel;
     private JPanel pausePanel;
-    private JPanel selectLevelPanel;
+    private SelectLevelPanel selectLevelPanel;
     private final CardLayout layout;
 
     private static final int frameWidth = 1280;
@@ -144,6 +144,7 @@ public class MainFrame extends JFrame {
 
     public void showSelectLevelPanel() {
         layout.show(cards, SELECT_LEVEL);
+        selectLevelPanel.updateLevels();
         LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
         refresh();
     }

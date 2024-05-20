@@ -7,6 +7,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.services.SessionManager;
 import tr.edu.ku.comp302.domain.services.save.BarrierData;
 import tr.edu.ku.comp302.domain.services.save.FireballData;
 import tr.edu.ku.comp302.domain.services.save.GameData;
@@ -51,11 +52,30 @@ public class DatabaseHandler {
 
     public Connection getConnection() {
         try {
-            return dataSource.getConnection();
+            return getConnection(5);
         } catch (SQLException e) {
             logger.error(e);
             return null;
         }
+    }
+
+    /**
+     * Get a connection from the connection pool. Used for extra rigidity
+     * @param retries Number of retries left
+     * @return A connection from the connection pool, or null if retries are exhausted
+     * @throws SQLException If the connection cannot be established
+     */
+    public Connection getConnection(int retries) throws SQLException {
+        if (retries <= 0) {
+            logger.error("Failed to get connection");
+            return null;
+        }
+        Connection conn = dataSource.getConnection();
+        if (conn == null) {
+            logger.error("Failed to get connection, retrying");
+            return getConnection(retries - 1);
+        }
+        return conn;
     }
 
     public String getSaltByUsername(String username) {
@@ -77,8 +97,14 @@ public class DatabaseHandler {
         return null;
     }
 
-    public boolean validateLogin(String username, String password) {
-        final String query = "SELECT * FROM Player WHERE username = ? AND password = ?";
+    /**
+     * Returns the user id if a user with the given username and password exists
+     * @param username The username of the user
+     * @param password The password of the user
+     * @return The user id if the user exists, null otherwise
+     */
+    public Integer validateLogin(String username, String password) {
+        final String query = "SELECT uid FROM Player WHERE username = ? AND password = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -86,14 +112,16 @@ public class DatabaseHandler {
                 ps.setString(2, password);
 
                 try (ResultSet rs = ps.executeQuery()) {
-                    return rs.next();
+                    if (rs.next()) {
+                        return rs.getInt("uid");
+                    }
                 }
 
             }
         } catch (SQLException e) {
             logger.error(e);
         }
-        return false;
+        return null;
     }
 
     public boolean isUsernameUnique(String username) {
@@ -133,10 +161,10 @@ public class DatabaseHandler {
         return false;
     }
 
-    public boolean saveMap(String username, List<BarrierData> barriers) {
+    public boolean saveMap(List<BarrierData> barriers) {
         final String saveMap = "INSERT INTO Map (owner) VALUES (?);";
-        int uid = getUidFromUsername(username);
-        if (uid == -1) {
+        Integer uid = (Integer) SessionManager.getSession().getSessionData("userID");
+        if (uid == null) {
             return false;
         }
         // insert the map
@@ -158,6 +186,26 @@ public class DatabaseHandler {
             return false;
         }
         return false;
+    }
+
+    public List<Integer> getMaps(int uid) {
+        final String query = "SELECT id FROM Map WHERE owner = ?";
+        List<Integer> maps = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, uid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        maps.add(rs.getInt("id"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+        return maps;
     }
 
     /**
@@ -201,7 +249,7 @@ public class DatabaseHandler {
         return barriers;
     }
 
-    public boolean saveGame(String username, GameData data) {
+    public boolean saveGame(GameData data) {
         FireballData fireball = data.fireballData();
         LanceData lance = data.lanceData();
         List<BarrierData> barriers = data.barriersData();
@@ -211,8 +259,9 @@ public class DatabaseHandler {
                 "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " +
                 "lance_x, lance_y, lance_angle, score) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        int uid = getUidFromUsername(username);
-        if (uid == -1) {
+
+        Integer uid = (Integer) SessionManager.getSession().getSessionData("userID");
+        if (uid == null) {
             return false;
         }
         try (Connection connection = getConnection()) {

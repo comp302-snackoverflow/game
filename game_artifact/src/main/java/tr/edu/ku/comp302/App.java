@@ -10,7 +10,7 @@ public class App {
         MainFrame frame = MainFrame.createMainFrame();
         LevelPanel panel = new LevelPanel(new LevelHandler(null), frame);
         new LanceOfDestiny(panel);
-        frame.showMainMenuPanel();
+        frame.showLoginPanel();
         frame.setVisible(true);
     }
 }

@@ -77,6 +77,12 @@ public class Level {
 
     public void setBarriers(List<Barrier> barriers) {
         this.barriers = barriers;
+        remains.clear();
+        for (Barrier barrier : barriers) {
+            if (barrier instanceof ExplosiveBarrier b) {
+                remains.add(b.getRemain());
+            }
+        }
     }
 
     public List<Remain> getRemains() {

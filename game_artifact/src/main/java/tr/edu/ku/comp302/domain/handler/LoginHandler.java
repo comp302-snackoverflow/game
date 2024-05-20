@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.domain.handler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.services.Hash;
+import tr.edu.ku.comp302.domain.services.SessionManager;
 
 public class LoginHandler {
     private static LoginHandler instance;
@@ -29,8 +30,10 @@ public class LoginHandler {
             return USER_NOT_FOUND;
         }
         String hash = Hash.hash(password, salt);
-        if (dbHandler.validateLogin(username, hash)) {
+        Integer uid = dbHandler.validateLogin(username, hash);
+        if (uid != null) {
             logger.info(String.format("Player %s successfully logged in", username));
+            SessionManager.getSession().setSessionData("userID", uid);
             return SUCCESS;
         }
         logger.debug(String.format("User with username %s not found", username));

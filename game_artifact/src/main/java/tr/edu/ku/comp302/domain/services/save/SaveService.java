@@ -29,20 +29,18 @@ public class SaveService {
         return instance;
     }
 
-    // TODO Save with the actual username and game score
     public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers) {
         FireballData fireballData = getFireballData(fireball);
         LanceData lanceData = getLanceData(lance);
         List<BarrierData> barrierData = barriers.stream().map(this::getBarrierData).toList();
         GameData data = new GameData(fireballData, lanceData, barrierData, 0.0);
 
-        return dbHandler.saveGame("test", data);
+        return dbHandler.saveGame(data);
     }
 
-    // TODO Save with the actual username
     public boolean saveMap(List<Barrier> barriers) {
         List<BarrierData> barrierData = barriers.stream().map(this::getBarrierData).toList();
-        return dbHandler.saveMap("test", barrierData);
+        return dbHandler.saveMap(barrierData);
     }
 
     private FireballData getFireballData(FireBall fireball) {

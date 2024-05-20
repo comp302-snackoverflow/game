@@ -16,7 +16,7 @@ public class BarrierRenderer {
     protected static final View firmBarrierView = View.of(View.FIRM_BARRIER);
     protected static final View explosiveBarrierView = View.of(View.EXPLOSIVE_BARRIER);
 
-    private final Logger logger = LogManager.getLogger(BarrierRenderer.class);  // TODO
+    private static final Logger logger = LogManager.getLogger(BarrierRenderer.class);
 
 
     public void resizeBarrierImages(List<Barrier> barriers) {

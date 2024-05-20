@@ -257,7 +257,6 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleBarriersMovement(long currentTime) {
-        // FIXME: @ayazici21 please fix the below errors tysm - Meric
         for(Barrier barrier : levelHandler.getBarriers()){
             if(barrier.getMovementStrategy() != null){
                 // If the barrier moved with 0.2 probability and stopped with 0.8, the barriers would stop a lot
@@ -276,12 +275,11 @@ public class LanceOfDestiny implements Runnable {
 
         List<Remain> remains = levelHandler.getRemains();
         for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
-
             remain.move();
             if (remain.getYPosition() > screenHeight) {
                 remains.remove(remain);
             }
-            //TODO: handle collision with lance, and also remove when it goes below the wall.
+            //TODO: handle collision with lance
         }
     }
 

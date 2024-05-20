@@ -1,9 +1,14 @@
 package tr.edu.ku.comp302.domain.handler;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.domain.services.save.SaveService;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import tr.edu.ku.comp302.ui.view.View;
 
@@ -17,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BuildHandler {
-
+    private static final Logger logger = LogManager.getLogger(BuildHandler.class);
     public static final int NOTHING_SELECTED_MODE = -2;
     public static final int DELETE_MODE = -1;
     public static final int SIMPLE_MODE = 1;
@@ -121,7 +126,7 @@ public class BuildHandler {
         double barrierWidth = buildSection.getWidth() / 50.;
         SecureRandom secureRandom = new SecureRandom();
         if (!countsSatisfied(simpleBarrierCount, firmBarrierCount, explosiveBarrierCount, giftBarrierCount)) {
-            // TODO: Add system message and logger
+            logger.info("Counts are not satisfied. simple: {}, firm: {}, explosive: {}, gift: {}", simpleBarrierCount, firmBarrierCount, explosiveBarrierCount, giftBarrierCount);
             return;
         }
         for (int i = 0; i < simpleBarrierCount; i++) {
@@ -167,7 +172,26 @@ public class BuildHandler {
         return barrier;
     }
 
+    public Level getLevel() {
+        Level level = new Level();
+        level.setBarriers(new ArrayList<>(barriersOnMap));
+        // FIXME: Resizing is wrong: Barriers overlap with each other
+        //  It is still buggy without this and I think its about vertical positioning.
+        level.getBarriers().forEach(barrier -> barrier.adjustPositionAndSize(
+                buildPanel.getBuildSection().getWidth(),
+                buildPanel.getBuildSection().getHeight(),
+                buildPanel.getWidth(),
+                buildPanel.getHeight()));
+        return level;
+    }
     public void saveMap() {
+        if (SaveService.getInstance().saveMap(barriersOnMap)) {
+            logger.info("Saved map successfully.");
+            buildPanel.alertSaveSuccess();
+            clearMap();
+        } else {
+            buildPanel.alertSaveFailure();
+        }
     }
 
     public void clearMap() {
@@ -184,11 +208,11 @@ public class BuildHandler {
             return;
         }
         System.out.println(selectionMode);
-        if (barriersOnMap.size() <= 200) {
+        if (barriersOnMap.size() < 200) {
             putBarrierToMap(x, y, selectionMode);
             buildPanel.repaint();
         } else {
-            // TODO: Add logger message and system msg.
+            buildPanel.alertFullMap();
         }
 
     }
@@ -217,14 +241,16 @@ public class BuildHandler {
     }
 
     private Barrier createBarrier(int width, int x, int y, int selectionMode) {
-        Barrier barrier;
-        switch (selectionMode) {
-            case BuildHandler.SIMPLE_MODE -> barrier = new SimpleBarrier(x, y);
-            case BuildHandler.FIRM_MODE -> barrier = new FirmBarrier(x, y);
-            case BuildHandler.EXPLOSIVE_MODE -> barrier = new ExplosiveBarrier(x, y);
-            // case BuildHandler.GIFT_MODE -> barrier = new GiftBarrier(x, y);
-            default -> barrier = new SimpleBarrier(x, y); // TODO: Add logger obj
-        }
+        Barrier barrier = switch (selectionMode) {
+            case BuildHandler.SIMPLE_MODE -> new SimpleBarrier(x, y);
+            case BuildHandler.FIRM_MODE -> new FirmBarrier(x, y);
+            case BuildHandler.EXPLOSIVE_MODE -> new ExplosiveBarrier(x, y);
+            // case BuildHandler.GIFT_MODE -> new GiftBarrier(x, y);
+            default -> {
+                logger.warn("Unknown selection mode: {}", selectionMode);
+                yield new SimpleBarrier(x, y);
+            }
+        };
         barrier.setLength(width);
         return barrier;
     }

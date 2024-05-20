@@ -69,6 +69,8 @@ public class LoadService {
         return new Level(lance, fireball, barriers);
     }
 
+
+
     private Barrier createBarrier(BarrierData bd) {
         double xPos = bd.x();
         double yPos = bd.y();
