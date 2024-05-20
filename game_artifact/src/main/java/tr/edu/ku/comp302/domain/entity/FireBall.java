@@ -106,7 +106,7 @@ public class FireBall extends Entity {
 
     public void stickToLance(Lance lance) {
         this.xPosition = lance.getXPosition() + lance.getLength() / 2 - (int) (size / 2.0);
-        this.yPosition = lance.getYPosition() - size;
+        this.yPosition = lance.getYPosition() - size - 2; // 2 more pxs to prevent fireball from getting stuck
         this.boundingBox.setRect(xPosition, yPosition, size, size);
     }
 

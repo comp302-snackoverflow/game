@@ -152,6 +152,8 @@ public class LanceOfDestiny implements Runnable {
     // Copilot's thoughts about this function: "I'm not sure what you're trying to do here."
     // (It couldn't even suggest any reasonable code for this)
     private void handleLanceMovement(boolean leftPressed, boolean rightPressed, long[] arrowKeyPressTimes, long currentTime, double tapSpeed, double holdSpeed, double[] lanceMovementRemainder) {
+        System.out.println("arrowKeyPressTimes = " + arrowKeyPressTimes[0] + ", " + arrowKeyPressTimes[1]);
+        System.out.println("lanceMovementRemainder = " + lanceMovementRemainder[0] + ", " + lanceMovementRemainder[1]);
         Lance lance = levelHandler.getLance();
         if (leftPressed != rightPressed) {
             int index = leftPressed ? 1 : 0;
@@ -200,8 +202,10 @@ public class LanceOfDestiny implements Runnable {
                     tapMoving = false;
                     lastMoving = null;
                     lastMovingTime = 0;
-                    lanceMovementRemainder[index] = 0;
-                    arrowKeyPressTimes[index] = 0;
+                    lanceMovementRemainder[0] = 0;
+                    lanceMovementRemainder[1] = 0;
+                    arrowKeyPressTimes[0] = 0;
+                    arrowKeyPressTimes[1] = 0;
                 } else {
                     double elapsedTime = currentTime - arrowKeyPressTimes[index];
                     double elapsedMs = elapsedTime / 1_000_000.0 + lanceMovementRemainder[index];
@@ -247,8 +251,11 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void handleCollisionLogic(long currentTime) {
-        if (levelHandler.getLance().canCollide(currentTime)) {
-            CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
+        Lance lance = levelHandler.getLance();
+        if (lance.canCollide(currentTime)) {
+            if (CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), lance)) {
+                lance.setLastCollisionTimeInMillis(currentTime / 1e6);
+            }
         }
 
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);

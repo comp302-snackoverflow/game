@@ -79,11 +79,12 @@ public class CollisionHandler {
                 break;
             }
             Rectangle2D box = b.getBoundingBox();
-            if (box.intersects(target.getBoundingBox())) {
-                logger.warn("checkCloseCalls: Barrier bounding boxes intersect");
-                logger.warn("Target: " + target.getBoundingBox());
-                logger.warn("Barrier: " + box);
-            }
+            // FIXME: since build and load map methods are broken now, commenting out these lines to avoid spamming logs
+//            if (box.intersects(target.getBoundingBox())) {
+//                logger.warn("checkCloseCalls: Barrier bounding boxes intersect");
+//                logger.warn("Target: " + target.getBoundingBox());
+//                logger.warn("Barrier: " + box);
+//            }
             if (ellipse.intersects(box)) {
                 int outcode = ellipseOutcode(ellipse, box.getCenterX(), box.getCenterY());
                 sides |= outcode;
@@ -113,9 +114,9 @@ public class CollisionHandler {
             if (barrier == target) {
                 continue;
             }
-            if (barrier.getBoundingBox().intersects(target.getBoundingBox())) {
-                logger.warn("checkCloseCalls: Barrier bounding boxes intersect");
-            }
+//            if (barrier.getBoundingBox().intersects(target.getBoundingBox())) {
+//                logger.warn("checkCloseCalls: Barrier bounding boxes intersect");
+//            }
 
             if (sides == 0b1111) {
                 break; // all sides are already collided
@@ -130,16 +131,16 @@ public class CollisionHandler {
                 if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
                     sides |= 0b0010;
                 }
-                if ((outcode & Rectangle2D.OUT_TOP) != 0) {
-                    logger.warn("checkCloseCalls: Horizontal padded hit box top intersects");
-                    logger.warn("Wider rect: " + wider);
-                    logger.warn("Barrier: " + box);
-                }
-                if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
-                    logger.warn("checkCloseCalls: Horizontal padded hit box bottom intersects");
-                    logger.warn("Wider rect: " + wider);
-                    logger.warn("Barrier: " + box);
-                }
+//                if ((outcode & Rectangle2D.OUT_TOP) != 0) {
+//                    logger.warn("checkCloseCalls: Horizontal padded hit box top intersects");
+//                    logger.warn("Wider rect: " + wider);
+//                    logger.warn("Barrier: " + box);
+//                }
+//                if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
+//                    logger.warn("checkCloseCalls: Horizontal padded hit box bottom intersects");
+//                    logger.warn("Wider rect: " + wider);
+//                    logger.warn("Barrier: " + box);
+//                }
             }
             if (taller.intersects(box)) {
                 int outcode = taller.outcode(box.getCenterX(), box.getCenterY());
@@ -149,16 +150,16 @@ public class CollisionHandler {
                 if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
                     sides |= 0b0100;
                 }
-                if ((outcode & Rectangle2D.OUT_LEFT) != 0) {
-                    logger.warn("checkCloseCalls: Vertical padded hit box left intersects");
-                    logger.warn("Taller rect: " + taller);
-                    logger.warn("Barrier: " + box);
-                }
-                if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
-                    logger.warn("checkCloseCalls: Vertical padded hit box right intersects");
-                    logger.warn("Taller rect: " + taller);
-                    logger.warn("Barrier: " + box);
-                }
+//                if ((outcode & Rectangle2D.OUT_LEFT) != 0) {
+//                    logger.warn("checkCloseCalls: Vertical padded hit box left intersects");
+//                    logger.warn("Taller rect: " + taller);
+//                    logger.warn("Barrier: " + box);
+//                }
+//                if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
+//                    logger.warn("checkCloseCalls: Vertical padded hit box right intersects");
+//                    logger.warn("Taller rect: " + taller);
+//                    logger.warn("Barrier: " + box);
+//                }
             }
         }
         return sides;
@@ -173,7 +174,7 @@ public class CollisionHandler {
         }
     }
 
-    public static void checkFireBallEntityCollisions(FireBall fireBall, Entity entity) {
+    public static boolean checkFireBallEntityCollisions(FireBall fireBall, Entity entity) {
         switch (entity) {
             case Lance lance -> {
                 if (boundingBoxCollision(fireBall, lance)) {
@@ -181,6 +182,7 @@ public class CollisionHandler {
                         Collision side = hitBoxCollision(fireBall, lance);
                         if (side != null) {
                             resolveCollision(fireBall, lance, side);
+                            return true;
                         }
                     } catch (CollisionError ignored) {
                     }
@@ -193,6 +195,7 @@ public class CollisionHandler {
                         Collision side = hitBoxCollision(fireBall, barrier);
                         if (side != null) {
                             resolveCollision(fireBall, barrier, side);
+                            return true;
                         }
                     } catch (CollisionError ignored) {
                     }
@@ -200,6 +203,7 @@ public class CollisionHandler {
             }
             case Entity ignored -> logger.warn("checkFireBallEntityCollisions: Unknown entity type");
         }
+        return false;
     }
 
     private static int findCollisions(FireBall fireBall, Point topLeft, Point topRight, Point bottomRight, Point bottomLeft) {
