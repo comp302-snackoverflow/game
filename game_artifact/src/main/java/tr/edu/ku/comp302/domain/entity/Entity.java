@@ -14,6 +14,9 @@ public abstract class Entity {
     }
 
     public void updatePositionRelativeToScreen(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+        if (newWidth < 0 || newHeight < 0){
+            throw new IllegalArgumentException("Width & Height should > 0");
+        }
         if (oldWidth != 0 && oldHeight != 0){
             xPosition = xPosition * newWidth / oldWidth;
             yPosition = yPosition * newHeight / oldHeight;
