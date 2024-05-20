@@ -97,7 +97,7 @@ public class HandleReflectionTest {
 
     // Rotation and speed of the surface is non-zero.
     // X Speed of the surface is in the same direction with FireBall dx.
-    // Should reflect normally with respect to the 90 degrees normal line.
+    // Should reflect normally with respect to the normal line of the rotated surface.
     // Total Speed of the FireBall should increase by 5.
     @Test
     public void testMovingRotatedReflection() {

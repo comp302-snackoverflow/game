@@ -33,10 +33,21 @@ public class FireBall extends Entity {
         dx = totalSpeed * Math.cos(newAngle);
         dy = totalSpeed * -Math.sin(newAngle);
     }
+
     // for handling reflections with moving surfaces
     // need to pass the surface angle and the surface speed
     // works for steady surfaces as well
     public void handleReflection(double surfaceAngleDegrees, double surfaceXSpeed) {
+        // REQUIRES: surfaceAngleDegrees to be between -90 and 90
+        // MODIFIES: dx, Fire Ball x-speed; dy, Fire Ball y-speed
+        // EFFECTS: calculates and modifies the x and y speed of the Fire Ball
+        // according to its current speed magnitude and speed direction
+        // as well as surface angle and surface speed
+        //
+        // example: if the Fire Ball is going to the right (dx = 1, dy = 0)
+        // and the collided surface angle is 45, with surface speed 0,
+        // the Fire Ball should reflect upwards (new dx = 0, new dy = -1)
+
         /*
         double DX,myDX,DY,myDY;
         System.out.print("\nBEFORE REFLECTION: ");
