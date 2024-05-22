@@ -18,6 +18,7 @@ public class MainFrame extends JFrame {
     private static final String BUILD = "build";
     private static final String PAUSE = "pause";
     private static final String SELECT_LEVEL = "select_level";
+    private static final String SELECT_SAVE = "select_save";
     private static final int frameWidth = 1280;
     private static final int frameHeight = 720;
     private final JPanel cards;
@@ -29,6 +30,7 @@ public class MainFrame extends JFrame {
     private JPanel buildPanel;
     private JPanel pausePanel;
     private SelectLevelPanel selectLevelPanel;
+    private SelectLoadPanel selectLoadPanel;
 
     private MainFrame() {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
@@ -53,6 +55,7 @@ public class MainFrame extends JFrame {
         self.prepareLevelPanel();
         self.preparePausePanel();
         self.prepareSelectLevelPanel();
+        self.prepareSelectSavedGamePanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
@@ -60,6 +63,7 @@ public class MainFrame extends JFrame {
         self.cards.add(self.buildPanel, BUILD);
         self.cards.add(self.pausePanel, PAUSE);
         self.cards.add(self.selectLevelPanel, SELECT_LEVEL);
+        self.cards.add(self.selectLoadPanel, SELECT_SAVE);
         return self;
     }
 
@@ -103,6 +107,10 @@ public class MainFrame extends JFrame {
 
     }
 
+    private void prepareSelectSavedGamePanel() {
+        selectLoadPanel = new SelectLoadPanel(this);
+    }
+
     public void showLoginPanel() {
         layout.show(cards, LOGIN);
         LanceOfDestiny.setCurrentGameState(GameState.LOGIN_MENU);
@@ -144,6 +152,13 @@ public class MainFrame extends JFrame {
         layout.show(cards, SELECT_LEVEL);
         selectLevelPanel.updateLevels();
         LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
+        refresh();
+    }
+
+    public void showSelectSavedGamePanel() {
+        layout.show(cards, SELECT_SAVE);
+        selectLoadPanel.updateLevels();
+        LanceOfDestiny.setCurrentGameState(GameState.LOAD_GAME);
         refresh();
     }
 

@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
@@ -39,6 +40,7 @@ public class PauseMenuPanel extends JPanel {
         });
         mainMenuButton.addActionListener(e -> {
             LanceOfDestiny.setCurrentGameState(GameState.MAIN_MENU);
+            mainFrame.showMainMenuPanel();
         });
 
 

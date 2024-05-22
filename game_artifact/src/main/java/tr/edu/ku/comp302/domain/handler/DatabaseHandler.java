@@ -202,6 +202,27 @@ public class DatabaseHandler {
         return maps;
     }
 
+    public List<Integer> getSavedLevels(int uid) {
+        final String query = "SELECT id FROM Save WHERE player_ref = ?";
+        List<Integer> savedLevels = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, uid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        savedLevels.add(rs.getInt("id"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+        return savedLevels;
+    }
+
+
     /**
      * Load barriers from the database from a save or a map
      *
