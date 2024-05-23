@@ -63,8 +63,8 @@ public class BuildHandler {
                     int newWidth = buildSection.getWidth();
                     int newHeight = buildSection.getHeight();
                     resizeBarriersOnMap(newWidth, newHeight);
-                    LanceOfDestiny.setScreenWidth(buildPanel.getWidth());
-                    LanceOfDestiny.setScreenHeight(buildPanel.getHeight());
+                    // LanceOfDestiny.setScreenWidth(buildPanel.getWidth());
+                    // LanceOfDestiny.setScreenHeight(buildPanel.getHeight());
                 }
             }
         });
@@ -174,8 +174,15 @@ public class BuildHandler {
     }
 
     public Level getLevel() {
+        LanceOfDestiny.setScreenWidth(buildPanel.getWidth());
+        LanceOfDestiny.setScreenHeight(buildPanel.getHeight());
         Level level = new Level();
         level.setBarriers(new ArrayList<>(barriersOnMap));
+        LevelHandler levelHandler = new LevelHandler(level);
+        levelHandler.resizeLanceImage();
+        levelHandler.resizeFireBallImage();
+        levelHandler.resizeBarrierImages();
+        levelHandler.resizeRemainImage();
         // FIXME: Resizing is wrong: Barriers overlap with each other
         //  It is still buggy without this and I think its about vertical positioning.
         level.getBarriers().forEach(barrier -> barrier.adjustPositionAndSize(buildPanel.getBuildSection().getWidth(), buildPanel.getBuildSection().getHeight(), buildPanel.getWidth(), buildPanel.getHeight()));

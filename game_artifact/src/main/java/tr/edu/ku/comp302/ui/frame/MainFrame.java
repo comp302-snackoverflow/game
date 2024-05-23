@@ -18,8 +18,8 @@ public class MainFrame extends JFrame {
     private static final String BUILD = "build";
     private static final String PAUSE = "pause";
     private static final String SELECT_LEVEL = "select_level";
-    private static final int frameWidth = 1280;
-    private static final int frameHeight = 720;
+    private static final int frameWidth = 1294;
+    private static final int frameHeight = 837;
     private final JPanel cards;
     private final CardLayout layout;
     private LoginPanel loginPanel;

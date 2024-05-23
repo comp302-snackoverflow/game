@@ -75,7 +75,6 @@ public class LanceOfDestiny implements Runnable {
                 }
                 if (pauseStartTime != null) {
                     addPauseTime(currentTime - pauseStartTime);
-                    System.out.println("(currentTime - previousTime) = " + (currentTime - previousTime) / 1e9);
                 }
                 deltaUpdate += (currentTime - previousTime) / timePerUpdate;
                 deltaFrame += (currentTime - previousTime) / timePerFrame;
@@ -142,6 +141,7 @@ public class LanceOfDestiny implements Runnable {
             levelPanel.setPanelSize(new Dimension(width, height));
             screenWidth = width;
             screenHeight = height;
+
         }
     }
 
@@ -152,8 +152,6 @@ public class LanceOfDestiny implements Runnable {
     // Copilot's thoughts about this function: "I'm not sure what you're trying to do here."
     // (It couldn't even suggest any reasonable code for this)
     private void handleLanceMovement(boolean leftPressed, boolean rightPressed, long[] arrowKeyPressTimes, long currentTime, double tapSpeed, double holdSpeed, double[] lanceMovementRemainder) {
-        System.out.println("arrowKeyPressTimes = " + arrowKeyPressTimes[0] + ", " + arrowKeyPressTimes[1]);
-        System.out.println("lanceMovementRemainder = " + lanceMovementRemainder[0] + ", " + lanceMovementRemainder[1]);
         Lance lance = levelHandler.getLance();
         if (leftPressed != rightPressed) {
             int index = leftPressed ? 1 : 0;
