@@ -6,14 +6,12 @@ import tr.edu.ku.comp302.domain.entity.Entity;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
-import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.CircularMovement;
-import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.HorizontalMovement;
-import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.IMovementStrategy;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.List;
 
 public class CollisionHandler {
@@ -31,29 +29,23 @@ public class CollisionHandler {
      *
      * @param target   the barrier to tes
      * @param barriers list of all barriers.
-     * @param padX     padding to the left and right sides of the target.
-     * @param padY     padding to the top and bottom sides of the target.
      * @return a 4-bit integer, where bits from least to most significant represent collisions
      * with the top, right, bottom, and left sides of the target.
      */
-    public static int checkCloseCalls(Barrier target, List<Barrier> barriers, double padX, double padY) {
-        switch (target.getMovementStrategy()) {
-            case HorizontalMovement ignored -> {
-                Rectangle2D wider = new Rectangle2D.Double(target.getXPosition() - padX, target.getYPosition(), target.getLength() + 2 * padX, target.getThickness());
-                Rectangle2D taller = new Rectangle2D.Double(target.getXPosition(), target.getYPosition() - padY, target.getLength(), target.getThickness() + 2 * padY);
-                return checkCloseCalls(target, barriers, wider, taller);
-            }
-            case CircularMovement ignored -> {
-                Ellipse2D ellipse = new Ellipse2D.Double(target.getXPosition() - padX, target.getYPosition() - padY, target.getLength() + 2 * padX, target.getThickness() + 2 * padY);
+    public static int checkCloseCalls(Barrier target, List<Barrier> barriers) {
+        return checkCloseCalls(target, barriers, target.getExtendedHitbox());
+    }
 
-                return checkCloseCalls(target, barriers, ellipse);
+    public static int checkCloseCalls(Barrier target, List<Barrier> barriers, RectangularShape shape) {
+        return switch (shape) {
+            case Rectangle2D rect -> checkCloseCalls(target, barriers, rect);
+            case Ellipse2D ellipse -> checkCloseCalls(target, barriers, ellipse);
+            default -> {
+                logger.warn("Unknown shape type: {}", shape.getClass().getName());
+                yield 0b1111;
             }
-            case null -> logger.warn("Barrier type {} has no movement strategy", target.getClass().getName());
-            case IMovementStrategy strategy ->
-                    logger.warn("Unknown movement strategy for Barrier: {}", strategy.getClass().getName());
-        }
-        return 0b1111; // return all sides collided just in case. Should never happen but also
-    }                  // should not let a barrier with an unknown movement strategy move.
+        };
+    }
 
     private static int checkCloseCalls(Barrier target, List<Barrier> barriers, Ellipse2D ellipse) {
         int sides = 0; // the bit order is `lbrt`
@@ -93,19 +85,19 @@ public class CollisionHandler {
         return sides;
     }
 
-    private static int checkCloseCalls(Barrier target, List<Barrier> barriers, Rectangle2D wider, Rectangle2D taller) {
+    private static int checkCloseCalls(Barrier target, List<Barrier> barriers, Rectangle2D rect) {
         int sides = 0; // the bit order is `lbrt`
 
-        if (wider.getMinX() <= 0) {
+        if (rect.getMinX() <= 0) {
             sides |= 0b1000; // left side
         }
-        if (wider.getMaxX() >= LanceOfDestiny.getScreenWidth() * 0.98) {
+        if (rect.getMaxX() >= LanceOfDestiny.getScreenWidth() * 0.98) {
             sides |= 0b0010; // right side
         }
-        if (taller.getMinY() <= 0) {
+        if (rect.getMinY() <= 0) {
             sides |= 0b0001; // top side
         }
-        if (taller.getMaxY() >= LanceOfDestiny.getScreenHeight() >> 1) {
+        if (rect.getMaxY() >= LanceOfDestiny.getScreenHeight() >> 1) {
             sides |= 0b0100; // bottom side
             logger.warn("checkCloseCalls: Barrier is at the bottom of the screen");
         }
@@ -123,14 +115,9 @@ public class CollisionHandler {
             }
             Rectangle2D box = barrier.getBoundingBox();
 
-            if (wider.intersects(box)) {
-                int outcode = wider.outcode(box.getCenterX(), box.getCenterY());
-                if ((outcode & Rectangle2D.OUT_LEFT) != 0) {
-                    sides |= 0b1000;
-                }
-                if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
-                    sides |= 0b0010;
-                }
+            if (rect.intersects(box)) {
+                sides |= rectangleOutcode(rect, box.getCenterX(), box.getCenterY());
+
 //                if ((outcode & Rectangle2D.OUT_TOP) != 0) {
 //                    logger.warn("checkCloseCalls: Horizontal padded hit box top intersects");
 //                    logger.warn("Wider rect: " + wider);
@@ -139,25 +126,6 @@ public class CollisionHandler {
 //                if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
 //                    logger.warn("checkCloseCalls: Horizontal padded hit box bottom intersects");
 //                    logger.warn("Wider rect: " + wider);
-//                    logger.warn("Barrier: " + box);
-//                }
-            }
-            if (taller.intersects(box)) {
-                int outcode = taller.outcode(box.getCenterX(), box.getCenterY());
-                if ((outcode & Rectangle2D.OUT_TOP) != 0) {
-                    sides |= 0b0001;
-                }
-                if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
-                    sides |= 0b0100;
-                }
-//                if ((outcode & Rectangle2D.OUT_LEFT) != 0) {
-//                    logger.warn("checkCloseCalls: Vertical padded hit box left intersects");
-//                    logger.warn("Taller rect: " + taller);
-//                    logger.warn("Barrier: " + box);
-//                }
-//                if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
-//                    logger.warn("checkCloseCalls: Vertical padded hit box right intersects");
-//                    logger.warn("Taller rect: " + taller);
 //                    logger.warn("Barrier: " + box);
 //                }
             }
@@ -331,6 +299,35 @@ public class CollisionHandler {
             out |= 0b0100; // bottom segment
         }
         if (centerY < ellipseCenterY && 2 * pi / 3 < lineAngle || lineAngle < -2 * pi / 3) { // point is to the Left of the ellipse
+            out |= 0b1000; // left segment
+        }
+
+        return out;
+    }
+
+    /**
+     * Acts similar to Rectangle2D.outcode method. However, unlike it, this method
+     * calculates outcode based on the center of the rectangle.
+     * @param rect the rectangle to calculate outcode for
+     * @param centerX the x coordinate of the point to calculate outcode for
+     * @param centerY the y coordinate of the point to calculate outcode for
+     * @return a 4-bit integer, where bits from least to most significant bit represent top, right, bottom, and left sides.
+     */
+    private static int rectangleOutcode(Rectangle2D rect, double centerX, double centerY) {
+        double rectCenterX = rect.getCenterX();
+        double rectCenterY = rect.getCenterY();
+
+        int out = 0;
+        if (centerY < rectCenterY) {
+            out |= 0b0001; // top segment
+        }
+        if (centerY > rectCenterY) {
+            out |= 0b0100; // bottom segment
+        }
+        if (centerX > rectCenterX) {
+            out |= 0b0010; // right segment
+        }
+        if (centerX < rectCenterX) {
             out |= 0b1000; // left segment
         }
 

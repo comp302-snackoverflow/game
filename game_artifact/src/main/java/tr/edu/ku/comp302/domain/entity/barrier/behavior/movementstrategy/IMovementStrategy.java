@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy;
 
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 
+import java.awt.geom.RectangularShape;
 import java.util.List;
 
 public interface IMovementStrategy {
@@ -20,6 +21,13 @@ public interface IMovementStrategy {
      * @return the padding in y-axis
      */
     double getYPadding();
+
+    /**
+     * Returns a RectangularShape that contains the barrier, extended by the paddings.
+     * This is used in barrier-barrier collision detection.
+     * @return the extended hitbox
+     */
+    RectangularShape getExtendedHitbox(Barrier barrier);
 
     /**
      * Moves the barrier in the appropriate direction with the given speed.

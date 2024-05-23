@@ -5,6 +5,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.IMoveme
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.security.SecureRandom;
 import java.util.List;
 
@@ -123,5 +124,9 @@ public abstract class Barrier extends Entity {
         if (movementStrategy != null) {
             movementStrategy.handleCloseCalls(this, barriers);
         }
+    }
+
+    public RectangularShape getExtendedHitbox() {
+        return movementStrategy.getExtendedHitbox(this);
     }
 }
