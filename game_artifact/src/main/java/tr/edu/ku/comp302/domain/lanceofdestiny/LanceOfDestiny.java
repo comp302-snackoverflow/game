@@ -331,4 +331,12 @@ public class LanceOfDestiny implements Runnable {
         lastMovingTime += pauseDuration;
         pauseStartTime = null;
     }
+
+    public static void setScreenWidth(int screenWidth) {
+        LanceOfDestiny.screenWidth = screenWidth;
+    }
+
+    public static void setScreenHeight(int screenHeight) {
+        LanceOfDestiny.screenHeight = screenHeight;
+    }
 }

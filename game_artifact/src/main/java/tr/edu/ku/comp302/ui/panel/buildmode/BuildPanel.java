@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.ui.panel.buildmode;
 
 import tr.edu.ku.comp302.domain.handler.BuildHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
