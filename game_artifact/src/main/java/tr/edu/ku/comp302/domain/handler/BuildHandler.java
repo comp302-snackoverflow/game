@@ -6,6 +6,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.save.SaveService;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
@@ -62,6 +63,8 @@ public class BuildHandler {
                     int newWidth = buildSection.getWidth();
                     int newHeight = buildSection.getHeight();
                     resizeBarriersOnMap(newWidth, newHeight);
+                    LanceOfDestiny.setScreenWidth(buildPanel.getWidth());
+                    LanceOfDestiny.setScreenHeight(buildPanel.getHeight());
                 }
             }
         });
