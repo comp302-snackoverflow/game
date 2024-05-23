@@ -48,7 +48,7 @@ public class Level {
 //        Lance lance = new Lance(xPosLance, yPosLance);
 //        FireBall fireBall = new FireBall(0, 0);
 //        fireBall.stickToLance(lance);
-        this(new Lance(LanceOfDestiny.getScreenWidth() / 2.0 + LanceOfDestiny.getScreenWidth() / 20.0, LanceOfDestiny.getScreenHeight() * 0.8), new FireBall(0, 0));
+        this(new Lance(LanceOfDestiny.getScreenWidth() / 2.0 - LanceOfDestiny.getScreenWidth() / 20.0, LanceOfDestiny.getScreenHeight() * 0.8), new FireBall(0, 0));
     }
 
     public static List<Level> getLevels() {
