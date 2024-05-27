@@ -19,7 +19,7 @@ public class LanceOfDestiny implements Runnable {
     private static int screenWidth = 1280;
     private static int screenHeight = 800;
     private static GameState currentGameState;
-    private final Logger logger = LogManager.getLogger(LanceOfDestiny.class);
+    private static final Logger logger = LogManager.getLogger(LanceOfDestiny.class);
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
     private final LevelPanel levelPanel;  // TODO: change this when we implement more than one level

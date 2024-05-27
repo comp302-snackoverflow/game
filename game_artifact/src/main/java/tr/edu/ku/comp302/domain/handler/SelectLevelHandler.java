@@ -35,7 +35,7 @@ public class SelectLevelHandler {
         return DatabaseHandler.getInstance().getMaps(uid);
     }
 
-    public JPanel generateSelectLevelButton(int buttonIndex, int levelId, Consumer<Level> onSuccess) {
+    public JPanel generateSelectLevelButton(int buttonIndex, int levelId, Consumer<Integer> onClick) {
         JPanel button = new JPanel(new BorderLayout());
         Border raised = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
         Border lowered = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
@@ -47,7 +47,6 @@ public class SelectLevelHandler {
 
         button.add(levelLabel, BorderLayout.CENTER);
 
-        Level level = getLevel(levelId);
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -57,12 +56,8 @@ public class SelectLevelHandler {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (button.getBorder() == lowered) {
-                    if (level != null) {
-                        onSuccess.accept(getLevel(levelId));
-                        button.setBorder(raised);
-                    } else {
-                        JOptionPane.showMessageDialog(button, "Level could not be loaded", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                    onClick.accept(levelId);
+                    button.setBorder(raised);
                 }
             }
         });

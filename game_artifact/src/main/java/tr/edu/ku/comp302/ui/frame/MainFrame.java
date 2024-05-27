@@ -18,6 +18,10 @@ public class MainFrame extends JFrame {
     private static final String BUILD = "build";
     private static final String PAUSE = "pause";
     private static final String SELECT_LEVEL = "select_level";
+    private static final String MULTIPLAYER = "multiplayer";
+    private static final String MULTIPLAYER_SELECT_LEVEL = "multiplayer_select_level";
+    private static final String CREATE_GAME_PANEL = "create_game_panel";
+    private static final String JOIN_GAME_PANEL = "join_game_panel";
     private static final int frameWidth = 1294;
     private static final int frameHeight = 837;
     private final JPanel cards;
@@ -29,6 +33,10 @@ public class MainFrame extends JFrame {
     private JPanel buildPanel;
     private JPanel pausePanel;
     private SelectLevelPanel selectLevelPanel;
+    private JPanel multiplayerPanel;
+    private SelectLevelPanel multiplayerSelectLevelPanel;
+    private CreateGamePanel createGamePanel;
+    private JPanel joinGamePanel;
 
     private MainFrame() {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
@@ -53,6 +61,10 @@ public class MainFrame extends JFrame {
         self.prepareLevelPanel();
         self.preparePausePanel();
         self.prepareSelectLevelPanel();
+        self.prepareMultiplayerPanel();
+        self.prepareMultiplayerSelectLevelPanel();
+        self.prepareCreateGamePanel();
+        self.prepareJoinGamePanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
@@ -60,6 +72,10 @@ public class MainFrame extends JFrame {
         self.cards.add(self.buildPanel, BUILD);
         self.cards.add(self.pausePanel, PAUSE);
         self.cards.add(self.selectLevelPanel, SELECT_LEVEL);
+        self.cards.add(self.multiplayerPanel, MULTIPLAYER);
+        self.cards.add(self.multiplayerSelectLevelPanel, MULTIPLAYER_SELECT_LEVEL);
+        self.cards.add(self.createGamePanel, CREATE_GAME_PANEL);
+        self.cards.add(self.joinGamePanel, JOIN_GAME_PANEL);
         return self;
     }
 
@@ -80,7 +96,6 @@ public class MainFrame extends JFrame {
 
     private void prepareLevelPanel() {
         levelPanel = new LevelPanel(new LevelHandler(null), this);
-        new LanceOfDestiny(levelPanel);
         levelPanel.repaint();
         levelPanel.setFocusable(true);
         levelPanel.requestFocusInWindow();
@@ -99,8 +114,23 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareSelectLevelPanel() {
-        selectLevelPanel = new SelectLevelPanel(this);
+        selectLevelPanel = new SelectLevelPanel(this, false);
+    }
 
+    private void prepareMultiplayerPanel() {
+        multiplayerPanel = new MultiplayerPanel(this);
+    }
+
+    private void prepareMultiplayerSelectLevelPanel() {
+        multiplayerSelectLevelPanel = new SelectLevelPanel(this, true);
+    }
+
+    private void prepareCreateGamePanel() {
+        createGamePanel = new CreateGamePanel(this);
+    }
+
+    private void prepareJoinGamePanel() {
+        joinGamePanel = new JoinGamePanel(this);
     }
 
     public void showLoginPanel() {
@@ -147,6 +177,35 @@ public class MainFrame extends JFrame {
         refresh();
     }
 
+    public void showMultiplayerPanel() {
+        layout.show(cards, MULTIPLAYER);
+        LanceOfDestiny.setCurrentGameState(GameState.MULTIPLAYER);
+        refresh();
+    }
+
+    public void showMultiplayerSelectLevelPanel() {
+        layout.show(cards, MULTIPLAYER_SELECT_LEVEL);
+        multiplayerSelectLevelPanel.updateLevels();
+        LanceOfDestiny.setCurrentGameState(GameState.MULTIPLAYER_NEW_GAME);
+        refresh();
+    }
+
+    public void showCreateGamePanel() {
+        layout.show(cards, CREATE_GAME_PANEL);
+        LanceOfDestiny.setCurrentGameState(GameState.MULTIPLAYER_CREATE_GAME);
+        refresh();
+    }
+
+    public void showJoinGamePanel() {
+        layout.show(cards, JOIN_GAME_PANEL);
+        LanceOfDestiny.setCurrentGameState(GameState.MULTIPLAYER_JOIN_GAME);
+        refresh();
+    }
+
+    public void setMultiplayerLevel(int levelId) {
+        createGamePanel.updateGameCode(levelId);
+    }
+
     private void refresh() {
         revalidate();
         repaint();
@@ -160,4 +219,5 @@ public class MainFrame extends JFrame {
     public void setCurrentLevel(Level level) {
         levelPanel.getLevelHandler().setLevel(level);
     }
+
 }
