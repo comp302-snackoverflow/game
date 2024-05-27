@@ -112,6 +112,7 @@ public class SpellHandler {
         }
         else{
             applyNewSpell(level);
+            SoundHandler.playLaughSound();
             previousTime = System.currentTimeMillis();
             ymirTime = 0;
         }

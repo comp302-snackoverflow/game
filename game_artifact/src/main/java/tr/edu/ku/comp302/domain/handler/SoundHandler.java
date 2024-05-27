@@ -44,8 +44,8 @@ public class SoundHandler {
         playSound("game_artifact/src/main/resources/sounds/hitHurt.wav");
     }
 
-    public static void playVictorySound() {
-        playSound("victory_sound.wav");
+    public static void playLaughSound() {
+        playSound("game_artifact/src/main/resources/sounds/evil_laugh.wav");
     }
 
     public static void playDefeatSound() {
