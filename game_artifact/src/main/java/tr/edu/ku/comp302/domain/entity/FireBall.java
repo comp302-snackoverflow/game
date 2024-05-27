@@ -159,9 +159,6 @@ public class FireBall extends Entity {
     public void setSpeed(double speed) {
         this.speed = speed;
     }
-    public void halfSpeed() {
-        this.speed = this.speed / 2;
-    }
 
     public boolean isMoving() {
         return moving;
@@ -174,5 +171,18 @@ public class FireBall extends Entity {
 
     public void setOverwhelming(boolean isOverwhelming) {
         this.isOverwhelming = isOverwhelming;
+    }
+
+
+    public void doubleAccel(){
+        this.speed *= 2;
+        dx *= 2;
+        dy *= 2;
+    }
+
+    public void halfAccel(){
+        this.speed /= 2;
+        dx /= 2;
+        dy /= 2;
     }
 }

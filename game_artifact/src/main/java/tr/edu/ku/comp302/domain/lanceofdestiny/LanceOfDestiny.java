@@ -128,9 +128,11 @@ public class LanceOfDestiny implements Runnable {
         handleChanceReductionLogic();
         handleRemainLogic();
         handleSpellBoxLogic();
-        
+        handleYmir();
         managePausableThreads();
     }
+
+
 
 
     private void render(){
@@ -215,7 +217,11 @@ public class LanceOfDestiny implements Runnable {
         }
     }
 
+    private void handleYmir() {
+        levelHandler.handleYmir();
 
+
+    }
 
     private void handleHexMovement() {
         for (Hex hex: levelHandler.getHexs()){

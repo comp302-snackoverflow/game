@@ -60,7 +60,8 @@ public class LevelHandler {
      */
     public LevelHandler(Level level) {
         this.level = level;
-        spellHandler = new SpellHandler();
+        spellHandler = new SpellHandler(this);
+        
     }
 
 
@@ -234,34 +235,12 @@ public class LevelHandler {
         return level.getHexs();
     }
 
-    public ArrayList<Barrier> eightRandomBarriers() {
-        ArrayList<Barrier> chosen = new ArrayList<>();
-        List<Barrier> allBarriers = Collections.synchronizedList(new ArrayList<>(getBarriers()));
-        int barrierCount = allBarriers.size();
-
-        // Less than 8 barriers remain
-        if (barrierCount < 8) {
-            for (Barrier b : allBarriers) {
-                b.setFrozen(true);
-            }
-            return new ArrayList<>(allBarriers);
-        }
-
-        Random random = new Random();
-        Set<Integer> chosenIndices = new HashSet<>();
-        while (chosenIndices.size() < 8) {
-            int index = random.nextInt(barrierCount);
-            if (chosenIndices.add(index)) {
-                chosen.add(allBarriers.get(index));
-            }
-        }
-
-        for (Barrier b : chosen) {
-            b.setFrozen(true);
-        }
-
-        return chosen;
-    }
+    /**
+     * Returns 8 randomly chosen barriers from the current level. If fewer than 8
+     * barriers remain, they are all frozen and returned.
+     * @return a list of 8 frozen barriers
+     */
+  
 
 
 
@@ -374,57 +353,12 @@ public class LevelHandler {
     }
 
 
-    public void generateHollowBarriers(){
-        SecureRandom secureRandom = new SecureRandom();
-        for(int i = 0; i<8; i++){
-            List<Barrier> barriers = getBarriers();
-            double width = barriers.get(0).getLength();
-            generateRandomBarrier(width, BarrierType.HOLLOW_BARRIER, secureRandom);
-        }
-    }
+    
 
     //temporarily replicated in this class
-    public void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom){
-        int buildSectionWidth = LanceOfDestiny.getScreenWidth()/2;
-        int buildSectionHeight = LanceOfDestiny.getScreenHeight()/2; // TODO: Change ratio later to a constant value
-        boolean collided;
-        int x, y;
-        Barrier randomBarrier;
-        do{
-            x = (int)barrierWidth / 2 + secureRandom.nextInt(buildSectionWidth - (int) barrierWidth - (int) barrierWidth / 2);
-            y = 20 + secureRandom.nextInt(buildSectionHeight - 40);  // -20 barrier -20 padding
-            randomBarrier = createBarrier(barrierType, x, y, barrierWidth);
-            collided = checkBarrierCollisionWithBarriers(randomBarrier);
-        }while(collided);
-        getBarriers().add(randomBarrier);
-    }
 
-    private Barrier createBarrier(BarrierType barrierType, int x, int y, double barrierWidth){
-        Barrier barrier;
-        switch (barrierType) {
-            case SIMPLE_BARRIER -> barrier = new SimpleBarrier(x, y);
-            case FIRM_BARRIER -> barrier = new FirmBarrier(x, y);
-            case EXPLOSIVE_BARRIER -> barrier = new ExplosiveBarrier(x, y);
-            case GIFT_BARRIER -> barrier = new GiftBarrier(x, y);
-            case HOLLOW_BARRIER -> barrier = new HollowBarrier(x, y);
-            default -> barrier = new SimpleBarrier(x, y);
-        }
-        barrier.setLength(barrierWidth);
-        return barrier;
-    }
 
-    public boolean checkBarrierCollisionWithBarriers(Barrier barrier){
-        for (Barrier b : getBarriers()) {
-            if (b != barrier && checkBarrierCollision(b, barrier)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean checkBarrierCollision(Barrier b1, Barrier b2){
-        return b1.getBoundingBox().intersects(b2.getBoundingBox());
-    }
+ 
 
 
 
@@ -435,6 +369,14 @@ public class LevelHandler {
 
     public void setLevelPanel(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
+    }
+
+
+
+    public void handleYmir() {
+        
+        spellHandler.handleYmir(level);
+        
     }
 
 
