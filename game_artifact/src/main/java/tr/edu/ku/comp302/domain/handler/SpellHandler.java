@@ -260,4 +260,10 @@ public class SpellHandler {
             barrier.setFrozen(false);
         }
     }
+
+
+    public long getYmirTime() {
+        return ymirTime;
+    }
+
 }

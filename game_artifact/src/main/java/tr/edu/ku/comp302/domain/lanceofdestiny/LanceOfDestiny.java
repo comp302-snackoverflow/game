@@ -13,6 +13,7 @@ import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
+import tr.edu.ku.comp302.domain.handler.SoundHandler;
 import tr.edu.ku.comp302.domain.handler.SpellHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.services.threads.PausableThread;
@@ -309,6 +310,7 @@ public class LanceOfDestiny implements Runnable {
             spellBox.move();
 
             if (CollisionHandler.checkSpellBoxLanceCollisions(levelHandler.getLance(), spellBox)){
+                SoundHandler.playGiftSound();
                 spellBoxes.remove(spellBox);
                 levelHandler.collectSpell(spellBox.getSpell());
             }
@@ -344,6 +346,7 @@ public class LanceOfDestiny implements Runnable {
         for (Iterator<Remain> iterator = remains.iterator(); iterator.hasNext(); ) {
             Remain remain = iterator.next();
             if (CollisionHandler.checkRemainLanceCollisions(levelHandler.getLance(), remain)) {
+                SoundHandler.playRemainHitSound();
                 levelHandler.getLevel().decreaseChances();
                 iterator.remove();
             }

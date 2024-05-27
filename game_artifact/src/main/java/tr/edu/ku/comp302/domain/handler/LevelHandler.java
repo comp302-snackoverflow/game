@@ -373,5 +373,10 @@ public class LevelHandler {
     }
 
 
+    public SpellHandler getSpellHandler() {
+        return spellHandler;
+    }
+
+
     
 }

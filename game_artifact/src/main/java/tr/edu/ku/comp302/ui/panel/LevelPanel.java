@@ -40,6 +40,7 @@ public class LevelPanel extends JPanel {
         levelHandler.renderHexs(g);
         levelHandler.renderSpellBox(g);
         prepareHeartImage(g);
+        showYmir(g);
         levelG = g;
     }
 
@@ -197,6 +198,18 @@ public class LevelPanel extends JPanel {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 5, y + heartHeight / 2 + 6);
+    }
+
+    public void showYmir(Graphics g){
+
+        // Position the heart image at the bottom-left corner of the screen
+        int x = 20; // Distance from the left edge
+        int y = getHeight() - 20; // Distance from the bottom edgeü
+
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+        g.drawString("x" + (30 - levelHandler.getSpellHandler().getYmirTime()), x + 5, y + 6);
+
     }
     
 }
