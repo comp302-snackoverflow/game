@@ -76,6 +76,16 @@ public class LevelHandler {
 
     public void resizeFireBallImage() {
         FireBall fireBall = getFireBall();
+
+        if(fireBall.isOverwhelming()){
+            fireBallView.setImage(View.OVERHWELM_FIREBALL_PATH);
+        }
+
+        else{
+            fireBallView.setImage(View.FIREBALL_IMAGE_PATH);
+        }
+
+
         fireBallView.resizeImage(fireBall.getSize(), fireBall.getSize());
     }
 
@@ -289,6 +299,7 @@ public class LevelHandler {
             public void run() {
                 // Call the method in the SpellHandler to apply the Overwhelming Spell
                 spellHandler.overwhelmingSpell(level);
+                resizeFireBallImage();
             }
         };
 
@@ -299,6 +310,7 @@ public class LevelHandler {
             public void run() {
                 // Call the method in the SpellHandler to normalize the fireball
                 spellHandler.endOverwhelmingBall(level);
+                resizeFireBallImage();
             }
         };
 

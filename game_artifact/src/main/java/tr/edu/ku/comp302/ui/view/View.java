@@ -36,7 +36,7 @@ public class View {
     public static final Type HOLLOW_BARRIER = Type.HOLLOW_BARRIER;
 
     private static final String HEX_IMAGE_PATH = "/assets/fireball_image.png";
-    private static final String FIREBALL_IMAGE_PATH = "/assets/fireball_image.png";
+    public static final String FIREBALL_IMAGE_PATH = "/assets/fireball_image.png";
     private static final String LANCE_IMAGE_PATH = "/assets/lance_image.png";
     private static final String SIMPLE_BARRIER_IMAGE_PATH = "/assets/simple_barrier.png";
     private static final String FIRM_BARRIER_IMAGE_PATH = "/assets/firm_barrier.png";
@@ -48,6 +48,7 @@ public class View {
     private static final String SPELL_BOX_IMAGE_PATH = "/assets/spell_box.png";
     private static final String FROZEN_BARRIER_PATH = "/assets/frozen_barrier.png";
     private static final String HOLLOW_BARRIER_PATH = "/assets/hollow_barrier.png";
+    public static final String OVERHWELM_FIREBALL_PATH = "/assets/overwhelming_fireball.png";
 
     private BufferedImage defaultImage;
     private BufferedImage image;
@@ -82,5 +83,11 @@ public class View {
             case FROZEN_BARRIER -> new View(FROZEN_BARRIER_PATH);
             case HOLLOW_BARRIER -> new View(HOLLOW_BARRIER_PATH);
         };
+    }
+
+
+    public void setImage(String imagePath) {
+        defaultImage = ImageHandler.getImageFromPath(imagePath);
+        image = defaultImage;
     }
 }
