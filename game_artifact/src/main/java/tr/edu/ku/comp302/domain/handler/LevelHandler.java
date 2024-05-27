@@ -227,20 +227,13 @@ public class LevelHandler {
 
     public void startCreatingHex() {
 
-        PausableThread pausableThread = new PausableThread(level::createHex, 10000,1000);
+        PausableThread pausableThread = new PausableThread(level::createHex, 10,1);
         pausableThreads.add(pausableThread);
     }
 
     public List<Hex> getHexs(){
         return level.getHexs();
     }
-
-    /**
-     * Returns 8 randomly chosen barriers from the current level. If fewer than 8
-     * barriers remain, they are all frozen and returned.
-     * @return a list of 8 frozen barriers
-     */
-  
 
 
 
@@ -261,7 +254,7 @@ public class LevelHandler {
             }
         };
 
-        PausableThread pausableThread = new PausableThread(() -> {}, shrinkLanceTask, 10000);
+        PausableThread pausableThread = new PausableThread(() -> {}, shrinkLanceTask, 10);
         pausableThreads.add(pausableThread);
 
 
@@ -294,7 +287,7 @@ public class LevelHandler {
         };
 
         // Create a PausableThread that will run the two tasks in sequence
-        PausableThread pausableThread = new PausableThread(overwhelmingSpellTask, normalizeFireball, 10000);
+        PausableThread pausableThread = new PausableThread(overwhelmingSpellTask, normalizeFireball, 10);
         // Add the thread to the list of pausable threads
         pausableThreads.add(pausableThread);
     }

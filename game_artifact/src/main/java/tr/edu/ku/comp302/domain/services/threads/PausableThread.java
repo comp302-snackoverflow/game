@@ -3,10 +3,12 @@ package tr.edu.ku.comp302.domain.services.threads;
 
 public class PausableThread{
     
-    long startTime;
-    long duration;
-    long intervalTime;
-    long nextRateTime;
+    long previousTime;
+    long current;
+    int duration;
+    int passedTime = 0;
+    int intervalTime;
+    int nextRateTime;
     boolean paused;
     Runnable initialTask;
     Runnable finalTask = () -> {};
@@ -20,13 +22,13 @@ public class PausableThread{
      * 
      * @param initialTask the initial task to run
      * @param finalTask the final task to run when the duration is reached
-     * @param duration the duration of the thread in milliseconds
+     * @param duration the duration of the thread in seconds
      */
-    public PausableThread(Runnable initialTask, Runnable finalTask, long duration) {
+    public PausableThread(Runnable initialTask, Runnable finalTask, int duration) {
         this.initialTask = initialTask;
         this.finalTask = finalTask;
         initialTask.run();
-        this.startTime = System.currentTimeMillis();
+        this.previousTime = System.currentTimeMillis();
         this.duration = duration;
         isScheduled = false;
     }
@@ -39,22 +41,24 @@ public class PausableThread{
      * the thread is paused or the duration is reached.
      * 
      * @param task the task to run
-     * @param duration the duration of the thread in milliseconds
-     * @param intervalTime the time between each run of the task in milliseconds
+     * @param duration the duration of the thread in seconds
+     * @param intervalTime the time between each run of the task in seconds
      */
-    public PausableThread(Runnable task, long duration, long intervalTime) {
-        this.startTime = System.currentTimeMillis();
+    public PausableThread(Runnable task, int duration, int intervalTime) {
+        this.previousTime = System.currentTimeMillis();
         this.duration = duration;
         this.initialTask = task;
         this.intervalTime = intervalTime;
-        this.nextRateTime = startTime + intervalTime;
+        nextRateTime = intervalTime;
         isScheduled = true;
     }
 
 
-    public boolean checkFinishState(long currentTime){
+    public boolean checkFinishState(){
 
-        if((currentTime - startTime) >= duration){
+        updateTimes();
+
+        if( passedTime >= duration){
             finalTask.run();
             return true;
         }
@@ -63,10 +67,13 @@ public class PausableThread{
         return false;
     }
 
-    public boolean checkRateState(long currentTime){    
-        if(currentTime  >= nextRateTime){
-            System.out.println("yes I am here");
-            nextRateTime = currentTime + intervalTime;
+    public boolean checkRateState(){    
+
+
+        if(passedTime  >= nextRateTime){
+            System.out.println(passedTime + " " + nextRateTime  + " " + intervalTime);
+            nextRateTime = passedTime + intervalTime;
+            System.out.println(nextRateTime);
             initialTask.run();
             return true;
         }
@@ -74,51 +81,39 @@ public class PausableThread{
     }
 
 
-    public void pause(){
-        paused = true;
-        duration -= System.currentTimeMillis() - startTime;
-    }
-
-    public void resume(){
-        if (paused == true){
-            paused = false;
-            startTime = System.currentTimeMillis();
-            nextRateTime = startTime + intervalTime;
+    public void updateTimes(){
+        current = System.currentTimeMillis();
+        if (current - previousTime > 1000){
+            passedTime++;
+            previousTime = current;
         }
     }
 
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public long getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(long duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
-    public long getIntervalTime() {
-        return intervalTime;
+    public int getPassedTime() {
+        return passedTime;
     }
 
-    public void setIntervalTime(long intervalTime) {
-        this.intervalTime = intervalTime;
+    public void setPassedTime(int passedTime) {
+        this.passedTime = passedTime;
     }
-
-    public long getNextRateTime() {
-        return nextRateTime;
-    }
-
 
     public boolean isScheduled() {
         return isScheduled;
     }
+
+    public void setScheduled(boolean isScheduled) {
+        this.isScheduled = isScheduled;
+    }
+
+
 
     
     

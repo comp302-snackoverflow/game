@@ -364,9 +364,9 @@ public class LanceOfDestiny implements Runnable {
         List<PausableThread> threadsToRemove = new ArrayList<>();
         for (PausableThread thread : pausableThreads) {
             if (thread.isScheduled()) {
-                thread.checkRateState(System.currentTimeMillis());
+                thread.checkRateState();
             }
-            if (thread.checkFinishState(System.currentTimeMillis())) {
+            if (thread.checkFinishState()) {
                 threadsToRemove.add(thread);
             }
         }

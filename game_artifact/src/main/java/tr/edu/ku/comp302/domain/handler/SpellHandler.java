@@ -12,7 +12,6 @@ import java.util.Set;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.*;
-import tr.edu.ku.comp302.domain.handler.BuildHandler.BarrierType;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.threads.PausableThread;
@@ -73,7 +72,7 @@ public class SpellHandler {
             }
         };
 
-        PausableThread pausableThread = new PausableThread(() -> {}, normalizeFireballSpeedTask, 5000);
+        PausableThread pausableThread = new PausableThread(() -> {}, normalizeFireballSpeedTask, 5);
 
         levelHandler.getPausableThreads().add(pausableThread);
     }
@@ -226,7 +225,7 @@ public class SpellHandler {
             }
         };
 
-        PausableThread pausableThread = new PausableThread(() -> {}, normalizeBarriersTast, 5000);
+        PausableThread pausableThread = new PausableThread(() -> {}, normalizeBarriersTast, 5);
         levelHandler.getPausableThreads().add(pausableThread);
     }
 
