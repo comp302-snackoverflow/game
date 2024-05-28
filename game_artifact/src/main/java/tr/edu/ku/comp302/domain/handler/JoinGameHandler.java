@@ -46,6 +46,7 @@ public class JoinGameHandler {
             while (true) {
                 try {
                     connection.connectToPeer();
+                    System.out.println(connection.receive());
                     break;
                 } catch (IOException e) {
                     logger.warn("Failed to connect to peer. Retrying in 5 seconds...");

@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.client;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tr.edu.ku.comp302.server.PlayerInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,8 +13,8 @@ import java.net.Socket;
 
 public class P2PConnection {
     private static final Logger logger = LogManager.getLogger(P2PConnection.class);
-    private final String peerAddress;
-    private final int peerPort;
+    private String peerAddress;
+    private int peerPort;
     private ServerSocket serverSocket;
     private Socket socket;
     private static final int PORT = 3132;
@@ -23,10 +24,18 @@ public class P2PConnection {
         this.peerPort = peerPort;
     }
 
+    public P2PConnection() {
+        this.peerAddress = null;
+        this.peerPort = 0;
+    }
+
     public void startServer() throws IOException {
         serverSocket = new ServerSocket(PORT);
 
         socket = serverSocket.accept();
+
+        this.peerAddress = socket.getInetAddress().getHostAddress();
+        this.peerPort = socket.getPort();
     }
 
     public void connectToPeer() throws IOException {
@@ -73,5 +82,9 @@ public class P2PConnection {
         } catch (IOException e) {
             logger.error("An error occurred while closing the connection", e);
         }
+    }
+
+    public PlayerInfo getPeer() {
+        return new PlayerInfo(peerAddress, peerPort);
     }
 }
