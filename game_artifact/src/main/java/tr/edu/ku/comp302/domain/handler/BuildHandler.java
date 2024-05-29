@@ -187,8 +187,8 @@ public class BuildHandler {
         return level;
     }
 
-    public void saveMap() {
-        if (SaveService.getInstance().saveMap(barriersOnMap)) {
+    public void saveMap(double width, double height) {
+        if (SaveService.getInstance().saveMap(barriersOnMap, width, height)) {
             logger.info("Saved map successfully.");
             buildPanel.alertSaveSuccess();
             clearMap();

@@ -88,7 +88,7 @@ public class BuildPanel extends JPanel {
     }
 
     private void addButtonsActions() {
-        buttonsPanel.saveButton.addActionListener(e -> buildHandler.saveMap());
+        buttonsPanel.saveButton.addActionListener(e -> buildHandler.saveMap(buildSection.getWidth(), buildSection.getHeight()));
         buttonsPanel.playButton.addActionListener(e -> {
             mainFrame.setCurrentLevel(buildHandler.getLevel());
             mainFrame.showLevelPanel();

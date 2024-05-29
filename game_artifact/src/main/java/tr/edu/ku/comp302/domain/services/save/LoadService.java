@@ -57,10 +57,9 @@ public class LoadService {
             return null;
         }
 
-        Lance lance = new Lance(576, 600);
+        Lance lance = new Lance(0.45 * LanceOfDestiny.getScreenWidth(), 0.875 * LanceOfDestiny.getScreenHeight());
 
-        FireBall fireball = new FireBall(632, 560);
-
+        FireBall fireball = new FireBall(1, 1);
         List<Barrier> barriers = barriersData.stream().map(this::createBarrier).collect(Collectors.toCollection(ArrayList::new));
 
         return new Level(lance, fireball, barriers);

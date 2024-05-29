@@ -66,17 +66,14 @@ public class MainFrame extends JFrame {
 
     private void prepareLoginPanel() {
         loginPanel = new LoginPanel(this);
-        loginPanel.setBounds(0, 11, 804, 781);
     }
 
     private void prepareRegisterPanel() {
         registerPanel = new RegisterPanel(this);
-        registerPanel.setBounds(0, 11, 804, 781);
     }
 
     private void prepareMainMenu() {
         mainMenuPanel = new MainMenuPanel(this);
-        mainMenuPanel.setBounds(0, 11, 804, 781);
     }
 
     private void prepareLevelPanel() {
@@ -95,7 +92,6 @@ public class MainFrame extends JFrame {
 
     private void preparePausePanel() {
         pausePanel = new PauseMenuPanel(this);
-        pausePanel.setBounds(0, 11, 804, 781);
         pausePanel.requestFocusInWindow();
     }
 
@@ -124,6 +120,7 @@ public class MainFrame extends JFrame {
     public void showLevelPanel() {
         layout.show(cards, LEVEL);
         levelPanel.requestFocusInWindow();
+        levelPanel.setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()));
         LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
         refresh();
     }

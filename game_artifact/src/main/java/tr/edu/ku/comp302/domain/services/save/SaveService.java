@@ -26,22 +26,27 @@ public class SaveService {
         return instance;
     }
 
+
     public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers) {
-        FireballData fireballData = getFireballData(fireball);
-        LanceData lanceData = getLanceData(lance);
-        List<BarrierData> barrierData = barriers.stream().map(this::getBarrierData).toList();
+        FireballData fireballData = getFireballData(fireball, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        LanceData lanceData = getLanceData(lance, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
         GameData data = new GameData(fireballData, lanceData, barrierData, 0.0);
 
         return dbHandler.saveGame(data);
     }
 
     public boolean saveMap(List<Barrier> barriers) {
-        List<BarrierData> barrierData = barriers.stream().map(this::getBarrierData).toList();
+        return saveMap(barriers, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+    }
+
+    public boolean saveMap(List<Barrier> barriers, double width, double height) {
+        List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, width, height)).toList();
         return dbHandler.saveMap(barrierData);
     }
 
-    private FireballData getFireballData(FireBall fireball) {
-        fireball.adjustPositionAndSpeed(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+    private FireballData getFireballData(FireBall fireball, double width, double height) {
+        fireball.adjustPositionAndSpeed(width, height, 1, 1);
         double x = fireball.getXPosition();
         double y = fireball.getYPosition();
         double dx = fireball.getDx();
@@ -51,8 +56,8 @@ public class SaveService {
         return new FireballData(x, y, dx, dy);
     }
 
-    private LanceData getLanceData(Lance lance) {
-        lance.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+    private LanceData getLanceData(Lance lance, double width, double height) {
+        lance.adjustPositionAndSize(width, height, 1, 1);
         double x = lance.getXPosition();
         double y = lance.getYPosition();
         double angle = lance.getRotationAngle();
@@ -60,8 +65,8 @@ public class SaveService {
         return new LanceData(x, y, angle);
     }
 
-    private BarrierData getBarrierData(Barrier barrier) {
-        barrier.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+    private BarrierData getBarrierData(Barrier barrier, double width, double height) {
+        barrier.adjustPositionAndSize(width, height, 1, 1);
         double x = barrier.getXPosition();
         double y = barrier.getYPosition();
         int health = barrier.getHealth();
