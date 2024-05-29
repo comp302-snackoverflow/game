@@ -75,7 +75,7 @@ public class SaveService {
                 yield SimpleBarrier.TYPE; // Barriers of unknown type will be saved as simple barriers
             }
         };
-        int barrierID = dbHandler.getBarrierFromName(type);
+        int barrierID = dbHandler.getBarrierIdFromType(type);
         return new BarrierData(x, y, health, barrierID);
     }
 }
