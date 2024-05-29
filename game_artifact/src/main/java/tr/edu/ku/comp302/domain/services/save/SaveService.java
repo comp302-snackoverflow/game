@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
@@ -26,11 +27,12 @@ public class SaveService {
         return instance;
     }
 
-    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers) {
+    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers, List<Remain> remains, double score) {
         FireballData fireballData = getFireballData(fireball);
         LanceData lanceData = getLanceData(lance);
         List<BarrierData> barrierData = barriers.stream().map(this::getBarrierData).toList();
-        GameData data = new GameData(fireballData, lanceData, barrierData, 0.0);
+        List<RemainData> remainData = remains.stream().map(this::getRemainData).toList();
+        GameData data = new GameData(fireballData, lanceData, barrierData, remainData, score);
 
         return dbHandler.saveGame(data);
     }
@@ -69,5 +71,14 @@ public class SaveService {
         int barrierID = dbHandler.getBarrierIdFromType(type);
         barrier.adjustPositionAndSize(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         return new BarrierData(x, y, health, barrierID);
+    }
+
+    private RemainData getRemainData(Remain remain) {
+        remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+        double x = remain.getXPosition();
+        double y = remain.getYPosition();
+        boolean isDropped = remain.isDropped();
+        remain.updatePositionRelativeToScreen(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        return new RemainData(x, y, isDropped);
     }
 }

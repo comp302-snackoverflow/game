@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
@@ -39,10 +40,11 @@ public class LoadService {
         }
 
         FireBall fb = loadFireBall(data.fireballData());
+        fb.setSpeed(Math.hypot(fb.getDx(), fb.getDy()));
         Lance lance = loadLance(data.lanceData());
-        List<Barrier> barriers = loadBarriers(data.barriersData());
-
-        return new Level(lance, fb, barriers, data.score());
+        List<Barrier> barriers = loadBarriers(data.barrierData());
+        List<Remain> remains = loadRemains(data.remainData());
+        return new Level(lance, fb, barriers, remains, data.score());
     }
 
     public Level loadMap(int mapId) {
@@ -89,6 +91,17 @@ public class LoadService {
         return barrier;
     }
 
+    private Remain createRemain(RemainData rd) {
+        double xPos = rd.x();
+        double yPos = rd.y();
+        Remain remain = new Remain(xPos, yPos);
+        remain.updatePositionRelativeToScreen(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        if (rd.isDropped()) {
+            remain.drop();
+        }
+        return remain;
+    }
+
 
     private Lance loadLance(LanceData ld) {
         double x = ld.x();
@@ -115,6 +128,10 @@ public class LoadService {
 
 
     private List<Barrier> loadBarriers(List<BarrierData> barrierData) {
-        return barrierData.stream().map(this::createBarrier).toList();
+        return barrierData.stream().map(this::createBarrier).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private List<Remain> loadRemains(List<RemainData> remainData) {
+        return remainData.stream().map(this::createRemain).collect(Collectors.toCollection(ArrayList::new));
     }
 }
