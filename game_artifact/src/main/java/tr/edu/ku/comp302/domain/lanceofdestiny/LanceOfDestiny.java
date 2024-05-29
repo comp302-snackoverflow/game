@@ -13,7 +13,6 @@ import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 import java.awt.*;
-import java.util.Arrays;
 import java.util.List;
 
 public class LanceOfDestiny implements Runnable {
