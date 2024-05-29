@@ -7,12 +7,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class LoginPanel extends JPanel {
     private final MainFrame mainFrame;
-    protected JPasswordField pwdField;
-    protected JTextField usernameTextField;
-    protected JTextArea errorTextArea;
+    private final JPasswordField pwdField;
+    private final JTextField usernameTextField;
+    private final JTextArea errorTextArea;
+    private final JButton loginButton;
 
     public LoginPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -29,12 +32,10 @@ public class LoginPanel extends JPanel {
         add(errorTextArea);
 
         JButton registerButton = new JButton("Register");
-        registerButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                clearInputs();
-                mainFrame.showRegisterPanel();
+        registerButton.addActionListener(e -> {
+            clearInputs();
+            mainFrame.showRegisterPanel();
 
-            }
         });
         registerButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 16));
         registerButton.setBounds(479, 356, 118, 35);
@@ -46,32 +47,7 @@ public class LoginPanel extends JPanel {
         dontHaveAnAccountLabel.setBounds(263, 355, 206, 35);
         add(dontHaveAnAccountLabel);
 
-        JButton loginButton = new JButton("Login");
-        loginButton.addActionListener(e -> {
-            String username = usernameTextField.getText();
-            String password = new String(pwdField.getPassword());
-            int response = LoginHandler.getInstance().login(username, password);
-            switch (response) {
-                case LoginHandler.SUCCESS:
-                    JOptionPane.showMessageDialog(null, "Successfully logged in.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    clearInputs();
-                    mainFrame.showMainMenuPanel();
-                    // TODO: Create user instance and open his game frame.
-                    break;
-                case LoginHandler.USERNAME_EMPTY:
-                    errorTextArea.setText("You must enter a username!");
-                    break;
-                case LoginHandler.PASSWORD_EMPTY:
-                    errorTextArea.setText("You must enter a password!");
-                    break;
-                case LoginHandler.USER_NOT_FOUND:
-                    errorTextArea.setText("Username or password is not valid!");
-                    break;
-                default:
-                    errorTextArea.setText("Womp womp");
-                    break;
-            }
-        });
+        loginButton = new JButton("Login");
         loginButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
         loginButton.setBounds(417, 305, 147, 43);
         add(loginButton);
@@ -99,29 +75,40 @@ public class LoginPanel extends JPanel {
         pwdLabel.setBounds(251, 165, 125, 41);
         add(pwdLabel);
 
-    }
-
-    // Are getters necessary?
-    // Also, I think Swing elements should be final in UI classes.
-    public JPasswordField getPwdField() {
-        return pwdField;
-    }
-
-    public void setPwdField(JPasswordField pwdField) {
-        this.pwdField = pwdField;
-    }
-
-    public JTextField getUsernameTextField() {
-        return usernameTextField;
-    }
-
-    public void setUsernameTextField(JTextField usernameTextField) {
-        this.usernameTextField = usernameTextField;
+        loginButton.addActionListener(e -> {
+            String username = usernameTextField.getText();
+            String password = new String(pwdField.getPassword());
+            int response = LoginHandler.getInstance().login(username, password);
+            switch (response) {
+                case LoginHandler.SUCCESS:
+                    JOptionPane.showMessageDialog(null, "Successfully logged in.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    clearInputs();
+                    mainFrame.showMainMenuPanel();
+                    // TODO: Create user instance and open his game frame.
+                    break;
+                case LoginHandler.USERNAME_EMPTY:
+                    errorTextArea.setText("You must enter a username!");
+                    break;
+                case LoginHandler.PASSWORD_EMPTY:
+                    errorTextArea.setText("You must enter a password!");
+                    break;
+                case LoginHandler.USER_NOT_FOUND:
+                    errorTextArea.setText("Username or password is not valid!");
+                    break;
+                default:
+                    errorTextArea.setText("Womp womp");
+                    break;
+            }
+        });
     }
 
     private void clearInputs() {
         usernameTextField.setText("");
         pwdField.setText("");
         errorTextArea.setText("");
+    }
+
+    public void registerEnterClick() {
+        SwingUtilities.getRootPane(this).setDefaultButton(loginButton);
     }
 }

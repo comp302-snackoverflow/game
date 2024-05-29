@@ -67,6 +67,7 @@ public class MainFrame extends JFrame {
         self.cards.add(self.selectLoadPanel, SELECT_SAVE);
         self.setMinimumSize(new Dimension(frameWidth, frameHeight));
         JFrame.setDefaultLookAndFeelDecorated(true);
+        self.loginPanel.registerEnterClick();
         return self;
     }
 
