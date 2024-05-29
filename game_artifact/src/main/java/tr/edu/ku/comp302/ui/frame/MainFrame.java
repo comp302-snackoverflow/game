@@ -4,6 +4,7 @@ import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.domain.listeners.SaveListener;
 import tr.edu.ku.comp302.ui.panel.*;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 
@@ -28,7 +29,7 @@ public class MainFrame extends JFrame {
     private JPanel mainMenuPanel;
     private LevelPanel levelPanel;
     private JPanel buildPanel;
-    private JPanel pausePanel;
+    private PauseMenuPanel pausePanel;
     private SelectLevelPanel selectLevelPanel;
     private SelectLoadPanel selectLoadPanel;
 
@@ -56,6 +57,7 @@ public class MainFrame extends JFrame {
         self.preparePausePanel();
         self.prepareSelectLevelPanel();
         self.prepareSelectSavedGamePanel();
+
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
@@ -173,6 +175,7 @@ public class MainFrame extends JFrame {
 
     // FIXME: bad practice. Find a way to set the level without passing it to the UI
     public void setCurrentLevel(Level level) {
+        pausePanel.setSaveListener(level);
         levelPanel.getLevelHandler().setLevel(level);
     }
 }
