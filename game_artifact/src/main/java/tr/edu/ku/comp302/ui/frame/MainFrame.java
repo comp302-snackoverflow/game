@@ -41,7 +41,6 @@ public class MainFrame extends JFrame {
         layout = new CardLayout();
         cards = new JPanel(layout);
         add(cards);
-
     }
 
     public static MainFrame createMainFrame() {
@@ -60,6 +59,8 @@ public class MainFrame extends JFrame {
         self.cards.add(self.buildPanel, BUILD);
         self.cards.add(self.pausePanel, PAUSE);
         self.cards.add(self.selectLevelPanel, SELECT_LEVEL);
+        self.setMinimumSize(new Dimension(frameWidth, frameHeight));
+        JFrame.setDefaultLookAndFeelDecorated(true);
         return self;
     }
 
