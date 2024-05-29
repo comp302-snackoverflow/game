@@ -22,6 +22,10 @@ public class LevelPanel extends JPanel {
     private JLabel extensionSpellLabel;
     private JLabel hexSpellLabel;
     private JLabel overwhelmingSpellLabel;
+    private int heartWidth = 20;
+    private int heartHeight = 20;
+    private int iconSize = 40;
+    private int iconSpacing = 10;
 
     public LevelPanel(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
@@ -39,7 +43,7 @@ public class LevelPanel extends JPanel {
         levelHandler.renderRemains(g);
         levelHandler.renderHexs(g);
         levelHandler.renderSpellBox(g);
-        prepareHeartImage(g);
+        prepareHeartImage(g, (int) (getWidth() * 0.05), getHeight() - heartHeight - 20);
         showYmir(g);
         levelG = g;
     }
@@ -72,6 +76,8 @@ public class LevelPanel extends JPanel {
         levelHandler.getSpellBoxes().forEach(spellBox ->
             spellBox.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
                     (int) size.getWidth(), (int) size.getHeight()));
+        resizeSpellIcons((int) size.getWidth(), (int) size.getHeight());
+        resizeHeartImage((int) size.getWidth(), (int) size.getHeight());
     }
 
     public LevelHandler getLevelHandler() {
@@ -96,46 +102,6 @@ public class LevelPanel extends JPanel {
             requestFocus();
             repaint();
         });
-
-        overwhelmingSpellLabel = addCircularButtonWithLabel("/assets/overwhelming_fireball.png", LanceOfDestiny.getScreenWidth() - 100, 500 + 100, e -> {
-            levelHandler.useSpell(SpellBox.OVERWHELMING_SPELL);
-            updateSpellCounts();
-            requestFocus();
-            repaint();
-        });
-
-        overwhelmingSpellLabel = addCircularButtonWithLabel("/assets/hollow_barrier.png", LanceOfDestiny.getScreenWidth() - 100, 500 + 150, e -> {
-            //levelHandler.generateHollowBarriers();
-            updateSpellCounts();
-            requestFocus();
-            repaint();
-        });
-
-        //Only hex lance extension and overwhelming fireball can bu used by the player the calls to these functions will be implemented in the Ymir Class
-
-        /*
-        addCircularButtonWithLabel("/assets/frozen_barrier.png", LanceOfDestiny.getScreenWidth()-300, 500, e -> {
-            List<Barrier> chosen = levelHandler.eightRandomBarriers();
-            levelHandler.renderBarriers(levelG);
-            requestFocus();
-        });
-         */
-        
-
-        /*
-        addCircularButtonWithLabel("/assets/hollow_barrier.png",LanceOfDestiny.getScreenWidth()-400, 500, e -> {
-            levelHandler.generateHollowBarriers();
-            requestFocus();
-        });
-         */
-        
-
-        
-        /*addCircularButton("/assets/hollow_barrier.png",LanceOfDestiny.getScreenWidth()-500, 500, e -> {
-            System.out.println("I am pressed");
-            levelHandler.useSpell(SpellBox.OVERWHELMING_SPELL);
-            requestFocus();
-        });*/
 
         revalidate();
         repaint();
@@ -176,29 +142,25 @@ public class LevelPanel extends JPanel {
         hexSpellLabel.setText(String.valueOf(counts[SpellBox.HEX_SPELL]));
         overwhelmingSpellLabel.setText(String.valueOf(counts[SpellBox.OVERWHELMING_SPELL]));
     }
-    
 
-    public void prepareHeartImage(Graphics g) {
+
+    public void prepareHeartImage(Graphics g, int x, int y) {
         BufferedImage heart = ImageHandler.getImageFromPath("/assets/heart_image.png");
         if (heart == null) {
             System.err.println("Heart image not found");
             return;
         }
-    
+
         // Resize the heart image
-        int heartWidth = 20;  // Adjust the width as needed
-        int heartHeight = 20; // Adjust the height as needed
         BufferedImage resizedHeart = ImageHandler.resizeImage(heart, heartWidth, heartHeight);
-    
-        // Position the heart image at the bottom-left corner of the screen
-        int x = 20; // Distance from the left edge
-        int y = getHeight() - heartHeight - 20; // Distance from the bottom edge
-    
+
+        // Draw the heart image at the specified position
         g.drawImage(resizedHeart, x, y, null);
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 5, y + heartHeight / 2 + 6);
     }
+
 
     public void showYmir(Graphics g){
 
@@ -210,6 +172,21 @@ public class LevelPanel extends JPanel {
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("x" + (30 - levelHandler.getSpellHandler().getYmirTime()), x + 5, y + 6);
 
+    }
+
+    private void resizeSpellIcons(int panelWidth, int panelHeight) {
+        int xOffset = panelWidth - 100;
+        int yOffsetBase = (int) (panelHeight * 0.6);
+
+        int yOffsetHex = yOffsetBase + iconSize + iconSpacing;
+        extensionSpellLabel.getParent().setBounds(xOffset, yOffsetBase, 100, 50);
+        hexSpellLabel.getParent().setBounds(xOffset, yOffsetHex, 100, 50);
+    }
+
+    private void resizeHeartImage(int panelWidth, int panelHeight) {
+        int x = (int) (panelWidth * 0.05);
+        int y = panelHeight - heartHeight - 20;
+        prepareHeartImage(levelG, x, y);
     }
     
 }
