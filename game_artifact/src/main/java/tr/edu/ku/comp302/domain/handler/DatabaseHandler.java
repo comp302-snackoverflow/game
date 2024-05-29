@@ -8,10 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.services.SessionManager;
-import tr.edu.ku.comp302.domain.services.save.BarrierData;
-import tr.edu.ku.comp302.domain.services.save.FireballData;
-import tr.edu.ku.comp302.domain.services.save.GameData;
-import tr.edu.ku.comp302.domain.services.save.LanceData;
+import tr.edu.ku.comp302.domain.services.save.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,10 +32,11 @@ public class DatabaseHandler {
         dataSource = new HikariDataSource(config);
     }
 
+    public static void init() {
+        instance = new DatabaseHandler();
+    }
+
     public static DatabaseHandler getInstance() {
-        if (instance == null) {
-            instance = new DatabaseHandler();
-        }
         return instance;
     }
 
@@ -202,6 +200,27 @@ public class DatabaseHandler {
         return maps;
     }
 
+    public List<Integer> getSavedLevels(int uid) {
+        final String query = "SELECT id FROM Save WHERE player_ref = ?";
+        List<Integer> savedLevels = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, uid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        savedLevels.add(rs.getInt("id"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+        return savedLevels;
+    }
+
+
     /**
      * Load barriers from the database from a save or a map
      *
@@ -228,11 +247,12 @@ public class DatabaseHandler {
                 ps.setInt(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        double x = rs.getDouble("x");
-                        double y = rs.getDouble("y");
-                        int health = rs.getInt("health");
-                        int barrierType = rs.getInt("type");
-                        barriers.add(new BarrierData(x, y, health, barrierType));
+                        barriers.add(new BarrierData(
+                                rs.getDouble("x"),
+                                rs.getDouble("y"),
+                                rs.getInt("health"),
+                                rs.getInt("type")
+                        ));
                     }
                 }
             }
@@ -246,7 +266,8 @@ public class DatabaseHandler {
     public boolean saveGame(GameData data) {
         FireballData fireball = data.fireballData();
         LanceData lance = data.lanceData();
-        List<BarrierData> barriers = data.barriersData();
+        List<BarrierData> barriers = data.barrierData();
+        List<RemainData> remains = data.remainData();
         double score = data.score();
 
         final String saveGame = "INSERT INTO Save " + "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " + "lance_x, lance_y, lance_angle, score) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -272,7 +293,9 @@ public class DatabaseHandler {
             try (PreparedStatement ps = connection.prepareStatement("SELECT LAST_INSERT_ID()")) {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return saveBarriers(barriers, rs.getInt(1), "save");
+                        int saveId = rs.getInt(1);
+                        return saveBarriers(barriers, saveId, "save")
+                                && saveRemains(remains, saveId);
                     }
                 }
             }
@@ -281,6 +304,39 @@ public class DatabaseHandler {
             return false;
         }
         return false;
+    }
+
+    private boolean saveRemains(List<RemainData> remains, int saveId) {
+        final String saveRemain = "INSERT INTO Remain (x, y, is_dropped, save_ref) VALUES (?, ?, ?, ?)";
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(saveRemain)) {
+                for (RemainData remain : remains) {
+                    ps.setDouble(1, remain.x());
+                    ps.setDouble(2, remain.y());
+                    ps.setBoolean(3, remain.isDropped());
+                    ps.setInt(4, saveId);
+                    ps.addBatch();
+                }
+                return executeBatch(ps);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return false;
+        }
+    }
+
+    private boolean executeBatch(PreparedStatement ps) throws SQLException {
+        int[] numUpdates = ps.executeBatch();
+        for (int i = 0; i < numUpdates.length; i++) {
+            if (numUpdates[i] == -2) {
+                logger.debug("Execution {}: unknown number of rows updated", i);
+            } else {
+                logger.debug("Execution {} successful: {} rows updated", i, numUpdates[i]);
+            }
+        }
+
+        return true;
     }
 
     public GameData loadGame(int saveId) {
@@ -306,7 +362,32 @@ public class DatabaseHandler {
         }
 
         List<BarrierData> barriers = loadBarriers(saveId, "save");
-        return new GameData(fireball, lance, barriers, score);
+        List<RemainData> remains = loadRemains(saveId);
+
+        return new GameData(fireball, lance, barriers, remains, score);
+    }
+
+    private List<RemainData> loadRemains(int saveId) {
+        List<RemainData> remains = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Remain WHERE save_ref = ?")) {
+                ps.setInt(1, saveId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        remains.add(new RemainData(
+                                rs.getDouble("x"),
+                                rs.getDouble("y"),
+                                rs.getBoolean("is_dropped")));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+
+        return remains;
     }
 
     private boolean saveBarriers(List<BarrierData> barriers, int id, String to) {
@@ -330,16 +411,7 @@ public class DatabaseHandler {
                     }
                     ps.addBatch();
                 }
-                int[] numUpdates = ps.executeBatch();
-                for (int i = 0; i < numUpdates.length; i++) {
-                    if (numUpdates[i] == -2) {
-                        logger.debug("Execution {}: unknown number of rows updated", i);
-                    } else {
-                        logger.debug("Execution {} successful: {} rows updated", i, numUpdates[i]);
-                    }
-                }
-
-                return true;
+                return executeBatch(ps);
             }
         } catch (SQLException e) {
             logger.error(e);

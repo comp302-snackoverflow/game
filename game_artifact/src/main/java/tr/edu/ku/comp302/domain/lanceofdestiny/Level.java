@@ -5,24 +5,33 @@ import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.listeners.SaveListener;
+import tr.edu.ku.comp302.domain.services.save.SaveService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Level {
+public class Level implements SaveListener {
     private static List<Level> levels = new ArrayList<>();
+    private static final SaveService saveService = SaveService.getInstance();
     private Lance lance;
     private FireBall fireBall;
     private List<Barrier> barriers;
     private List<Remain> remains;
     private double score;
 
-    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, double score) {
+    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, List<Remain> remains, double score) {
         this.lance = lance;
         this.fireBall = fireBall;
         this.barriers = barriers;
-        this.remains = new ArrayList<>();
+        this.remains = remains;
         this.score = score;
+
+        levels.add(this);
+    }
+
+    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, double score) {
+        this(lance, fireBall, barriers, new ArrayList<>(), score);
 
         for (Barrier barrier : barriers) {
             if (barrier instanceof ExplosiveBarrier b) {
@@ -95,6 +104,11 @@ public class Level {
 
     public void setRemains(List<Remain> remains) {
         this.remains = remains;
+    }
+
+    @Override
+    public boolean save() {
+        return saveService.saveGame(fireBall, lance, barriers, remains, score);
     }
 }
 

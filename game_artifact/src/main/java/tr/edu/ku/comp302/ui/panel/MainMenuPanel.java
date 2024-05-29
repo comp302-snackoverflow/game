@@ -33,8 +33,7 @@ public class MainMenuPanel extends JPanel {
             LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
         });
         loadGameButton.addActionListener(e -> {
-            // Not implemented
-            assert false; // FIXME: implement LoadGamePanel
+            mainFrame.showSelectSavedGamePanel();
 
         });
         createCustomMapButton.addActionListener(e -> {

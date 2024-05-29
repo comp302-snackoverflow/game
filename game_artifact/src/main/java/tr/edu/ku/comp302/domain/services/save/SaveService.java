@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
@@ -26,12 +27,12 @@ public class SaveService {
         return instance;
     }
 
-
-    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers) {
+    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers, List<Remain> remains, double score) {
         FireballData fireballData = getFireballData(fireball, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         LanceData lanceData = getLanceData(lance, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
-        GameData data = new GameData(fireballData, lanceData, barrierData, 0.0);
+        List<RemainData> remainData = remains.stream().map(remain -> getRemainData(remain, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
+        GameData data = new GameData(fireballData, lanceData, barrierData, remainData, score);
 
         return dbHandler.saveGame(data);
     }
@@ -52,7 +53,7 @@ public class SaveService {
         double dx = fireball.getDx();
         double dy = fireball.getDy();
         // Retrieve the old size in case the user resumes the game
-        fireball.adjustPositionAndSpeed(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        fireball.adjustPositionAndSpeed(1, 1, width, height);
         return new FireballData(x, y, dx, dy);
     }
 
@@ -61,7 +62,7 @@ public class SaveService {
         double x = lance.getXPosition();
         double y = lance.getYPosition();
         double angle = lance.getRotationAngle();
-        lance.adjustPositionAndSize(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        lance.adjustPositionAndSize(1, 1, width, height);
         return new LanceData(x, y, angle);
     }
 
@@ -72,7 +73,16 @@ public class SaveService {
         int health = barrier.getHealth();
         String type = barrier.getClass().getSimpleName();
         int barrierID = dbHandler.getBarrierIdFromType(type);
-        barrier.adjustPositionAndSize(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        barrier.adjustPositionAndSize(1, 1, width, height);
         return new BarrierData(x, y, health, barrierID);
+    }
+
+    private RemainData getRemainData(Remain remain, double width, double height) {
+        remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+        double x = remain.getXPosition();
+        double y = remain.getYPosition();
+        boolean isDropped = remain.isDropped();
+        remain.updatePositionRelativeToScreen(1, 1, width, height);
+        return new RemainData(x, y, isDropped);
     }
 }
