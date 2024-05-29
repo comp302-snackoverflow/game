@@ -102,7 +102,7 @@ public class SpellHandler {
     public void handleYmir(Level level) {
 
         if (ymirTime < 30) {
-            if (System.currentTimeMillis() - previousTime > 3000) {
+            if (System.currentTimeMillis() - previousTime > 1000) {
                 previousTime = System.currentTimeMillis();
                 ymirTime++;
 
