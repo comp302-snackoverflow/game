@@ -101,7 +101,6 @@ public class MainFrame extends JFrame {
 
     private void prepareSelectLevelPanel() {
         selectLevelPanel = new SelectLevelPanel(this);
-
     }
 
     public void showLoginPanel() {
