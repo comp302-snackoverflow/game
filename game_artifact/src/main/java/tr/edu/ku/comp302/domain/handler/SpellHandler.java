@@ -57,7 +57,7 @@ public class SpellHandler {
         level.increaseChances();
     }
 
-    //TODO: Note to Eren: This spell lasts for 15 seconds.
+
     public void doubleAccel(Level level) {
         FireBall fireball = level.getFireBall();
 
@@ -67,12 +67,11 @@ public class SpellHandler {
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 fireball.doubleAccel();
             }
         };
 
-        PausableThread pausableThread = new PausableThread(() -> {}, normalizeFireballSpeedTask, 5);
+        PausableThread pausableThread = new PausableThread(() -> {}, normalizeFireballSpeedTask, 15);
 
         levelHandler.getPausableThreads().add(pausableThread);
     }
@@ -102,12 +101,11 @@ public class SpellHandler {
 
     public void handleYmir(Level level) {
 
-        if (ymirTime < 10) {
-            if (System.currentTimeMillis() - previousTime > 1000) {
+        if (ymirTime < 30) {
+            if (System.currentTimeMillis() - previousTime > 3000) {
                 previousTime = System.currentTimeMillis();
                 ymirTime++;
-                
-                System.out.println("fireball speed: " + level.getFireBall().getSpeed());
+
             }
         }
         else{
@@ -150,7 +148,7 @@ public class SpellHandler {
 
         switch (chosenSpell) {
             case INFINITE_VOID:
-                freezeEightRandomBarriers(level);
+                handleFrozenBarriers(level);
                 break;
             case HOLLOW_BARRIER:
                 generateHollowBarriers(level);
@@ -215,7 +213,7 @@ public class SpellHandler {
 
         freezeEightRandomBarriers(level);
         
-        Runnable normalizeBarriersTast = new Runnable() {
+        Runnable normalizeBarriersTest = new Runnable() {
 
             @Override
             public void run() {
@@ -226,7 +224,7 @@ public class SpellHandler {
             }
         };
 
-        PausableThread pausableThread = new PausableThread(() -> {}, normalizeBarriersTast, 5);
+        PausableThread pausableThread = new PausableThread(() -> {}, normalizeBarriersTest, 15);
         levelHandler.getPausableThreads().add(pausableThread);
     }
 

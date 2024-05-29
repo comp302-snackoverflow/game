@@ -287,7 +287,7 @@ public class LevelHandler {
         };
 
         // Create a PausableThread that will run the two tasks in sequence
-        PausableThread pausableThread = new PausableThread(overwhelmingSpellTask, normalizeFireball, 10);
+        PausableThread pausableThread = new PausableThread(overwhelmingSpellTask, normalizeFireball, 30);
         // Add the thread to the list of pausable threads
         pausableThreads.add(pausableThread);
     }
@@ -298,14 +298,11 @@ public class LevelHandler {
     public void collectSpell(char spell){
         SpellBox.incrementSpellCount(spell);
         switch(spell) {
-            case(SpellBox.EXTENSION_SPELL):
+            case(SpellBox.EXTENSION_SPELL), (SpellBox.HEX_SPELL):
                 level.collectSpell(spell);
                 break;
             case(SpellBox.OVERWHELMING_SPELL):
                 applyOverwhelmingSpell();
-                break; //TODO: add the overwhelming spell once it is done.
-            case(SpellBox.HEX_SPELL):
-                level.collectSpell(spell);
                 break;
             case(SpellBox.FELIX_FELICIS_SPELL):
                 spellHandler.felixFelicis(level);
@@ -324,10 +321,11 @@ public class LevelHandler {
             switch (spell) {
                 case SpellBox.EXTENSION_SPELL:
                     extendLance();
-                    //level.removeSpell(spell);
+                    level.removeSpell(spell);
                     break;
                 case SpellBox.HEX_SPELL:
                     startCreatingHex();
+                    level.removeSpell(spell);
                     break;
                 case SpellBox.OVERWHELMING_SPELL:
                     applyOverwhelmingSpell();

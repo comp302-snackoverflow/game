@@ -173,7 +173,7 @@ public class Level {
 
     public void removeSpell(char spell) {
         if (!inventoryHasSpell(spell)) return;
-        spellInventory.remove(spell);
+        spellInventory.remove((Character)spell);
     }
 
     public boolean inventoryHasSpell(char spell) {
