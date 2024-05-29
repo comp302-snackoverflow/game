@@ -82,10 +82,11 @@ public class LanceOfDestiny implements Runnable {
                 previousTime = currentTime;
             } else {  // TODO: Change this else statement whenever implemented other game states.
                 try {
-                    if (pauseStartTime == null) {
+                    if (pauseStartTime == null && currentGameState.isPaused()) {
                         pauseStartTime = System.nanoTime();
                     }
                     Thread.sleep(1000 / UPS_SET);
+
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -323,9 +324,13 @@ public class LanceOfDestiny implements Runnable {
     }
 
     private void addPauseTime(long pauseDuration) {
-        arrowKeyPressTimes[0] += pauseDuration;
-        arrowKeyPressTimes[1] += pauseDuration;
-//        previousTime += pauseDuration;
+        if (arrowKeyPressTimes[0] != 0){
+            arrowKeyPressTimes[0] += pauseDuration;
+        }
+        if (arrowKeyPressTimes[1] != 0){
+            arrowKeyPressTimes[1] += pauseDuration;
+        }
+        previousTime += pauseDuration;
         lastMovingTime += pauseDuration;
         pauseStartTime = null;
     }
