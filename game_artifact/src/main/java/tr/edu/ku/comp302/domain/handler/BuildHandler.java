@@ -63,8 +63,6 @@ public class BuildHandler {
                     int newWidth = buildSection.getWidth();
                     int newHeight = buildSection.getHeight();
                     resizeBarriersOnMap(newWidth, newHeight);
-                    // LanceOfDestiny.setScreenWidth(buildPanel.getWidth());
-                    // LanceOfDestiny.setScreenHeight(buildPanel.getHeight());
                 }
             }
         });
@@ -148,15 +146,15 @@ public class BuildHandler {
     private void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom) {
         int buildSectionWidth = buildPanel.getBuildSection().getWidth();
         int buildSectionHeight = buildPanel.getBuildSection().getHeight() * 4 / 8; // TODO: Change ratio later to a constant value
-        boolean collided;
+        Barrier collidedBarrier;
         int x, y;
         Barrier randomBarrier;
         do {
             x = (int) barrierWidth / 2 + secureRandom.nextInt(buildSectionWidth - (int) barrierWidth - (int) barrierWidth / 2);
             y = 20 + secureRandom.nextInt(buildSectionHeight - 40);  // -20 barrier -20 padding
             randomBarrier = createBarrier(barrierType, x, y, barrierWidth);
-            collided = checkBarrierCollisionWithBarriers(randomBarrier);
-        } while (collided);
+            collidedBarrier = checkBarrierCollisionWithBarriers(randomBarrier);
+        } while (collidedBarrier != null);
         barriersOnMap.add(randomBarrier);
     }
 
@@ -212,14 +210,17 @@ public class BuildHandler {
         if (selectionMode == -2) {
             return;
         }
-        System.out.println(selectionMode);
-        if (barriersOnMap.size() < 200) {
-            putBarrierToMap(x, y, selectionMode);
-            buildPanel.repaint();
-        } else {
-            buildPanel.alertFullMap();
+        if (selectionMode == -1){
+            deleteBarrier(x, y);
         }
-
+        else{
+            if (barriersOnMap.size() < 200) {
+                putBarrierToMap(x, y, selectionMode);
+            } else {
+                buildPanel.alertFullMap();
+            }
+        }
+        buildPanel.repaint();
     }
 
     public void handleMouseDrag(int x, int y) {
@@ -237,11 +238,20 @@ public class BuildHandler {
         int yMin = 20;
         if (x <= xMax && y <= yMax && x >= xMin && y >= yMin) {
             Barrier createdBarrier = createBarrier(buildSection.getWidth() / 50, x, y, selectionMode);
-            if (!checkBarrierCollisionWithBarriers(createdBarrier)) {
+            if (checkBarrierCollisionWithBarriers(createdBarrier) == null) {
                 barriersOnMap.add(createdBarrier);
             } else {
                 // TODO: Add logger message.
             }
+        }
+    }
+
+    private void deleteBarrier(int x, int y){
+        Barrier tempBarrier = new SimpleBarrier(x, y);
+        Barrier barrierToRemove = checkBarrierCollisionWithBarriers(tempBarrier);
+        if (barrierToRemove != null){
+            barriersOnMap.remove(barrierToRemove);
+
         }
     }
 
@@ -260,13 +270,13 @@ public class BuildHandler {
         return barrier;
     }
 
-    public boolean checkBarrierCollisionWithBarriers(Barrier barrier) {
+    public Barrier checkBarrierCollisionWithBarriers(Barrier barrier) {
         for (Barrier b : barriersOnMap) {
             if (b != barrier && checkBarrierCollision(b, barrier)) {
-                return true;
+                return b;
             }
         }
-        return false;
+        return null;
     }
 
     private boolean checkBarrierCollision(Barrier b1, Barrier b2) {

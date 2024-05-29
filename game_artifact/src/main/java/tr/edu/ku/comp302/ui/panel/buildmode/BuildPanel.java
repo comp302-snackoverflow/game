@@ -84,6 +84,7 @@ public class BuildPanel extends JPanel {
         barriersPanel.firmBarrierButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.FIRM_MODE));
         barriersPanel.explosiveBarrierButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.EXPLOSIVE_MODE));
         barriersPanel.giftingBarrierButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.GIFT_MODE));
+        barriersPanel.deleteButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.DELETE_MODE));
     }
 
     private void addButtonsActions() {
