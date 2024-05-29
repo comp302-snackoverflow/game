@@ -3,12 +3,13 @@ package tr.edu.ku.comp302.ui.frame;
 import tr.edu.ku.comp302.App;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
+import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.panel.*;
-import tr.edu.ku.comp302.ui.view.BarrierView;
-import tr.edu.ku.comp302.ui.view.FireBallView;
-import tr.edu.ku.comp302.ui.view.LanceView;
+import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
+import tr.edu.ku.comp302.ui.view.View;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,7 @@ public class MainFrame extends JFrame {
     private static final String BUILD = "build";
     private static final String PAUSE = "pause";
 
-    private JPanel cards;
+    private final JPanel cards;
     private LoginPanel loginPanel;
     private JPanel registerPanel;
     private JPanel mainMenuPanel;
@@ -67,30 +68,30 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareLevelPanel() {
-        Lance lance = new Lance(576, 600);
-        LanceView lv = new LanceView(lance);
-        Level level = new Level();
+//        Lance lance = new Lance(576, 600);
+//        FireBall fb = new FireBall(600, 560);
+//        var barriers = App.generateBarriers(LanceOfDestiny.getScreenWidth(),
+//                LanceOfDestiny.getScreenHeight(), new BuildPanelModel());
+
+//        Level level = new Level(lance, fb, barriers);
+//        levelPanel = new LevelPanel(new LevelHandler(level));
         // levelPanel = new LevelPanel(level, lv); TODO: FIX THIS
         // levelPanel = new LevelPanel(level, lv,
         // new FireBallView(new FireBall(600, 560, frameWidth, frameHeight)));
         // TODO: FIX THIS AS WELL
 
-        BuildPanelModel randomModel = new BuildPanelModel();
+        // BuildPanelModel randomModel = new BuildPanelModel();
 
-        levelPanel = new LevelPanel(level, lv,
-                new FireBallView(new FireBall(632, 560)),
-                App.generateBarriers((double)LanceOfDestiny.getScreenWidth(), (double)LanceOfDestiny.getScreenHeight(), randomModel), this); //I called the generate barrier function for now
         // to demonstrate how the game works.
-        ((LevelPanel) levelPanel).setPanelSize(new Dimension(1280, 800));
-        levelPanel.repaint();
-        levelPanel.setFocusable(true);
-        levelPanel.requestFocusInWindow();
+       //(LevelPanel) levelPanel).setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()))
+//        levelPanel.repaint();
+//        levelPanel.setFocusable(true);
+//        levelPanel.requestFocusInWindow();
     }
 
     private void prepareBuildPanel() {
-        buildPanel = new BuildPanel(this);
+        buildPanel = BuildPanel.createPanel(this);
         buildPanel.repaint();
-        buildPanel.setLayout(null);
         buildPanel.requestFocusInWindow();
     }
 
@@ -105,20 +106,19 @@ public class MainFrame extends JFrame {
         self.prepareLoginPanel();
         self.prepareRegisterPanel();
         self.prepareMainMenu();
+        // self.prepareLevelPanel();
         self.prepareBuildPanel();
-        self.prepareLevelPanel();
         self.preparePausePanel();
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
-        self.cards.add(self.levelPanel, LEVEL);
+        // self.cards.add(self.levelPanel, LEVEL);
         self.cards.add(self.buildPanel, BUILD);
         self.cards.add(self.pausePanel, PAUSE);
         return self;
     }
 
     public void showLoginPanel() {
-
         layout.show(cards, LOGIN);
         refresh();
     }
@@ -173,7 +173,6 @@ public class MainFrame extends JFrame {
         this.levelPanel = levelPanel;
         cards.add(this.levelPanel, LEVEL);
         refresh();
-
     }
 }
 

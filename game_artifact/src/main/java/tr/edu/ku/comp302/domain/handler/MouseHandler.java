@@ -9,20 +9,14 @@ public class MouseHandler implements MouseListener{
     public static boolean mouseClicked = false;
     @Override
     public void mouseClicked(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-        return;
     }
 
     @Override
     public void mouseEntered(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-        return;
     }
 
     @Override
     public void mouseExited(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-        return;
     }
 
     @Override
