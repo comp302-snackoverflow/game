@@ -11,11 +11,6 @@ import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
-import tr.edu.ku.comp302.ui.frame.MainFrame;
-import tr.edu.ku.comp302.ui.panel.LevelPanel;
-import tr.edu.ku.comp302.ui.view.FireBallView;
-import tr.edu.ku.comp302.ui.view.LanceView;
-import tr.edu.ku.comp302.ui.view.BarrierView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class LoadService {
     private static LoadService instance;
-    private final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
     private LoadService() {
@@ -36,8 +31,8 @@ public class LoadService {
         }
         return instance;
     }
-      // FIXME LevelPanel needs MainFrame. Return a GameData instead
-    public LevelPanel loadGame(int saveId, MainFrame mainFrame) {
+
+    public Level loadGame(int saveId) {
         GameData data = dbHandler.loadGame(saveId);
         if (data == null) {
             return null;
@@ -48,14 +43,12 @@ public class LoadService {
         FireBall fb = loadFireBall(data.fireballData(), windowWidth, windowHeight);
         Lance lance = loadLance(data.lanceData(), windowWidth, windowHeight);
         List<Barrier> barriers = loadBarriers(data.barriersData(), windowWidth, windowHeight);
-        FireBallView fbv = new FireBallView(fb);
-        LanceView lv = new LanceView(lance);
-        List<BarrierView> barrierViews = barriers.stream().map(BarrierView::new).toList();
         // TODO: score must be loaded into LanceOfDestiny (probably),
         //  find a way to do it because its stupid to statically set it
-        return new LevelPanel(new Level(), lv, fbv, barrierViews, mainFrame);
+        return new Level(lance, fb, barriers);
     }
-    public LevelPanel loadMap(int mapId, MainFrame mainFrame) {
+
+    public Level loadMap(int mapId) {
         /*
          * FIXME: this works but has at least two issues:
          *  - barrier sizes are not consistent with the window size
@@ -63,53 +56,41 @@ public class LoadService {
          *  - just for the demo adding MainFrame to parameters
          *  but at least it works so yay
          */
-        List<BarrierData> barriers = dbHandler.loadBarriers(mapId, "map");
-        if (barriers == null) {
+        List<BarrierData> barriersData = dbHandler.loadBarriers(mapId, "map");
+        if (barriersData == null) {
             return null;
         }
 
-        double windowWidth = LanceOfDestiny.getScreenWidth();
-        double windowHeight = LanceOfDestiny.getScreenHeight();
         Lance lance = new Lance(576, 600);
-        LanceView lv = new LanceView(lance);
-        Level level = new Level();
-        FireBallView fbv = new FireBallView(new FireBall(632, 560));
-        List<BarrierView> barrierViews =
-            barriers.stream()
-                    .map(b -> createBarrierView(b, windowWidth, windowHeight))
-                    .collect(Collectors.toCollection(ArrayList::new));
-        return new LevelPanel(level, lv, fbv, barrierViews, mainFrame);
-    }
 
-    private BarrierView createBarrierView(BarrierData bd, double width, double height) {
-        double xPos = bd.x() * width;
-        double yPos = bd.y() * height;
+        FireBall fireball = new FireBall(632, 560);
+
+        List<Barrier> barriers = barriersData.stream().map(this::createBarrier).collect(Collectors.toCollection(ArrayList::new));
+
+        return new Level(lance, fireball, barriers);    }
+
+    private Barrier createBarrier(BarrierData bd) {
+        double xPos = bd.x();
+        double yPos = bd.y();
         int health = bd.health();
         String type = dbHandler.getBarrierTypeFromId(bd.type());
-        return switch (type) {
-            case SimpleBarrier.TYPE -> {
-                Barrier b = new SimpleBarrier(xPos, yPos);
-                b.setHealth(health);
-                yield new BarrierView(b);
-            }
-            case FirmBarrier.TYPE -> {
-                Barrier b = new FirmBarrier(xPos, yPos);
-                b.setHealth(health);
-                yield new BarrierView(b);
-            }
-            case ExplosiveBarrier.TYPE -> {
-                Barrier b = new ExplosiveBarrier(xPos, yPos);
-                b.setHealth(health);
-                yield new BarrierView(b);
-            }
-            default -> {
-                Barrier b = new SimpleBarrier(xPos, yPos);
-                b.setHealth(health);
-                yield new BarrierView(b);
-            }
-        };
+        Barrier barrier;
+        if (type.equals(SimpleBarrier.class.getSimpleName())) {
+            barrier = new SimpleBarrier(xPos, yPos);
+        } else if (type.equals(FirmBarrier.class.getSimpleName())) {
+            barrier = new FirmBarrier(xPos, yPos);
+        } else if (type.equals(ExplosiveBarrier.class.getSimpleName())) {
+            barrier = new ExplosiveBarrier(xPos, yPos);
+        } else {
+            barrier = new SimpleBarrier(xPos, yPos);
+            logger.warn("Unknown barrier type: {}, creating a simple barrier.", type);
+        }
+
+        barrier.setHealth(health);
+        barrier.adjustPositionAndSize(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        return barrier;
     }
-    
+
     private Lance loadLance(LanceData ld, double windowWidth, double windowHeight) {
         double x = ld.x() * windowWidth;
         double y = ld.y() * windowHeight;

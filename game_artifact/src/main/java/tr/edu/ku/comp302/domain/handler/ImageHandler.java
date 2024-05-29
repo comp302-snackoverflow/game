@@ -1,6 +1,9 @@
 package tr.edu.ku.comp302.domain.handler;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -8,13 +11,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ImageHandler {
-    public static BufferedImage createCustomImage(String pathStr, int widthNew, int heightNew){
+    private static Logger logger = LogManager.getLogger(ImageHandler.class);
+
+    public static BufferedImage createCustomImage(String pathStr, int widthNew, int heightNew) {
         BufferedImage image = getImageFromPath(pathStr);
         assert image != null;
         return resizeImage(image, widthNew, heightNew);
     }
 
-    public static BufferedImage resizeImage(BufferedImage image, int widthNew, int heightNew){
+    public static BufferedImage resizeImage(BufferedImage image, int widthNew, int heightNew) {
         BufferedImage resizedImage = new BufferedImage(widthNew, heightNew, image.getType());
         Graphics2D g2d = resizedImage.createGraphics();
         g2d.drawImage(image, 0, 0, widthNew, heightNew, null);
@@ -22,13 +27,13 @@ public class ImageHandler {
         return resizedImage;
     }
 
-    public static BufferedImage getImageFromPath(String pathStr){
+    public static BufferedImage getImageFromPath(String pathStr) {
         InputStream is = ImageHandler.class.getResourceAsStream(pathStr);
         try {
             assert is != null;
             return ImageIO.read(is);
         } catch (IOException e) {
-            e.printStackTrace();    // TODO: Change this later
+            logger.error(e);
             return null;
         }
     }

@@ -1,29 +1,32 @@
 package tr.edu.ku.comp302.domain.entity.barrier;
 
-import tr.edu.ku.comp302.domain.entity.Remains;
+import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.CircularMovement;
-
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 public class ExplosiveBarrier extends Barrier {
-    public static final String TYPE = "Explosive";
-    public Remains remain;
+    public static final String TYPE = "explosive";
+    private final Remain remain;
 
     public ExplosiveBarrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
-        //TODO Auto-generated constructor stub
-        ImagePath = "/assets/explosive_barrier.png";
+        remain = new Remain(0, 0);
         health = 1;
-        this.MovementStrategy = new CircularMovement(this);
+        this.movementStrategy = new CircularMovement(this);
     }
 
-    public Remains dropRemains(){
-        // barrier is removed then the asset remains added 
-        // starting from the x and y position fot he center of 
-        // the barrier that was destroyed the remains fall with constant speed 
-        remain = new Remains(this.getXPosition() + this.getLength()/2, this.getYPosition() + this.getThickness()/2);
-        //call to remain view here
+    public void dropRemains() {
+        remain.setXPosition(getXPosition() + getLength() / 2);
+        remain.setYPosition(getYPosition() + getThickness() / 2);
+        remain.drop();
+    }
+
+    public Remain getRemain() {
         return remain;
-        
     }
 
+    @Override
+    public double getSpeed() {
+        return LanceOfDestiny.getScreenWidth() * 0.075 * Math.PI;
+    }
 }
