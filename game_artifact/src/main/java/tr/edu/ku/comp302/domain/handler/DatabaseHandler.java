@@ -19,14 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-
 public class DatabaseHandler {
     private static DatabaseHandler instance;
     private final String DATABASE_URL;
     private final String USER;
     private final String PASSWORD;
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
 
     private DatabaseHandler() {
         Properties prop = new Properties();
@@ -34,7 +33,7 @@ public class DatabaseHandler {
         try (FileInputStream fis = new FileInputStream("./game_artifact/src/main/resources/database.config")) {
             prop.load(fis);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
 
         DATABASE_URL = prop.getProperty("url");
@@ -53,7 +52,7 @@ public class DatabaseHandler {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e);
             return null;
         }
     }
@@ -72,7 +71,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
         return null;
     }
@@ -91,11 +90,10 @@ public class DatabaseHandler {
 
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
         return false;
     }
-
 
     public boolean isUsernameUnique(String username) {
         final String query = "SELECT * FROM Player WHERE username = ?";
@@ -109,11 +107,10 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
         return true;
     }
-
 
     /// This method assumes that the person who checked it already verified that the username is unique !!!
     public boolean createUser(String username, String password, String salt) {
@@ -129,7 +126,7 @@ public class DatabaseHandler {
                 return ps.executeUpdate() > 0;
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
 
         return false;
@@ -156,7 +153,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
             return false;
         }
         return false;
@@ -169,7 +166,6 @@ public class DatabaseHandler {
      * @return A list containing the barriers in the save or map
      */
     public List<BarrierData> loadBarriers(int id, String type) {
-
         final String query = switch (type) {
             case "save" -> "SELECT * FROM Barrier WHERE save_ref = ? AND map_ref IS NULL";
             case "map" -> "SELECT * FROM Barrier WHERE map_ref = ? AND save_ref IS NULL";
@@ -197,7 +193,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
             return null;
         }
         return barriers;
@@ -239,7 +235,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
             return false;
         }
         return false;
@@ -268,13 +264,12 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
             return null;
         }
 
         List<BarrierData> barriers = loadBarriers(saveId, "save");
         return new GameData(fireball, lance, barriers, score);
-
     }
 
     private boolean saveBarriers(List<BarrierData> barriers, int id, String to) {
@@ -301,10 +296,9 @@ public class DatabaseHandler {
                 return true;
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
             return false;
         }
-
     }
 
     public int getUidFromUsername(String username) {
@@ -321,7 +315,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
         return -1;
     }
@@ -340,7 +334,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
         return 1; // default to simple barrier
     }
@@ -359,9 +353,8 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
         return SimpleBarrier.TYPE; // default to simple barrier
     }
 }
-

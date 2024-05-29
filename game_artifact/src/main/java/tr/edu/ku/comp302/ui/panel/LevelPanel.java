@@ -1,7 +1,9 @@
 package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 
 import javax.swing.*;
@@ -10,10 +12,19 @@ import java.awt.*;
 
 public class LevelPanel extends JPanel {
     private LevelHandler levelHandler;
+    private MainFrame mainFrame;
+    private JButton pauseButton;
 
-    public LevelPanel(LevelHandler levelHandler) {
+    public LevelPanel(LevelHandler levelHandler, MainFrame mainFrame) {
         this.levelHandler = levelHandler;
         addKeyListener(new KeyboardHandler());
+        pauseButton = new JButton("PAUSE");
+        pauseButton.addActionListener(e -> {
+            LanceOfDestiny.setCurrentGameState(GameState.PAUSE_MENU);
+            mainFrame.showPausePanel();
+        });
+        pauseButton.setBounds(0,0, 10, 20);
+        this.add(pauseButton);
     }
 
     public void paintComponent(Graphics g){

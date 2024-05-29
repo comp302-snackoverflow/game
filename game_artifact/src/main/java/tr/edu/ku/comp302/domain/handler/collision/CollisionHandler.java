@@ -178,7 +178,7 @@ public class CollisionHandler {
         }
     }
 
-    public static void checkFireBallEntityCollisions(FireBall fireBall, Entity entity) {
+    public static boolean checkFireBallEntityCollisions(FireBall fireBall, Entity entity) {
         switch (entity) {
             case Lance lance -> {
                 if (boundingBoxCollision(fireBall, lance)) {
@@ -186,6 +186,7 @@ public class CollisionHandler {
                         Collision side = hitBoxCollision(fireBall, lance);
                         if (side != null) {
                             resolveCollision(fireBall, lance, side);
+                            return true;
                         }
                     } catch (CollisionError ignored) {
                     }
@@ -198,6 +199,7 @@ public class CollisionHandler {
                         Collision side = hitBoxCollision(fireBall, barrier);
                         if (side != null) {
                             resolveCollision(fireBall, barrier, side);
+                            return true;
                         }
                     } catch (CollisionError ignored) {
                     }
@@ -205,6 +207,7 @@ public class CollisionHandler {
             }
             case Entity ignored -> logger.warn("checkFireBallEntityCollisions: Unknown entity type");
         }
+        return false;
     }
 
     private static int findCollisions(FireBall fireBall, Point topLeft, Point topRight,

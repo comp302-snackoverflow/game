@@ -64,7 +64,8 @@ public class LanceOfDestiny implements Runnable {
             }else{  // TODO: Change this else statement whenever implemented other game states.
                 try{
                     Thread.sleep(1000 / UPS_SET);
-                } catch (InterruptedException e) {
+                    previousTime = System.nanoTime(); // Should not accumulate while waiting
+                } catch (InterruptedException e) {    // however, does not work
                     Thread.currentThread().interrupt();
                 }
             }
@@ -109,7 +110,7 @@ public class LanceOfDestiny implements Runnable {
 
         handleBarriersMovement(currentTime);
 
-        handleCollisionLogic();
+        handleCollisionLogic(currentTime / 1e6);
     }
 
     private void render(){
@@ -219,12 +220,18 @@ public class LanceOfDestiny implements Runnable {
                 fb.stickToLance(levelHandler.getLance());
             }
         }
-
-        fb.move();
+        // FIXME assumes this is called UPS_SET times per second
+        fb.move(fb.getDx() / UPS_SET, fb.getDy() / UPS_SET);
     }
 
-    private void handleCollisionLogic() {
-        CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
+    private void handleCollisionLogic(double currentTimeInMillis) {
+        Lance lance = levelHandler.getLance();
+        if (lance.canCollide(currentTimeInMillis)) {
+            if (levelHandler.getFireBall().isMoving()
+                && CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance())) {
+                lance.setLastCollisionTimeInMillis(currentTimeInMillis);
+            }
+        }
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
 
         List<Barrier> barriers = levelHandler.getBarriers();
@@ -313,5 +320,4 @@ public class LanceOfDestiny implements Runnable {
     public static void setCurrentGameState(GameState gameState) {
         GameState.state = gameState;
     }
-
 }
