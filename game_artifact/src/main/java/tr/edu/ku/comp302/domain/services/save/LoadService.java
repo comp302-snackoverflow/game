@@ -9,21 +9,22 @@ import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LoadService {
+    private static LoadService instance;
     private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
-    private LoadService instance;
 
     private LoadService() {
         dbHandler = DatabaseHandler.getInstance();
     }
 
-    public LoadService getInstance() {
+    public static LoadService getInstance() {
         if (instance == null) {
             instance = new LoadService();
         }

@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.domain.entity;
 
 
 import tr.edu.ku.comp302.domain.handler.collision.Collision;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.geom.Rectangle2D;
 
@@ -10,7 +11,7 @@ public class FireBall extends Entity {
     private int size = 16;
     private double dx = 0;
     private double dy = 0;
-    private double speed = 2; // Might change the speed later.
+    private double speed = 0.2 * LanceOfDestiny.getScreenWidth(); // in px/s
     //TODO: Add the player!
     private boolean moving;
 
@@ -105,7 +106,7 @@ public class FireBall extends Entity {
         */
     }
 
-    public void handleCornerReflection(double surfaceAngleDegrees,  Collision corner) {
+    public void handleCornerReflection(double surfaceAngleDegrees, Collision corner) {
         switch (corner) {
             case TOP_RIGHT, BOTTOM_LEFT:
                 handleReflection(surfaceAngleDegrees + 45);
@@ -135,7 +136,7 @@ public class FireBall extends Entity {
         }
     }
 
-    public void move() {
+    public void move(double dx, double dy) {
         xPosition += dx;
         yPosition += dy;
         boundingBox.setRect(xPosition, yPosition, size, size);
