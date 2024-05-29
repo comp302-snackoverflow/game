@@ -131,6 +131,7 @@ public class LanceOfDestiny implements Runnable {
         handleSpellBoxLogic();
         handleYmir();
         managePausableThreads();
+        handleSpellLogic();
     }
 
 
@@ -391,6 +392,15 @@ public class LanceOfDestiny implements Runnable {
         } else {
             double pxPerUpdate = getMsPerUpdate() / onePxMs;
             return ((int) pxPerUpdate) + 1;
+        }
+    }
+
+    private void handleSpellLogic() {
+        if (KeyboardHandler.buttonHPressed) {
+            levelHandler.useSpell(SpellBox.HEX_SPELL);
+        }
+        if (KeyboardHandler.buttonTPressed) {
+            levelHandler.useSpell(SpellBox.EXTENSION_SPELL);
         }
     }
 
