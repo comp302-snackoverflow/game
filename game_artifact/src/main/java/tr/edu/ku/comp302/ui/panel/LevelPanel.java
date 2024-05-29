@@ -21,7 +21,6 @@ public class LevelPanel extends JPanel {
     private Graphics levelG;
     private JLabel extensionSpellLabel;
     private JLabel hexSpellLabel;
-    private JLabel overwhelmingSpellLabel;
     private int heartWidth = 20;
     private int heartHeight = 20;
     private int iconSize = 40;
@@ -140,7 +139,6 @@ public class LevelPanel extends JPanel {
         int[] counts = SpellBox.getSpellCounts();
         extensionSpellLabel.setText(String.valueOf(counts[SpellBox.EXTENSION_SPELL]));
         hexSpellLabel.setText(String.valueOf(counts[SpellBox.HEX_SPELL]));
-        overwhelmingSpellLabel.setText(String.valueOf(counts[SpellBox.OVERWHELMING_SPELL]));
     }
 
 
