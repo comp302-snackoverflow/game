@@ -22,6 +22,8 @@ public class FireBall extends Entity {
     public void adjustPositionAndSpeed(double oldWidth, double oldHeight, double newWidth, double newHeight) {
         updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
         speed = speed * newWidth / oldWidth;
+        dx = dx * newWidth / oldWidth;
+        dy = dy * newHeight / oldHeight;
     }
 
     // for handling reflections with steady surfaces
@@ -52,6 +54,7 @@ public class FireBall extends Entity {
                 double currentSpeed = Math.sqrt(dx * dx + dy * dy);
                 double newSpeed = currentSpeed + 5; // increase total speed by 5
 //                double newSpeed = currentSpeed; // because permanent +5 speed boost looks bad
+                speed = newSpeed;
                 dx = newSpeed * Math.cos(totalSpeedAngle);
                 dy = -newSpeed * Math.sin(totalSpeedAngle);
             } else { // in the opposite direction
@@ -111,7 +114,6 @@ public class FireBall extends Entity {
     }
 
     public void launchFireball() {
-        moving = true;
         this.dy = speed;
     }
 
@@ -172,6 +174,6 @@ public class FireBall extends Entity {
     }
 
     public boolean isMoving() {
-        return moving;
+        return dx != 0 || dy != 0;
     }
 }
