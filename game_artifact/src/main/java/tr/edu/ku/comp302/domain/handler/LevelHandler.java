@@ -111,7 +111,6 @@ public class LevelHandler {
         handleCollisionLogic(currentTime);
     }
 
-
     private void handleLanceMovement(boolean leftPressed, boolean rightPressed, double tapSpeed, double holdSpeed, Chronometer chronometer, int upsSet) {
         Lance lance = getLance();
         long currentTime = chronometer.getCurrentTime();

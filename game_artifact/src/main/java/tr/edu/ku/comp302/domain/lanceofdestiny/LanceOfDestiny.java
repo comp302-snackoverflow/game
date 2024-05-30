@@ -18,6 +18,7 @@ import java.awt.*;
 import java.util.List;
 
 public class LanceOfDestiny implements Runnable {
+
     private static int screenWidth = 1280;
     private static int screenHeight = 800;
     private static GameState currentGameState;
