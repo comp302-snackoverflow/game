@@ -2,7 +2,7 @@ package tr.edu.ku.comp302.ui.panel;
 
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
-import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
+import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
@@ -19,7 +19,7 @@ public class LevelPanel extends JPanel {
         setFocusable(true);
         pauseButton = new JButton("PAUSE");
         pauseButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.PAUSE_MENU);
+            LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
             mainFrame.showPausePanel();
         });
         pauseButton.setBounds(0, 0, 10, 20);

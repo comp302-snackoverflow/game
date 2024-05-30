@@ -111,6 +111,12 @@ public class LevelHandler {
         handleCollisionLogic(currentTime);
     }
 
+    // Warning: DO NOT try to make this method clean. You will most likely fail.
+    // Let's spend our time in more valuable stuff like writing actually useful code
+    // instead of trying to invent key tap event in Swing.
+    // Just check for bugs and leave it be.
+    // Copilot's thoughts about this function: "I'm not sure what you're trying to do here."
+    // (It couldn't even suggest any reasonable code for this)
     private void handleLanceMovement(boolean leftPressed, boolean rightPressed, double tapSpeed, double holdSpeed, Chronometer chronometer, int upsSet) {
         Lance lance = getLance();
         long currentTime = chronometer.getCurrentTime();

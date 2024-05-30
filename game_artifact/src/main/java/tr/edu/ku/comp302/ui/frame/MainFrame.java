@@ -1,7 +1,7 @@
 package tr.edu.ku.comp302.ui.frame;
 
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
-import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
+import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.ui.panel.*;
@@ -101,19 +101,19 @@ public class MainFrame extends JFrame {
 
     public void showLoginPanel() {
         layout.show(cards, LOGIN);
-        LanceOfDestiny.setCurrentGameState(GameState.LOGIN_MENU);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
     public void showRegisterPanel() {
         layout.show(cards, REGISTER);
-        LanceOfDestiny.setCurrentGameState(GameState.REGISTER_MENU);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
     public void showMainMenuPanel() {
         layout.show(cards, MAINMENU);
-        LanceOfDestiny.setCurrentGameState(GameState.MAIN_MENU);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
@@ -127,20 +127,20 @@ public class MainFrame extends JFrame {
 
     public void showBuildPanel() {
         layout.show(cards, BUILD);
-        LanceOfDestiny.setCurrentGameState(GameState.CREATE_CUSTOM_MAP);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
     public void showPausePanel() {
         layout.show(cards, PAUSE);
-        LanceOfDestiny.setCurrentGameState(GameState.PAUSE_MENU);
+        LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
         refresh();
     }
 
     public void showSelectLevelPanel() {
         layout.show(cards, SELECT_LEVEL);
         selectLevelPanel.updateLevels();
-        LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
