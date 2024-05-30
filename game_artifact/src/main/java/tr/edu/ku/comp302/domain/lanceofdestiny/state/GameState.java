@@ -1,4 +1,4 @@
-package tr.edu.ku.comp302.domain.lanceofdestiny;
+package tr.edu.ku.comp302.domain.lanceofdestiny.state;
 
 public enum GameState {
     MAIN_MENU, PLAYING, PAUSE_MENU, NEW_GAME, LOAD_GAME, SAVE_GAME, CREATE_CUSTOM_MAP, HELP, LOGIN_MENU, REGISTER_MENU, OPTIONS, NULL_STATE;
