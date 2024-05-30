@@ -128,7 +128,7 @@ public class LanceOfDestiny implements Runnable {
         handleBarriersMovement(currentTime);
         handleCollisionLogic(currentTime);
         handleHexMovement();
-        
+
         handleChanceReductionLogic();
         handleRemainLogic();
         handleSpellBoxLogic();
@@ -137,7 +137,7 @@ public class LanceOfDestiny implements Runnable {
         handleSpellLogic();
         updateTimeInSeconds();
         updateSpells();
-        levelHandler.createHex(currentTime);
+        levelHandler.createHex(System.currentTimeMillis());
     }
 
 
