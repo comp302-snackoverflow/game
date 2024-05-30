@@ -136,6 +136,8 @@ public class LanceOfDestiny implements Runnable {
         managePausableThreads();
         handleSpellLogic();
         updateTimeInSeconds();
+        updateSpells();
+        levelHandler.createHex(currentTime);
     }
 
 
@@ -456,6 +458,10 @@ public class LanceOfDestiny implements Runnable {
 
     public static void setCurrentGameState(GameState gameState) {
         GameState.state = gameState;
+    }
+
+    private void updateSpells() {
+        levelHandler.updateSpells();
     }
 
     

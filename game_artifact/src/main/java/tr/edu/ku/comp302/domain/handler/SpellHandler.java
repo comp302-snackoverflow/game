@@ -26,7 +26,11 @@ public class SpellHandler {
     private final static char INFINITE_VOID = 'i';
     private final static char HOLLOW_BARRIER = 'h';
     private final static char DOUBLE_ACCEL = 'd';
-
+    private long doubleAccelEndTime = 0;
+    private long freezeBarriersEndTime = 0;
+    private long lanceExtensionEndTime = 0;
+    private long hexEndTime = 0;
+    private long overwhelmingEndTime = 0;
 
     private Random random = new Random();
     LevelHandler levelHandler;
@@ -38,18 +42,16 @@ public class SpellHandler {
 
     public void extendLance(Lance lance) {
         lance.setLength(lance.getLength()*2);
-        //use new length
         lance.setXPosition(lance.getXPosition() - lance.getLength()/4);
+        levelHandler.resizeLanceImage();
+        lanceExtensionEndTime = System.currentTimeMillis() + 30000;
         
     }
 
     public void shrinkLance(Lance lance) {
-        //use extended length
         lance.setXPosition(lance.getXPosition() + lance.getLength()/4);
-
         lance.setLength(lance.getLength()/2);
-        
-        
+        levelHandler.resizeLanceImage();
     }
 
     public void felixFelicis(Level level) {
@@ -59,41 +61,29 @@ public class SpellHandler {
 
     public void doubleAccel(Level level) {
         FireBall fireball = level.getFireBall();
-
         fireball.applyDoubleAccel();
+        doubleAccelEndTime = System.currentTimeMillis() + 15000;
+    }
 
-        Runnable normalizeFireballSpeedTask = new Runnable() {
-
-            @Override
-            public void run() {
-                fireball.revertDoubleAccel();
-            }
-        };
-
-        PausableThread pausableThread = new PausableThread(() -> {}, normalizeFireballSpeedTask, 15);
-
-        levelHandler.getPausableThreads().add(pausableThread);
+    public void revertDoubleAccel(Level level) {
+        FireBall fireball = level.getFireBall();
+        fireball.revertDoubleAccel();
     }
 
 
-    
-
 
     public void overwhelmingSpell(Level level) {
-
         FireBall fireBall = level.getFireBall();
-
         fireBall.setOverwhelming(true);
-        
-
+        levelHandler.resizeFireBallImage();
+        overwhelmingEndTime = System.currentTimeMillis() + 30000;
     }
 
     public void endOverwhelmingBall(Level level){
 
         FireBall fireBall = level.getFireBall();
-
         fireBall.setOverwhelming(false);
-        
+        levelHandler.resizeFireBallImage();
     }
 
     public void handleYmir(Level level) {
@@ -115,7 +105,16 @@ public class SpellHandler {
 
     }
 
+    public void startCreatingHex(Level level) {
+        hexEndTime = System.currentTimeMillis() + 30000;
+    }
 
+    public void createHex(Level level, long currentTime, long lastHexCreationTime) {
+        if (currentTime < hexEndTime && (currentTime - lastHexCreationTime >= 1000)) {
+            level.createHex();
+            levelHandler.setLastHexCreationTime(currentTime);
+        }
+    }
 
     public char chooseYmirSpell() {
         List<Character> spells = new ArrayList<>();
@@ -182,17 +181,7 @@ public class SpellHandler {
     public void handleFrozenBarriers(Level level) {
 
         freezeEightRandomBarriers(level);
-        Runnable normalizeBarriersTest = new Runnable() {
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                
-                normalizeBarriers(level);
-
-            }
-        };
-        PausableThread pausableThread = new PausableThread(() -> {}, normalizeBarriersTest, 15);
-        levelHandler.getPausableThreads().add(pausableThread);
+        freezeBarriersEndTime = System.currentTimeMillis() + 15000;
     }
 
     public void freezeEightRandomBarriers(Level level) {
@@ -217,7 +206,28 @@ public class SpellHandler {
         }
     }
 
-
+    public void updateSpells(Level level) {
+        long currentTime = System.currentTimeMillis();
+        if (doubleAccelEndTime > 0 && currentTime >= doubleAccelEndTime) {
+            revertDoubleAccel(level);
+            doubleAccelEndTime = 0;
+        }
+        if (freezeBarriersEndTime > 0 && currentTime >= freezeBarriersEndTime) {
+            normalizeBarriers(level);
+            freezeBarriersEndTime = 0;
+        }
+        if (lanceExtensionEndTime > 0 && currentTime >= lanceExtensionEndTime) {
+            shrinkLance(level.getLance());
+            lanceExtensionEndTime = 0;
+        }
+        if (hexEndTime > 0 && currentTime >= hexEndTime) {
+            hexEndTime = 0;
+        }
+        if (overwhelmingEndTime > 0 && currentTime >= overwhelmingEndTime) {
+            endOverwhelmingBall(level);
+            overwhelmingEndTime = 0;
+        }
+    }
     public long getYmirTime() {
         return ymirTime;
     }

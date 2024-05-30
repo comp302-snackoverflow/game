@@ -37,6 +37,7 @@ public class LevelHandler {
     private SpellHandler spellHandler;
     private List<PausableThread> pausableThreads= new ArrayList<>();
     private LevelPanel levelPanel;
+    private long lastHexCreationTime = 0;
 
     /**
      * Handling the render of the views of the objects of the level instance.
@@ -48,10 +49,6 @@ public class LevelHandler {
         spellHandler = new SpellHandler(this);
         
     }
-
-    public void resizeHexImage() {
-    }
-
     public void resizeSpellBoxImage(){
         if (!getSpellBoxes().isEmpty()) {
             spellBoxView.resizeImage(level.getSpellBoxes().getFirst().getSize(), level.getSpellBoxes().getFirst().getSize());
@@ -60,16 +57,12 @@ public class LevelHandler {
 
     public void resizeFireBallImage() {
         FireBall fireBall = getFireBall();
-
         if(fireBall.isOverwhelming()){
             currentFireBallView = overwhelmedFireBallView;
         }
-
         else{
             currentFireBallView = fireBallView;
         }
-
-
         currentFireBallView.resizeImage(fireBall.getSize(), fireBall.getSize());
     }
 
@@ -82,7 +75,6 @@ public class LevelHandler {
             remainView.resizeImage(level.getRemains().getFirst().getSize(), level.getRemains().getFirst().getSize());
         }
     }
-
     public void resizeLanceImage(){
         Lance lance = level.getLance();
         
@@ -153,9 +145,6 @@ public class LevelHandler {
     public void renderHexs(Graphics g) {
         // Retrieve the hexs from the current level
         List<Hex> hexs = level.getHexes();
-        
-        
-        
         if (hexs != null){
             for (Hex hex : hexs) {
                 g.drawImage(hexView.getImage(), (int) hex.getXPosition(), (int) hex.getYPosition(), null);
@@ -204,9 +193,7 @@ public class LevelHandler {
      */
 
     public void startCreatingHex() {
-
-        PausableThread pausableThread = new PausableThread(level::createHex, 10,1);
-        pausableThreads.add(pausableThread);
+        spellHandler.startCreatingHex(level);
     }
 
     public List<Hex> getHexs(){
@@ -214,26 +201,7 @@ public class LevelHandler {
     }
 
     public void extendLance() {
-        
-        
         spellHandler.extendLance(getLance());
-        resizeLanceImage();
-
-        Runnable shrinkLanceTask = new Runnable() {
-
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                
-                spellHandler.shrinkLance(getLance());
-                resizeLanceImage();
-            }
-        };
-
-        PausableThread pausableThread = new PausableThread(() -> {}, shrinkLanceTask, 10);
-        pausableThreads.add(pausableThread);
-
-
     }
 
     /**
@@ -241,31 +209,15 @@ public class LevelHandler {
      * travels across the screen, damaging and destroying barriers in its path.
      */
     public void applyOverwhelmingSpell() {
-        // Create a thread that will run the code to apply the Overwhelming Spell
-        Runnable overwhelmingSpellTask = new Runnable() {
-            @Override
-            public void run() {
-                // Call the method in the SpellHandler to apply the Overwhelming Spell
-                spellHandler.overwhelmingSpell(level);
-                resizeFireBallImage();
-            }
-        };
+        spellHandler.overwhelmingSpell(level);
+    }
 
-        // Create a thread that will run the code to normalize the fireball after the
-        // Overwhelming Spell has finished
-        Runnable normalizeFireball = new Runnable() {
-            @Override
-            public void run() {
-                // Call the method in the SpellHandler to normalize the fireball
-                spellHandler.endOverwhelmingBall(level);
-                resizeFireBallImage();
-            }
-        };
+    public void updateSpells() {
+        spellHandler.updateSpells(level);
+    }
 
-        // Create a PausableThread that will run the two tasks in sequence
-        PausableThread pausableThread = new PausableThread(overwhelmingSpellTask, normalizeFireball, 30);
-        // Add the thread to the list of pausable threads
-        pausableThreads.add(pausableThread);
+    public void createHex(long currentTime) {
+        spellHandler.createHex(level, currentTime, lastHexCreationTime);
     }
 
     public void collectSpell(char spell){
@@ -322,9 +274,6 @@ public class LevelHandler {
     //temporarily replicated in this class
 
 
- 
-
-
 
 
     public List<PausableThread> getPausableThreads() {
@@ -335,7 +284,9 @@ public class LevelHandler {
         this.levelPanel = levelPanel;
     }
 
-
+    public void setLastHexCreationTime(long currentTime) {
+        lastHexCreationTime = currentTime;
+    }
 
     public void handleYmir() {
         
