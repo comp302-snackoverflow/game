@@ -17,14 +17,11 @@ public class Level {
     private FireBall fireBall;
     private List<Barrier> barriers;
     private List<Remain> remains;
-    private List<Hex> hexs = new ArrayList<>();
+    private List<Hex> hexes = new ArrayList<>();
     private static List<Level> levels = new ArrayList<>();
     private List<SpellBox> spellBoxes;
     private int chances;
     private int score;
-
-    private boolean isHexSpellCollected = false;
-    private boolean isExtensionSpellCollected = false;
     private List<Character> spellInventory;
     
 
@@ -44,7 +41,7 @@ public class Level {
      * @see Barrier
      * @see ExplosiveBarrier
      */
-    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, List<Hex> hexs) {
+    public Level(Lance lance, FireBall fireBall, List<Barrier> barriers, List<Hex> hexes) {
         // Initialize the lance, fireball, and barriers for the level
         this.lance = lance;
         this.fireBall = fireBall;
@@ -76,19 +73,6 @@ public class Level {
 
     public Level(Lance lance, FireBall fireBall) {
         this(lance, fireBall, new ArrayList<>(), new ArrayList<>());
-    }
-
-    public Level(){
-        // Keeping this just just in case.
-        //double xPosLance = LanceOfDestiny.getScreenWidth() / 2. + LanceOfDestiny.getScreenWidth() / 20.;
-        //double yPosLance = LanceOfDestiny.getScreenHeight() * 8 / 10.;
-        //Lance lance = new Lance(xPosLance, yPosLance);
-        //FireBall fireBall = new FireBall(0, 0);
-        //fireBall.stickToLance(lance);
-        this(
-            new Lance(LanceOfDestiny.getScreenWidth() / 2.0 + LanceOfDestiny.getScreenWidth() / 20.0,
-                LanceOfDestiny.getScreenHeight() * 0.8),
-            new FireBall(0, 0));
     }
 
     public Lance getLance() {
@@ -131,12 +115,12 @@ public class Level {
         Level.levels = levels;
     }
 
-    public List<Hex> getHexs() {
-        return hexs;
+    public List<Hex> getHexes() {
+        return hexes;
     }
 
-    public void setHexs(List<Hex> hexs) {
-        this.hexs = hexs;
+    public void setHexes(List<Hex> hexes) {
+        this.hexes = hexes;
     }
 
     public List<SpellBox> getSpellBoxes() {
@@ -163,11 +147,6 @@ public class Level {
 
 
     public void collectSpell(char spell){
-        if (spell == SpellBox.HEX_SPELL) {
-            isHexSpellCollected = true;
-        } else if (spell == SpellBox.EXTENSION_SPELL) {
-            isExtensionSpellCollected = true;
-        }
         spellInventory.add(spell);
     }
 
@@ -182,11 +161,9 @@ public class Level {
 
 
     public void createHex() {
-        double xPosition = lance.getActualHitbox().getBounds2D().getCenterX();
-        double yPosition = lance.getActualHitbox().getBounds2D().getCenterY();
+        double xPosition = lance.getBoundingBox().getCenterX();
+        double yPosition = lance.getBoundingBox().getCenterY();
         double rotationAngle = lance.getRotationAngle();
-
-
 
         double xOffset = Math.cos(Math.toRadians(rotationAngle)) * lance.getLength()/2;
         double yOffset = Math.sin(Math.toRadians(rotationAngle)) * lance.getLength()/2;
@@ -200,8 +177,8 @@ public class Level {
         Hex newHex1 = new Hex(hex1X, hex1Y, rotationAngle);
         Hex newHex2 = new Hex(hex2X, hex2Y, rotationAngle);
 
-        hexs.add(newHex1);
-        hexs.add(newHex2);
+        hexes.add(newHex1);
+        hexes.add(newHex2);
     }
 }
 

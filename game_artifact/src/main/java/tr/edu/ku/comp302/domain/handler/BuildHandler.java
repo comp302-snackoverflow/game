@@ -6,6 +6,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import tr.edu.ku.comp302.ui.view.View;
@@ -160,7 +161,8 @@ public class BuildHandler {
             x = (int)barrierWidth / 2 + secureRandom.nextInt(buildSectionWidth - (int) barrierWidth - (int) barrierWidth / 2);
             y = 20 + secureRandom.nextInt(buildSectionHeight - 40);  // -20 barrier -20 padding
             randomBarrier = createBarrier(barrierType, x, y, barrierWidth);
-            collided = checkBarrierCollisionWithBarriers(randomBarrier);
+            // collided = checkBarrierCollisionWithBarriers(randomBarrier);
+            collided = CollisionHandler.checkBarrierCollisionWithBarriers(randomBarrier, barriersOnMap);
         }while(collided);
         barriersOnMap.add(randomBarrier);
     }
@@ -218,7 +220,8 @@ public class BuildHandler {
         int yMin = 20;
         if (x <= xMax && y <= yMax && x >= xMin && y >= yMin){
             Barrier createdBarrier = createBarrier(buildSection.getWidth() / 50, x, y, selectionMode);
-            if (!checkBarrierCollisionWithBarriers(createdBarrier)){
+            // if (!checkBarrierCollisionWithBarriers(createdBarrier)){
+            if (!CollisionHandler.checkBarrierCollisionWithBarriers(createdBarrier, barriersOnMap)) {
                 barriersOnMap.add(createdBarrier);
             }else{
                 // TODO: Add logger message.
@@ -251,6 +254,7 @@ public class BuildHandler {
     private boolean checkBarrierCollision(Barrier b1, Barrier b2){
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
+    //TODO: delete the two above when tested correctly !
 
     public int getOldWidth() {
         return oldWidth;

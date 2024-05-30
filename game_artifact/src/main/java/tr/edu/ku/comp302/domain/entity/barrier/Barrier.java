@@ -51,11 +51,11 @@ public abstract class Barrier extends Entity {
         return thickness;
     }
 
-    public boolean getFrozen() {
+    public boolean isFrozen() {
         return isFrozen;
     }
 
-    public void setFrozen(Boolean selected) {
+    public void freeze(Boolean selected) {
         isFrozen = selected;
     }
 

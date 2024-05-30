@@ -209,7 +209,6 @@ public class CollisionHandler {
                     try {
                         Collision side = hitBoxCollision(fireBall, barrier);
                         if (side != null) {
-
                             resolveCollision(fireBall, barrier, side);
                         }
                     } catch (CollisionError ignored) {
@@ -318,18 +317,12 @@ public class CollisionHandler {
     private static void resolveCollision(FireBall fireBall, Barrier barrier, Collision side) {
         // FIXME surface speed should be barrier.getYDirection when collision side is left or right
         //  think about the corner collision cases. @Omer-Burak-Duran
-        //if fireball is ovewhelming do not reflect it
-        if (!fireBall.isOverwhelming()){
-
             switch (side) {
                 case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(0, barrier.getXDirection());
                 case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
                         fireBall.handleCornerReflection(0, barrier.getXDirection(), side);
             }
-
-        }
-        
-        if(!(barrier.getFrozen() && !fireBall.isOverwhelming())){
+        if(fireBall.isOverwhelming() || !barrier.isFrozen()) {
             barrier.decreaseHealth();
         }
     }
@@ -367,7 +360,6 @@ public class CollisionHandler {
             
         }
 
-        
         Iterator<Hex> hexIterator = hexes.iterator();
         while (hexIterator.hasNext()) {
             Hex currentHex = hexIterator.next();
@@ -381,6 +373,17 @@ public class CollisionHandler {
                 }
             }
         }
+    }
+    public static boolean checkBarrierCollisionWithBarriers(Barrier barrier, List<Barrier> barriersOnMap){
+        for (Barrier b : barriersOnMap) {
+            if (b != barrier && checkBarrierCollision(b, barrier)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private static boolean checkBarrierCollision(Barrier b1, Barrier b2){
+        return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
 
 }

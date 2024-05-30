@@ -21,10 +21,10 @@ public class LevelPanel extends JPanel {
     private Graphics levelG;
     private JLabel extensionSpellLabel;
     private JLabel hexSpellLabel;
-    private int heartWidth = 20;
-    private int heartHeight = 20;
-    private int iconSize = 40;
-    private int iconSpacing = 10;
+    private final int heartWidth = 20;
+    private final int heartHeight = 20;
+    private final int iconSize = 40;
+    private final int iconSpacing = 10;
 
     public LevelPanel(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
@@ -87,7 +87,7 @@ public class LevelPanel extends JPanel {
         this.levelHandler = levelHandler;
     }
 
-    public void addButtons() {
+    private void addButtons() {
         extensionSpellLabel = addCircularButtonWithLabel("/assets/lance_extension.png", LanceOfDestiny.getScreenWidth() - 100, 500, e -> {
             levelHandler.useSpell(SpellBox.EXTENSION_SPELL);
             updateSpellCounts();
@@ -168,7 +168,7 @@ public class LevelPanel extends JPanel {
 
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 18));
-        g.drawString("x" + (30 - levelHandler.getSpellHandler().getYmirTime()), x + 5, y + 6);
+        g.drawString("x" + (levelHandler.getRemainingTimeForYmir()), x + 5, y + 6);
 
     }
 

@@ -10,11 +10,11 @@ import java.util.Map;
 
 
 public class SoundHandler {
-
-
-
-
     private static final Map<String, Clip> soundCache = new HashMap<>();
+    private static final String PICKUP_GIFT_SOUND = "game_artifact/src/main/resources/sounds/pickupGift.wav";
+    private static final String HIT_HURT_SOUND = "game_artifact/src/main/resources/sounds/hitHurt.wav";
+    private static final String EVIL_LAUGH_SOUND = "game_artifact/src/main/resources/sounds/evil_laugh.wav";
+    private static final String DEFEAT_SOUND = "defeat_sound.wav";
 
     public static void playSound(String soundFileName) {
         try {
@@ -37,19 +37,19 @@ public class SoundHandler {
     }
 
     public static void playGiftSound() {
-        playSound("game_artifact/src/main/resources/sounds/pickupGift.wav");
+        playSound(PICKUP_GIFT_SOUND);
     }
 
     public static void playRemainHitSound() {
-        playSound("game_artifact/src/main/resources/sounds/hitHurt.wav");
+        playSound(HIT_HURT_SOUND);
     }
 
     public static void playLaughSound() {
-        playSound("game_artifact/src/main/resources/sounds/evil_laugh.wav");
+        playSound(EVIL_LAUGH_SOUND);
     }
 
     public static void playDefeatSound() {
-        playSound("defeat_sound.wav");
+        playSound(DEFEAT_SOUND);
     }
 
     

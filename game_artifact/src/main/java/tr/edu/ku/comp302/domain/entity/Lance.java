@@ -175,8 +175,4 @@ public class Lance extends Entity {
         return getActualHitbox().getBounds2D();
     }
 
-    
-
-    
-
 }

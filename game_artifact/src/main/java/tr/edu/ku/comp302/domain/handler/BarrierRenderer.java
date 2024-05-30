@@ -45,7 +45,7 @@ public class BarrierRenderer {
     }
 
     private void renderBarrier(Graphics g, Barrier barrier) {
-        var image = barrier.getFrozen() ? frozenBarrierView.getImage() : switch (barrier) {
+        var image = barrier.isFrozen() ? frozenBarrierView.getImage() : switch (barrier) {
             case SimpleBarrier ignored -> simpleBarrierView.getImage();
             case FirmBarrier ignored -> {
                 renderFirmBarrier(g, barrier);

@@ -9,38 +9,23 @@ import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
-import tr.edu.ku.comp302.domain.handler.BuildHandler.BarrierType;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.threads.PausableThread;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
-import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 import tr.edu.ku.comp302.ui.view.View;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.JPanel;
+import java.util.concurrent.ScheduledExecutorService;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Random;
-import java.util.Set;
 
 
 public class LevelHandler {
     private static final View fireBallView = View.of(View.FIREBALL);
+    private static View currentFireBallView = View.of(View.FIREBALL);
+    private static final View overwhelmedFireBallView = View.of(View.OVERWHELMED_FIREBALL);
     private static final View lanceView = View.of(View.LANCE);
     private BarrierRenderer barrierRenderer = new BarrierRenderer();
     private static final View remainView = View.of(View.REMAIN);
@@ -64,8 +49,6 @@ public class LevelHandler {
         
     }
 
-
-    
     public void resizeHexImage() {
     }
 
@@ -79,15 +62,15 @@ public class LevelHandler {
         FireBall fireBall = getFireBall();
 
         if(fireBall.isOverwhelming()){
-            fireBallView.setImage(View.OVERHWELM_FIREBALL_PATH);
+            currentFireBallView = overwhelmedFireBallView;
         }
 
         else{
-            fireBallView.setImage(View.FIREBALL_IMAGE_PATH);
+            currentFireBallView = fireBallView;
         }
 
 
-        fireBallView.resizeImage(fireBall.getSize(), fireBall.getSize());
+        currentFireBallView.resizeImage(fireBall.getSize(), fireBall.getSize());
     }
 
     public void resizeBarrierImages() {
@@ -122,11 +105,10 @@ public class LevelHandler {
 
     public void renderFireBall(Graphics g) {
         FireBall fireBall = level.getFireBall();
-        g.drawImage(fireBallView.getImage(), (int) fireBall.getXPosition(), (int) fireBall.getYPosition(), null);
+        g.drawImage(currentFireBallView.getImage(), (int) fireBall.getXPosition(), (int) fireBall.getYPosition(), null);
         // uncomment the below line to see FireBall hit box
         // g.drawRect((int) fireBall.getXPosition(), (int) fireBall.getYPosition(), fireBall.getSize(), fireBall.getSize());
     }
-
 
     public void renderBarriers(Graphics g) {
         barrierRenderer.renderBarriers(g, getBarriers());
@@ -168,10 +150,9 @@ public class LevelHandler {
         }
     }
 
-
     public void renderHexs(Graphics g) {
         // Retrieve the hexs from the current level
-        List<Hex> hexs = level.getHexs();
+        List<Hex> hexs = level.getHexes();
         
         
         
@@ -218,12 +199,9 @@ public class LevelHandler {
         return level.getSpellBoxes();
     }
 
-
     /**
      * Creates a new hex at a position relative to the lance.
      */
-    
-    
 
     public void startCreatingHex() {
 
@@ -232,10 +210,8 @@ public class LevelHandler {
     }
 
     public List<Hex> getHexs(){
-        return level.getHexs();
+        return level.getHexes();
     }
-
-
 
     public void extendLance() {
         
@@ -291,10 +267,7 @@ public class LevelHandler {
         // Add the thread to the list of pausable threads
         pausableThreads.add(pausableThread);
     }
-    
 
-
-    
     public void collectSpell(char spell){
         SpellBox.incrementSpellCount(spell);
         switch(spell) {
@@ -370,7 +343,9 @@ public class LevelHandler {
         
     }
 
-
+    public long getRemainingTimeForYmir() {
+        return (30 - spellHandler.getYmirTime());
+    }
     public SpellHandler getSpellHandler() {
         return spellHandler;
     }

@@ -18,7 +18,8 @@ public class View {
         HEX,
         SPELL_BOX,
         FROZEN_BARRIER,
-        HOLLOW_BARRIER
+        HOLLOW_BARRIER,
+        OVERWHELMED_FIREBALL
     }
 
     public static final Type FIREBALL = Type.FIREBALL;
@@ -34,9 +35,10 @@ public class View {
     public static final Type SPELL_BOX = Type.SPELL_BOX;
     public static final Type FROZEN_BARRIER = Type.FROZEN_BARRIER;
     public static final Type HOLLOW_BARRIER = Type.HOLLOW_BARRIER;
+    public static final Type OVERWHELMED_FIREBALL = Type.OVERWHELMED_FIREBALL;
 
     private static final String HEX_IMAGE_PATH = "/assets/fireball_image.png";
-    public static final String FIREBALL_IMAGE_PATH = "/assets/fireball_image.png";
+    private static final String FIREBALL_IMAGE_PATH = "/assets/fireball_image.png";
     private static final String LANCE_IMAGE_PATH = "/assets/lance_image.png";
     private static final String SIMPLE_BARRIER_IMAGE_PATH = "/assets/simple_barrier.png";
     private static final String FIRM_BARRIER_IMAGE_PATH = "/assets/firm_barrier.png";
@@ -48,7 +50,7 @@ public class View {
     private static final String SPELL_BOX_IMAGE_PATH = "/assets/spell_box.png";
     private static final String FROZEN_BARRIER_PATH = "/assets/frozen_barrier.png";
     private static final String HOLLOW_BARRIER_PATH = "/assets/hollow_barrier.png";
-    public static final String OVERHWELM_FIREBALL_PATH = "/assets/overwhelming_fireball.png";
+    private static final String OVERHWELM_FIREBALL_PATH = "/assets/overwhelming_fireball.png";
 
     private BufferedImage defaultImage;
     private BufferedImage image;
@@ -82,6 +84,7 @@ public class View {
             case SPELL_BOX -> new View(SPELL_BOX_IMAGE_PATH);
             case FROZEN_BARRIER -> new View(FROZEN_BARRIER_PATH);
             case HOLLOW_BARRIER -> new View(HOLLOW_BARRIER_PATH);
+            case OVERWHELMED_FIREBALL -> new View(OVERHWELM_FIREBALL_PATH);
         };
     }
 

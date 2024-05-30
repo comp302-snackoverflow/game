@@ -37,6 +37,9 @@ public class FireBall extends Entity {
     // need to pass the surface angle and the surface speed
     // works for steady surfaces as well
     public void handleReflection(double surfaceAngleDegrees, double surfaceXSpeed) {
+        if (isOverwhelming) {
+            return;
+        }
         double surfaceAngleRadians = Math.toRadians(surfaceAngleDegrees);
         double totalSpeedAngle = Math.atan2(dy, dx); //FireBall speed angle
         if (surfaceXSpeed != 0) { // if the lance is moving
@@ -76,6 +79,9 @@ public class FireBall extends Entity {
     // for handling reflections at a surface's corner
     // need to pass which corner the collision happened
     public void handleCornerReflection(double surfaceAngleDegrees, double surfaceXSpeed, Collision corner) {
+        if (isOverwhelming) {
+            return;
+        }
         switch (corner) {
             case TOP_RIGHT, BOTTOM_LEFT:
                 handleReflection(surfaceAngleDegrees + 45, surfaceXSpeed);
@@ -174,15 +180,15 @@ public class FireBall extends Entity {
     }
 
 
-    public void doubleAccel(){
-        this.speed *= 2;
-        dx *= 2;
-        dy *= 2;
-    }
-
-    public void halfAccel(){
+    public void applyDoubleAccel() {
         this.speed /= 2;
         dx /= 2;
         dy /= 2;
+    }
+
+    public void revertDoubleAccel() {
+        this.speed *= 2;
+        dx *= 2;
+        dy *= 2;
     }
 }

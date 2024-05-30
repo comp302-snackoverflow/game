@@ -4,14 +4,13 @@ package tr.edu.ku.comp302.domain.handler;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.barrier.*;
+import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.threads.PausableThread;
@@ -61,13 +60,13 @@ public class SpellHandler {
     public void doubleAccel(Level level) {
         FireBall fireball = level.getFireBall();
 
-        fireball.halfAccel();
+        fireball.applyDoubleAccel();
 
         Runnable normalizeFireballSpeedTask = new Runnable() {
 
             @Override
             public void run() {
-                fireball.doubleAccel();
+                fireball.revertDoubleAccel();
             }
         };
 
@@ -96,8 +95,6 @@ public class SpellHandler {
         fireBall.setOverwhelming(false);
         
     }
-
-       
 
     public void handleYmir(Level level) {
 
@@ -151,7 +148,7 @@ public class SpellHandler {
                 handleFrozenBarriers(level);
                 break;
             case HOLLOW_BARRIER:
-                generateHollowBarriers(level);
+                generateHollowBarriers(level.getBarriers());
                 break;
             case DOUBLE_ACCEL:
                 doubleAccel(level);
@@ -162,59 +159,30 @@ public class SpellHandler {
         
     }
 
-
-
-    /**
-     * Generates 8 random hollow barriers in the game level
-     *
-     * @param level the game level
-     */
-    public void generateHollowBarriers(Level level) {
+    public void generateHollowBarriers(List<Barrier> barriers) {
         SecureRandom secureRandom = new SecureRandom();
+        int barriersToAdd = 8;
 
-        for (int i = 0; i < 8; i++) {
-            double barrierWidth = level.getBarriers().get(0).getLength();
-            int buildSectionWidth = LanceOfDestiny.getScreenWidth() / 2;
-            int buildSectionHeight = LanceOfDestiny.getScreenHeight() / 2; // TODO: Change ratio later to a constant value
+        while (barriersToAdd > 0) {
+            double barrierWidth = barriers.get(0).getLength();
+            int x = secureRandom.nextInt(LanceOfDestiny.getScreenWidth() - (int) barrierWidth - (int) barrierWidth / 2) + (int) barrierWidth / 2;
+            int y = secureRandom.nextInt(LanceOfDestiny.getScreenHeight() / 2 - 40) + 20; // -20 barrier -20 padding
 
-            // Generate random barrier position within the build area
-            int x = secureRandom.nextInt(buildSectionWidth - (int) barrierWidth - (int) barrierWidth / 2) + (int) barrierWidth / 2;
-            int y = secureRandom.nextInt(buildSectionHeight - 40) + 20; // -20 barrier -20 padding
-
-            // Create new barrier
             Barrier randomBarrier = new HollowBarrier(x, y);
             randomBarrier.setLength(barrierWidth);
 
             // Check for collision
-            if (!hasCollision(level.getBarriers(), randomBarrier)) {
-                level.getBarriers().add(randomBarrier);
+            if (!CollisionHandler.checkBarrierCollisionWithBarriers(randomBarrier, barriers)) {
+                barriers.add(randomBarrier);
+                barriersToAdd--;
             }
         }
-    }
-
-    /**
-     * Checks if a barrier collides with any other barrier in the list
-     *
-     * @param barriers the list of barriers
-     * @param barrier  the barrier to check
-     * @return true if there is a collision, false if not
-     */
-    private boolean hasCollision(List<Barrier> barriers, Barrier barrier) {
-        for (Barrier b : barriers) {
-            if (b != barrier && b.getBoundingBox().intersects(barrier.getBoundingBox())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void handleFrozenBarriers(Level level) {
 
-
         freezeEightRandomBarriers(level);
-        
         Runnable normalizeBarriersTest = new Runnable() {
-
             @Override
             public void run() {
                 // TODO Auto-generated method stub
@@ -223,40 +191,29 @@ public class SpellHandler {
 
             }
         };
-
         PausableThread pausableThread = new PausableThread(() -> {}, normalizeBarriersTest, 15);
         levelHandler.getPausableThreads().add(pausableThread);
     }
 
-    public List<Barrier> freezeEightRandomBarriers(Level level) {
-        List<Barrier> allBarriers = Collections.synchronizedList(new ArrayList<>(level.getBarriers() ));
+    public void freezeEightRandomBarriers(Level level) {
+        List<Barrier> allBarriers = new ArrayList<>(level.getBarriers());
         int barrierCount = allBarriers.size();
 
         if (barrierCount < 8) {
-            for (Barrier barrier : allBarriers) {
-                barrier.setFrozen(true);
-            }
-            return new ArrayList<>(allBarriers);
+            allBarriers.forEach(barrier -> barrier.freeze(true));
+            return;
         }
 
-        Set<Integer> chosenIndices = new HashSet<>();
-        List<Barrier> chosen = new ArrayList<>();
-        Random random = new Random();
-        while (chosen.size() < 8) {
-            int index = random.nextInt(barrierCount);
-            if (!chosenIndices.contains(index)) {
-                chosenIndices.add(index);
-                chosen.add(allBarriers.get(index));
-                chosen.get(chosen.size() - 1).setFrozen(true);
-            }
-        }
+        SecureRandom random = new SecureRandom();
+        Collections.shuffle(allBarriers, random);
 
-        return chosen;
+        List<Barrier> chosenBarriers = allBarriers.subList(0, 8);
+        chosenBarriers.forEach(barrier -> barrier.freeze(true));
     }
 
     public void normalizeBarriers(Level level) {
         for (Barrier barrier : level.getBarriers()) {
-            barrier.setFrozen(false);
+            barrier.freeze(false);
         }
     }
 
