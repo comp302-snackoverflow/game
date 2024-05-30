@@ -56,8 +56,8 @@ public class HelpPanel extends JPanel {
                 "<img src='" + getClass().getResource("/assets/gift_barrier.png") + "' alt='Gift Barrier Image' width='50' height='20'>" +
                 "<p>Break these to unleash magical spells. Use them wisely!</p>" +
                 "<h2>Spells You Can Acquire</h2>" +
-                "<p><b>Lance Extension:</b> Make your Magical Staff longer to deflect the Fire Ball with ease.</p>" +
-                "<p><b>Hex Spell:</b> Equip your Magical Staff with hex-casting canons. Fire away!</p>" +
+                "<p><b>Lance Extension (Press T):</b> Make your Magical Staff longer to deflect the Fire Ball with ease.</p>" +
+                "<p><b>Hex Spell (Press H):</b> Equip your Magical Staff with hex-casting canons. Fire away!</p>" +
                 "<p><b>Overwhelming Fireball:</b> Turns your Fire Ball into an unstoppable force plowing through barriers like a hot knife through butter!</p>" +
                 "<h2>Beware of Ymir!</h2>" +
                 "<img src='" + getClass().getResource("/assets/ymir.png") + "' alt='Ymir Image' width='70' height='70'>" +
