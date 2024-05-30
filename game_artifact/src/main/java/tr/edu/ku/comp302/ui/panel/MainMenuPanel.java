@@ -39,7 +39,13 @@ public class MainMenuPanel extends JPanel {
         });
         helpButton.addActionListener(e -> {
             LanceOfDestiny.setCurrentGameState(GameState.HELP);
-
+            // Create and display the HelpPanel
+            JDialog helpDialog = new JDialog(mainFrame, "Help", true);
+            helpDialog.getContentPane().add(new HelpPanel());
+            helpDialog.pack();
+            helpDialog.setLocationRelativeTo(mainFrame);
+            helpDialog.setVisible(true);
+            // TODO: Change game state here and after the panel is closed 
         });
         optionsButton.addActionListener(e -> {
             LanceOfDestiny.setCurrentGameState(GameState.OPTIONS);
