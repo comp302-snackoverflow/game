@@ -2,12 +2,13 @@ package tr.edu.ku.comp302.ui.panel;
 
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
-import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class LevelPanel extends JPanel {
     private final JButton pauseButton;
@@ -18,11 +19,22 @@ public class LevelPanel extends JPanel {
         addKeyListener(new KeyboardHandler());
         setFocusable(true);
         pauseButton = new JButton("PAUSE");
+
         pauseButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
             mainFrame.showPausePanel();
         });
+
         pauseButton.setBounds(0, 0, 10, 20);
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    pauseButton.doClick();
+                }
+            }
+        });
+
         this.add(pauseButton);
     }
 

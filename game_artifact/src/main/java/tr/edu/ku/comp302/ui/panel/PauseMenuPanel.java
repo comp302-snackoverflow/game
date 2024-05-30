@@ -7,6 +7,8 @@ import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class PauseMenuPanel extends JPanel {
     private final JButton resumeGameButton;
@@ -15,7 +17,6 @@ public class PauseMenuPanel extends JPanel {
     private final JButton mainMenuButton;
     private final MainFrame mainFrame;
     private SaveListener saveListener;
-
 
     public PauseMenuPanel(MainFrame mainFrame) {
         GridBagLayout gridBagLayout = new GridBagLayout();
@@ -29,25 +30,29 @@ public class PauseMenuPanel extends JPanel {
         mainMenuButton = new JButton("Return to Main Menu");
 
         resumeGameButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
             mainFrame.showLevelPanel();
         });
         optionsButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.MENU);
             // mainFrame.showOptionsPanel();
         });
         optionsButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.MENU);
             // FIXME: @ayazici21
         });
         saveButton.addActionListener(e -> this.handleSave());
 
         mainMenuButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.MENU);
             mainFrame.setCurrentLevel(null);
             mainFrame.showMainMenuPanel();
         });
 
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    resumeGameButton.doClick();
+                }
+            }
+        });
 
         Dimension buttonSize = new Dimension(150, 30);
         resumeGameButton.setPreferredSize(buttonSize);

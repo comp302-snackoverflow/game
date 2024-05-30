@@ -73,14 +73,17 @@ public class MainFrame extends JFrame {
 
     private void prepareLoginPanel() {
         loginPanel = new LoginPanel(this);
+        loginPanel.setFocusable(true);
     }
 
     private void prepareRegisterPanel() {
         registerPanel = new RegisterPanel(this);
+        registerPanel.setFocusable(true);
     }
 
     private void prepareMainMenu() {
         mainMenuPanel = new MainMenuPanel(this);
+        mainMenuPanel.setFocusable(true);
     }
 
     private void prepareLevelPanel() {
@@ -88,22 +91,22 @@ public class MainFrame extends JFrame {
         new LanceOfDestiny(levelPanel);
         levelPanel.repaint();
         levelPanel.setFocusable(true);
-        levelPanel.requestFocusInWindow();
     }
 
     private void prepareBuildPanel() {
         buildPanel = BuildPanel.createPanel(this);
         buildPanel.repaint();
-        buildPanel.requestFocusInWindow();
+        buildPanel.setFocusable(true);
     }
 
     private void preparePausePanel() {
         pausePanel = new PauseMenuPanel(this);
-        pausePanel.requestFocusInWindow();
+        pausePanel.setFocusable(true);
     }
 
     private void prepareSelectLevelPanel() {
         selectLevelPanel = new SelectLevelPanel(this);
+        selectLevelPanel.setFocusable(true);
     }
 
     private void prepareSelectSavedGamePanel() {
@@ -112,18 +115,21 @@ public class MainFrame extends JFrame {
 
     public void showLoginPanel() {
         layout.show(cards, LOGIN);
+        loginPanel.requestFocusInWindow();
         LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
     public void showRegisterPanel() {
         layout.show(cards, REGISTER);
+        registerPanel.requestFocusInWindow();
         LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
     public void showMainMenuPanel() {
         layout.show(cards, MAINMENU);
+        mainMenuPanel.requestFocusInWindow();
         LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
@@ -138,18 +144,21 @@ public class MainFrame extends JFrame {
 
     public void showBuildPanel() {
         layout.show(cards, BUILD);
+        buildPanel.requestFocusInWindow();
         LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
     public void showPausePanel() {
         layout.show(cards, PAUSE);
+        pausePanel.requestFocusInWindow();
         LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
         refresh();
     }
 
     public void showSelectLevelPanel() {
         layout.show(cards, SELECT_LEVEL);
+        selectLevelPanel.requestFocusInWindow();
         selectLevelPanel.updateLevels();
         LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
@@ -158,7 +167,7 @@ public class MainFrame extends JFrame {
     public void showSelectSavedGamePanel() {
         layout.show(cards, SELECT_SAVE);
         selectLoadPanel.updateLevels();
-        LanceOfDestiny.setCurrentGameState(GameState.LOAD_GAME);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
         refresh();
     }
 
