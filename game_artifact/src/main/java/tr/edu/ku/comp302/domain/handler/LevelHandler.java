@@ -350,6 +350,9 @@ public class LevelHandler {
         return spellHandler;
     }
 
+    public int getScore(){
+        return level.getScore();
+    }
 
     
 }

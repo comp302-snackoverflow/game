@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.FireBall;
@@ -50,6 +51,8 @@ public class LanceOfDestiny implements Runnable {
     private double[] lanceMovementRemainder = new double[2];   // [remainderTotalRightArrowKey, remainderTotalLeftArrowKey]
     private boolean tapMoving;
     private LevelHandler levelHandler;
+    private int secondsPassed = 0;
+    private long nextTimeMS = 1;
     
     
 
@@ -132,6 +135,7 @@ public class LanceOfDestiny implements Runnable {
         handleYmir();
         managePausableThreads();
         handleSpellLogic();
+        updateTimeInSeconds();
     }
 
 
@@ -230,6 +234,7 @@ public class LanceOfDestiny implements Runnable {
             hex.move();
         }
     }
+    
     private void handleRotationLogic(boolean keyPressed, double angularSpeed) {
         Lance lance = levelPanel.getLevelHandler().getLance();
         if (keyPressed) {
@@ -259,23 +264,33 @@ public class LanceOfDestiny implements Runnable {
         fb.move();
     }
 
+    /**
+     * Handles the logic for collision checking and handling dead barriers.
+     *
+     * @param currentTime the current time in milliseconds
+     * @return void
+     */
     private void handleCollisionLogic(long currentTime) {
+        List<Barrier> barriers = levelHandler.getBarriers();
         CollisionHandler.checkFireBallEntityCollisions(levelHandler.getFireBall(), levelHandler.getLance());
         CollisionHandler.checkFireBallBorderCollisions(levelHandler.getFireBall(), screenWidth, screenHeight);
-        CollisionHandler.handleHexCollision(levelHandler.getHexs(), levelHandler.getBarriers());
-        List<Barrier> barriers = levelHandler.getBarriers();
+        CollisionHandler.handleHexCollision(levelHandler.getHexs(), barriers);
         CollisionHandler.checkFireballBarriersCollisions(levelHandler.getFireBall(), barriers);
 
-        for (Barrier barrier : barriers.stream().toList()) {
+        Iterator<Barrier> iterator = barriers.iterator();
+        while (iterator.hasNext()) {
+            Barrier barrier = iterator.next();
             if (barrier.isDead()) {
-                handleScoreLogic(currentTime);
+                if (! (barrier instanceof HollowBarrier)){
+                    handleScoreLogic(currentTime);
+                }
                 if (barrier instanceof ExplosiveBarrier b) {
                     b.dropRemains();
                 }
                 if (barrier instanceof GiftBarrier b) {
                     b.dropSpellBox();
                 }
-                barriers.remove(barrier);
+                iterator.remove();
             }
         }
     }
@@ -357,7 +372,7 @@ public class LanceOfDestiny implements Runnable {
     //TODO: Ask mert/meriç/ömer on how to implement the time. Since it's in miliseconds, the score is just zero all the time.
     private void handleScoreLogic(long currentTime) {
         Level level = levelHandler.getLevel();
-        long newScore = level.getScore() + 300 / (currentTime/1000);
+        long newScore = level.getScore() + 300 / (secondsPassed + 1);
         level.setScore((int)newScore);
         // newScore = oldScore + 300 / (currentTime - gameStartingTime) //TODO: is gameStartingTime needed ? Ask this to meriç/mert/ömer.
     }
@@ -401,6 +416,14 @@ public class LanceOfDestiny implements Runnable {
         }
         if (KeyboardHandler.buttonTPressed) {
             levelHandler.useSpell(SpellBox.EXTENSION_SPELL);
+        }
+    }
+
+    private void updateTimeInSeconds(){
+       
+        if (System.currentTimeMillis() >= nextTimeMS){
+            secondsPassed+=1;
+            nextTimeMS = System.currentTimeMillis() + 1000;
         }
     }
 

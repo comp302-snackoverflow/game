@@ -364,7 +364,7 @@ public class CollisionHandler {
         while (hexIterator.hasNext()) {
             Hex currentHex = hexIterator.next();
             for (Barrier barrier : barriers) {
-                if (currentHex.isCollidingWith(barrier)) {
+                if (isCollidingWith(currentHex, barrier)) {
                     hexIterator.remove();
                     barrier.decreaseHealth();
 
@@ -374,6 +374,11 @@ public class CollisionHandler {
             }
         }
     }
+
+    public static boolean isCollidingWith(Entity entity1, Entity entity2) {
+        return entity1.getBoundingBox().intersects(entity2.getBoundingBox());
+    }
+    
     public static boolean checkBarrierCollisionWithBarriers(Barrier barrier, List<Barrier> barriersOnMap){
         for (Barrier b : barriersOnMap) {
             if (b != barrier && checkBarrierCollision(b, barrier)) {
@@ -385,5 +390,7 @@ public class CollisionHandler {
     private static boolean checkBarrierCollision(Barrier b1, Barrier b2){
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
+
+   
 
 }

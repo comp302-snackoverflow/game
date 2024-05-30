@@ -36,8 +36,5 @@ public class Hex extends Entity {
     }
     
 
-    public boolean isCollidingWith(Barrier other) {
-        return this.boundingBox.intersects(other.boundingBox);
-    }
     
 }

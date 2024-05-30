@@ -44,7 +44,16 @@ public class LevelPanel extends JPanel {
         levelHandler.renderSpellBox(g);
         prepareHeartImage(g, (int) (getWidth() * 0.05), getHeight() - heartHeight - 20);
         showYmir(g);
+        showScore(g);
         levelG = g;
+    }
+
+    private void showScore(Graphics g) {
+        // Draw the score in the top right corner
+        g.setColor(Color.BLACK);
+        g.drawString("Score: " + levelHandler.getScore(),
+                getWidth() - g.getFontMetrics().stringWidth("Score: " + levelHandler.getScore()) - 20,
+                20);
     }
 
     public void setPanelSize(Dimension size) {
@@ -169,6 +178,7 @@ public class LevelPanel extends JPanel {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("x" + (levelHandler.getRemainingTimeForYmir()), x + 5, y + 6);
+
 
     }
 
