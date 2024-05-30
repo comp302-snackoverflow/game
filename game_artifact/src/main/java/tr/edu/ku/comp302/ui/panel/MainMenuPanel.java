@@ -1,6 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
+import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.services.SessionManager;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
@@ -30,7 +30,7 @@ public class MainMenuPanel extends JPanel {
 
         newGameButton.addActionListener(e -> {
             mainFrame.showSelectLevelPanel();
-            LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
+            LanceOfDestiny.setCurrentGameState(GameState.MENU);
         });
         loadGameButton.addActionListener(e -> {
             mainFrame.showSelectSavedGamePanel();

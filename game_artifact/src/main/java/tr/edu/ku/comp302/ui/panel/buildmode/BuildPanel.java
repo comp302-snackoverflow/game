@@ -71,11 +71,15 @@ public class BuildPanel extends JPanel {
 
     private void addGenerateAction() {
         generatePanel.generateButton.addActionListener(e -> {
-            int simpleCount = Integer.parseInt(generatePanel.simpleBarrierCount.getText());
-            int firmCount = Integer.parseInt(generatePanel.firmBarrierCount.getText());
-            int explosiveCount = Integer.parseInt(generatePanel.explosiveBarrierCount.getText());
-            int giftingCount = Integer.parseInt(generatePanel.giftingBarrierCount.getText());
-            buildHandler.generateRandomMap(simpleCount, firmCount, explosiveCount, giftingCount);
+            try{
+                int simpleCount = Integer.parseInt(generatePanel.simpleBarrierCount.getText());
+                int firmCount = Integer.parseInt(generatePanel.firmBarrierCount.getText());
+                int explosiveCount = Integer.parseInt(generatePanel.explosiveBarrierCount.getText());
+                int giftingCount = Integer.parseInt(generatePanel.giftingBarrierCount.getText());
+                buildHandler.generateRandomMap(simpleCount, firmCount, explosiveCount, giftingCount);
+            }catch (NumberFormatException nfe){
+                alertBarrierInputs();
+            }
         });
     }
 
@@ -143,5 +147,9 @@ public class BuildPanel extends JPanel {
 
     public void alertFullMap() {
         JOptionPane.showMessageDialog(this, "Map is full. Please clear some barriers before inserting more barriers.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void alertBarrierInputs(){
+        JOptionPane.showMessageDialog(this, "Invalid input. Please enter non-negative integer.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
