@@ -29,9 +29,6 @@ public class FireBall extends Entity {
     // need to pass the surface angle and the surface speed
     // works for steady surfaces as well
     public void handleReflection(double surfaceAngleDegrees, double surfaceXSpeed) {
-        if (isOverwhelming) {
-            return;
-        }
         /*
         double DX,myDX,DY,myDY;
         System.out.print("\nBEFORE REFLECTION: ");
@@ -92,9 +89,6 @@ public class FireBall extends Entity {
     // for handling reflections at a surface's corner
     // need to pass which corner the collision happened
     public void handleCornerReflection(double surfaceAngleDegrees, double surfaceXSpeed, Collision corner) {
-        if (isOverwhelming) {
-            return;
-        }
         switch (corner) {
             case TOP_RIGHT, BOTTOM_LEFT:
                 handleReflection(surfaceAngleDegrees + 45, surfaceXSpeed);
