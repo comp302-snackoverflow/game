@@ -13,12 +13,14 @@ import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.CircularButton;
 import tr.edu.ku.comp302.ui.view.View;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ public class LevelPanel extends JPanel {
     private final int iconSpacing = 10;
     private static final View heartView = View.of(View.HEART);
     private MainFrame mainFrame;
+    private BufferedImage backgroundImage;
 
     public LevelPanel(LevelHandler levelHandler, MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -52,10 +55,19 @@ public class LevelPanel extends JPanel {
         addButtons();
 
         this.add(pauseButton);
+                try {
+            backgroundImage = ImageIO.read(getClass().getResource("/assets/light.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if (backgroundImage != null ) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
         levelHandler.renderLance(g);
         levelHandler.renderFireBall(g);
         levelHandler.renderBarriers(g);
@@ -194,4 +206,5 @@ public class LevelPanel extends JPanel {
         extensionSpellLabel.getParent().setBounds(xOffset, yOffsetBase, 100, 50);
         hexSpellLabel.getParent().setBounds(xOffset, yOffsetHex, 100, 50);
     }
+
 }

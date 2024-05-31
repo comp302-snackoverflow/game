@@ -79,16 +79,22 @@ public class MainFrame extends JFrame {
     private void prepareLoginPanel() {
         loginPanel = new LoginPanel(this);
         loginPanel.setFocusable(true);
+        revalidate();
+        repaint();
     }
 
     private void prepareRegisterPanel() {
         registerPanel = new RegisterPanel(this);
         registerPanel.setFocusable(true);
+        revalidate();
+        repaint();
     }
 
     private void prepareMainMenu() {
         mainMenuPanel = new MainMenuPanel(this);
         mainMenuPanel.setFocusable(true);
+        revalidate();
+        repaint();
     }
 
     private void prepareLevelPanel() {
@@ -98,26 +104,36 @@ public class MainFrame extends JFrame {
         new LanceOfDestiny(levelPanel);
         levelPanel.repaint();
         levelPanel.setFocusable(true);
+        revalidate();
+        repaint();
     }
 
     private void prepareBuildPanel() {
         buildPanel = BuildPanel.createPanel(this);
         buildPanel.repaint();
         buildPanel.setFocusable(true);
+        revalidate();
+        repaint();
     }
 
     private void preparePausePanel() {
         pausePanel = new PauseMenuPanel(this);
         pausePanel.setFocusable(true);
+        revalidate();
+        repaint();
     }
 
     private void prepareSelectLevelPanel() {
         selectLevelPanel = new SelectLevelPanel(this);
         selectLevelPanel.setFocusable(true);
+        revalidate();
+        repaint();
     }
 
     private void prepareSelectSavedGamePanel() {
         selectLoadPanel = new SelectLoadPanel(this);
+        revalidate();
+        repaint();
     }
 
     public void showGameOverPanel(boolean isWon, int score) {

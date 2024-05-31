@@ -2,7 +2,10 @@ package tr.edu.ku.comp302.ui.panel;
 
 import tr.edu.ku.comp302.domain.services.SessionManager;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,6 +16,7 @@ public class MainMenuPanel extends JPanel {
     protected JButton helpButton;
     protected JButton optionsButton;
     protected JButton logOutButton;
+    private BufferedImage backgroundImage;
 
     public MainMenuPanel(MainFrame mainFrame) {
         GridBagLayout gridBagLayout = new GridBagLayout();
@@ -79,5 +83,19 @@ public class MainMenuPanel extends JPanel {
 
         gbc.gridy = 5;
         this.add(logOutButton, gbc);
+
+        try {
+            backgroundImage = ImageIO.read(getClass().getResource("/assets/light_sat.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 }
