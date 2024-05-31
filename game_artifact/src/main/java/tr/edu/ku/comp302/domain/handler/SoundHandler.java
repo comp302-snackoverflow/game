@@ -31,7 +31,7 @@ public class SoundHandler {
             clip.setFramePosition(0);
             clip.start();
         } catch (Exception e) {
-            System.err.println("Error playing sound: " + e.getMessage());
+            System.err.println("Error playing sound:" + e.getMessage());
             e.printStackTrace();
         }
     }
