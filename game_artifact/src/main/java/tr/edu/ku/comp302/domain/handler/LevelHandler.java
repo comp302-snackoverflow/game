@@ -60,10 +60,11 @@ public class LevelHandler {
         Graphics2D g2d = (Graphics2D) g;
         double rotationAngle = Math.toRadians(lance.getRotationAngle());
         AffineTransform oldTransform = g2d.getTransform();
-        g2d.rotate(rotationAngle, lance.getXPosition() + lance.getLength() / 2.0, lance.getYPosition() + lance.getThickness() / 2.0);
-        g2d.drawImage(lanceView.getImage(), (int) lance.getXPosition(), (int) lance.getYPosition(), null);
-        g2d.setTransform(oldTransform);    // Reset transformation to prevent unintended rotations.
-
+        synchronized (lance) {
+            g2d.rotate(rotationAngle, lance.getXPosition() + lance.getLength() / 2.0, lance.getYPosition() + lance.getThickness() / 2.0);
+            g2d.drawImage(lanceView.getImage(), (int) lance.getXPosition(), (int) lance.getYPosition(), null);
+            g2d.setTransform(oldTransform);    // Reset transformation to prevent unintended rotations.
+        }
         // uncomment the below two lines to see Lance Hit Box and Lance Bounding Box
         // g2d.drawPolygon(lance.getActualHitbox());
         // ((Graphics2D) g).draw(lance.getLanceBounds());
@@ -71,19 +72,26 @@ public class LevelHandler {
 
     public void renderFireBall(Graphics g) {
         FireBall fireBall = level.getFireBall();
-        g.drawImage(fireBallView.getImage(), (int) fireBall.getXPosition(), (int) fireBall.getYPosition(), null);
-        // uncomment the below line to see FireBall hit box
-        // g.drawRect((int) fireBall.getXPosition(), (int) fireBall.getYPosition(), fireBall.getSize(), fireBall.getSize());
+        synchronized (fireBall) {
+            g.drawImage(fireBallView.getImage(), (int) fireBall.getXPosition(), (int) fireBall.getYPosition(), null);
+            // uncomment the below line to see FireBall hit box
+            // g.drawRect((int) fireBall.getXPosition(), (int) fireBall.getYPosition(), fireBall.getSize(), fireBall.getSize());
+        }
     }
 
     public void renderBarriers(Graphics g) {
-        barrierRenderer.renderBarriers(g, getBarriers());
+        var barriers = getBarriers();
+        synchronized (barriers) {
+            barrierRenderer.renderBarriers(g, barriers);
+        }
     }
 
     public void renderRemains(Graphics g) {
         List<Remain> remains = level.getRemains();
-        for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
-            renderRemainView(g, remain);
+        synchronized (remains) {
+            for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
+                renderRemainView(g, remain);
+            }
         }
     }
 
@@ -92,14 +100,12 @@ public class LevelHandler {
     }
 
     public void handleGameLogic(long currentTime, Chronometer chronometer, int upsSet) {
-        Lance lance = getLance();
         boolean moveLeft = KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed;
         boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
-        double holdSpeed = lance.getSpeedWithHold();
-        double tapSpeed = lance.getSpeedWithTap();
+
         boolean rotateCCW = KeyboardHandler.buttonAPressed && !KeyboardHandler.buttonDPressed;
         boolean rotateCW = KeyboardHandler.buttonDPressed && !KeyboardHandler.buttonAPressed;
-        handleLanceMovement(moveLeft, moveRight,tapSpeed, holdSpeed, chronometer, upsSet);
+        handleLanceMovement(moveLeft, moveRight, chronometer, upsSet);
         handleRotationLogic(rotateCCW, -Lance.rotationSpeed, upsSet);
         handleRotationLogic(rotateCW, Lance.rotationSpeed, upsSet);
         handleSteadyStateLogic(!rotateCCW && !rotateCW, Lance.horizontalRecoverySpeed, upsSet);
@@ -117,8 +123,11 @@ public class LevelHandler {
     // Just check for bugs and leave it be.
     // Copilot's thoughts about this function: "I'm not sure what you're trying to do here."
     // (It couldn't even suggest any reasonable code for this)
-    private void handleLanceMovement(boolean leftPressed, boolean rightPressed, double tapSpeed, double holdSpeed, Chronometer chronometer, int upsSet) {
+    private void handleLanceMovement(boolean leftPressed, boolean rightPressed, Chronometer chronometer, int upsSet) {
         Lance lance = getLance();
+        double holdSpeed = lance.getSpeedWithHold();
+        double tapSpeed = lance.getSpeedWithTap();
+
         long currentTime = chronometer.getCurrentTime();
         if (leftPressed != rightPressed) {
             int index = leftPressed ? 1 : 0;
