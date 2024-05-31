@@ -72,7 +72,7 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareGameOverPanel(boolean isWon, int score) {
-        gameOverPanel = new GameOverPanel(isWon, score, this);
+        gameOverPanel = new GameOverPanel(isWon, score,this);
         gameOverPanel.setFocusable(true);
     }
 
@@ -92,7 +92,9 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareLevelPanel() {
-        levelPanel = new LevelPanel(new LevelHandler(null), this);
+        LevelHandler levelHandler = new LevelHandler(null);
+        levelPanel = new LevelPanel(levelHandler, this);
+        levelHandler.setLevelPanel(levelPanel);
         new LanceOfDestiny(levelPanel);
         levelPanel.repaint();
         levelPanel.setFocusable(true);

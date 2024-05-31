@@ -42,7 +42,7 @@ public class LevelHandler {
     private Character lastMoving;
     private boolean tapMoving;
 
-    public LevelHandler(Level level) {
+    public LevelHandler(Level level ) {
         this.level = level;
         spellHandler = new SpellHandler(this);
     }
@@ -104,6 +104,12 @@ public class LevelHandler {
     }
 
     public void renderBarriers(Graphics g) {
+        if (g == null) {
+            throw new IllegalArgumentException("Graphics object cannot be null.");
+        }
+        if (getBarriers() == null) {
+            throw new IllegalStateException("Barriers list cannot be null.");
+        }
         barrierRenderer.renderBarriers(g, getBarriers());
     }
 
@@ -317,21 +323,19 @@ public class LevelHandler {
     }
 
     private void handleBarriersMovement(long currentTime, int upsSet) {
-        for (Barrier barrier : getBarriers()) {
-            if (barrier.getMovementStrategy() != null) {
-                // If the barrier moved with 0.2 probability and stopped with 0.8, the barriers would stop a lot
-                // with 1s intervals. However, if they moved endlessly after rolling <= 0.2, a lot of them would
-                // start to move at the same time. So, I decided to increase testing time to 3s and also added
-                // stopping with 0.2 probability for moving barriers. This is of course subject to change.
-                if (!barrier.isMoving() && currentTime - barrier.getLastDiceRollTime() >= 3_000_000_000L) {
-                    barrier.tryMove(currentTime);
-                } else if (barrier.isMoving() && currentTime - barrier.getLastDiceRollTime() >= 3_000_000_000L) {
-                    barrier.tryStop(currentTime);
+        getBarriers().parallelStream().forEach(barrier -> {
+            synchronized (barrier) {
+                if (barrier.getMovementStrategy() != null) {
+                    if (!barrier.isMoving() && currentTime - barrier.getLastDiceRollTime() >= 3_000_000_000L) {
+                        barrier.tryMove(currentTime);
+                    } else if (barrier.isMoving() && currentTime - barrier.getLastDiceRollTime() >= 3_000_000_000L) {
+                        barrier.tryStop(currentTime);
+                    }
+                    barrier.handleCloseCalls(getBarriers());
+                    barrier.move(barrier.getSpeed() / upsSet);
                 }
-                barrier.handleCloseCalls(getBarriers());
-                barrier.move(barrier.getSpeed() / upsSet);
             }
-        }
+        });
     }
 
     private void handleRemainLogic(int upsSet) {
@@ -476,6 +480,7 @@ public class LevelHandler {
     }
 
     public void collectSpell(char spell){
+        
         SpellBox.incrementSpellCount(spell);
         switch(spell) {
             case(SpellBox.EXTENSION_SPELL), (SpellBox.HEX_SPELL):
@@ -492,7 +497,10 @@ public class LevelHandler {
         }
         if (levelPanel != null) {
             levelPanel.updateSpellCounts();
+            levelPanel.repaint();
+            levelPanel.revalidate();
         }
+
     }
     public void useSpell(char spell) {
         if (!level.inventoryHasSpell(spell)) return;

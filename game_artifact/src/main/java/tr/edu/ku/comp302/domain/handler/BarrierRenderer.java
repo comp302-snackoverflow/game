@@ -11,6 +11,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.ui.view.View;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,17 +45,18 @@ public class BarrierRenderer {
             logger.warn("Barriers list is null");
             return;
         }
-    
-        Iterator<Barrier> iterator = barriers.iterator();
-        while (iterator.hasNext()) {
-            Barrier barrier = iterator.next();
+
+        List<Barrier> toRemove = new ArrayList<>();
+        for (Barrier barrier : barriers) {
             if (barrier == null) {
                 logger.warn("Barrier is null");
-                iterator.remove(); // Remove the null barrier from the list
+                toRemove.add(barrier);
                 continue;
             }
             renderBarrier(g, barrier);
         }
+
+        barriers.removeAll(toRemove);
     }
 
     private void renderBarrier(Graphics g, Barrier barrier) {

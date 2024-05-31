@@ -137,32 +137,32 @@ public class LevelPanel extends JPanel {
         repaint();
     }
 
-    private JLabel addCircularButtonWithLabel(String iconPath, int x, int y, ActionListener action) {
-        BufferedImage icon = ImageHandler.getImageFromPath(iconPath);
-        if (icon == null) {
-            System.err.println("Icon not found: " + iconPath);
-            return null;
+    private JLabel addCircularButtonWithLabel(String iconPath, int xPosition, int yPosition, ActionListener action) {
+        BufferedImage iconImage = ImageHandler.getImageFromPath(iconPath);
+        if (iconImage == null) {
+            throw new IllegalArgumentException("Icon not found: " + iconPath);
         }
 
-        // Resize the icon
-        int iconSize = 40; // Adjust size as needed
-        BufferedImage resizedIcon = ImageHandler.resizeImage(icon, iconSize, iconSize);
+        int buttonSize = 40;
+        BufferedImage resizedIconImage = ImageHandler.resizeImage(iconImage, buttonSize, buttonSize);
 
-        CircularButton button = new CircularButton(resizedIcon);
-        button.setBounds(0, 0, 50, 50); // Set position and size
+        CircularButton button = new CircularButton(resizedIconImage);
+        button.setBounds(0, 0, buttonSize, buttonSize);
         button.addActionListener(action);
 
-        JLabel label = new JLabel("0");
-        label.setBounds(60, 15, 30, 20); // Adjust position relative to button
+        JLabel spellCountLabel = new JLabel("0");
+        spellCountLabel.setBounds(buttonSize + 10, 0, 30, 20);
 
-        JPanel panel = new JPanel(null); // Use null layout for custom positioning
-        panel.setBounds(x, y, 100, 50); // Set panel size to fit button and label
-        panel.add(button);
-        panel.add(label);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buttonPanel.setBounds(xPosition, yPosition, buttonSize + 40, buttonSize);
+        buttonPanel.add(button);
+        buttonPanel.add(spellCountLabel);
+        buttonPanel.setOpaque(false);
 
-        add(panel);
+        add(buttonPanel);
+        buttonPanel.setVisible(true);
 
-        return label;
+        return spellCountLabel;
     }
 
     public void updateSpellCounts() {
