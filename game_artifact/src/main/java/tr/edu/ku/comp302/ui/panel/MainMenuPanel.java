@@ -37,7 +37,12 @@ public class MainMenuPanel extends JPanel {
             mainFrame.showBuildPanel();
         });
         helpButton.addActionListener(e -> {
-//            mainFrame.showHelpPanel();
+            JDialog helpDialog = new JDialog(mainFrame, "Help", true);
+            helpDialog.getContentPane().add(new HelpPanel());
+
+            helpDialog.pack();
+            helpDialog.setLocationRelativeTo(mainFrame);
+            helpDialog.setVisible(true);
         });
         optionsButton.addActionListener(e -> {
             System.out.println("Options");
