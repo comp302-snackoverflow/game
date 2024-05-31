@@ -76,6 +76,11 @@ public class BuildPanel extends JPanel {
                 int firmCount = Integer.parseInt(generatePanel.firmBarrierCount.getText());
                 int explosiveCount = Integer.parseInt(generatePanel.explosiveBarrierCount.getText());
                 int giftingCount = Integer.parseInt(generatePanel.giftingBarrierCount.getText());
+                if (!buildHandler.countsSatisfied(simpleCount, firmCount, explosiveCount, giftingCount)) {
+                    JOptionPane.showMessageDialog(null, "Invalid number of barriers! Make sure that your simple" +
+                            "barrier count is over 75, your firm barrier count is over 10, your explosive barrier count is over 5, your gift barrier count " +
+                            "is over 10, and that your overall barrier count does not exceed 200!");
+                }
                 buildHandler.generateRandomMap(simpleCount, firmCount, explosiveCount, giftingCount);
             }catch (NumberFormatException nfe){
                 alertBarrierInputs();
