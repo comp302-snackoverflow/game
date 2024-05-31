@@ -166,7 +166,6 @@ public class LevelHandler {
         handleSpellBoxLogic();
 
         handleYmir();
-        handleSpellLogic();
         updateTimeInSeconds(chronometer);
         updateSpells();
 
@@ -394,16 +393,6 @@ public class LevelHandler {
             //TODO: Stop the game if the chances become 0!
             fb.stopFireball();
             fb.stickToLance(getLance());
-        }
-    }
-
-    private void handleSpellLogic() {
-        // FIXME: use key bindings.
-        if (KeyboardHandler.buttonHPressed) {
-            useSpell(SpellBox.HEX_SPELL);
-        }
-        if (KeyboardHandler.buttonTPressed) {
-            useSpell(SpellBox.EXTENSION_SPELL);
         }
     }
 

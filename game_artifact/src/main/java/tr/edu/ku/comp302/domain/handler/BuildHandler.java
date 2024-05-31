@@ -125,6 +125,7 @@ public class BuildHandler {
         SecureRandom secureRandom = new SecureRandom();
         if (!countsSatisfied(simpleBarrierCount, firmBarrierCount, explosiveBarrierCount, giftBarrierCount)) {
             logger.info("Counts are not satisfied. simple: {}, firm: {}, explosive: {}, gift: {}", simpleBarrierCount, firmBarrierCount, explosiveBarrierCount, giftBarrierCount);
+
             return;
         }
         for (int i = 0; i < simpleBarrierCount; i++) {
