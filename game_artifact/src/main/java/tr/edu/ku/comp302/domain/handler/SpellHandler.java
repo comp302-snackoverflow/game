@@ -13,7 +13,6 @@ import tr.edu.ku.comp302.domain.entity.barrier.*;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
-import tr.edu.ku.comp302.domain.services.threads.PausableThread;
 
 public class SpellHandler {
 
@@ -87,7 +86,7 @@ public class SpellHandler {
     }
 
     public void handleYmir(Level level) {
-
+        SecureRandom random = new SecureRandom();
         if (ymirTime < 30) {
             if (System.currentTimeMillis() - previousTime > 1000) {
                 previousTime = System.currentTimeMillis();
@@ -96,10 +95,12 @@ public class SpellHandler {
             }
         }
         else{
-            applyNewSpell(level);
-            SoundHandler.playLaughSound();
-            previousTime = System.currentTimeMillis();
-            ymirTime = 0;
+            if (random.nextDouble() < 0.5) {
+                applyNewSpell(level);
+                SoundHandler.playLaughSound();
+                previousTime = System.currentTimeMillis();
+                ymirTime = 0;
+            }
         }
 
 

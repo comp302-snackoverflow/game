@@ -127,7 +127,7 @@ public class LanceOfDestiny implements Runnable {
         handleSpellLogic();
         updateTimeInSeconds();
         updateSpells();
-        levelHandler.createHex(System.currentTimeMillis());
+        levelHandler.createHex(currentTime / 1000000);
     }
 
 

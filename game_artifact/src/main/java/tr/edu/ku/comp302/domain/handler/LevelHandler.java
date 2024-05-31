@@ -10,7 +10,6 @@ import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
-import tr.edu.ku.comp302.domain.services.threads.PausableThread;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.View;
 
@@ -35,7 +34,6 @@ public class LevelHandler {
     private Level level;
     private ScheduledExecutorService scheduler;
     private SpellHandler spellHandler;
-    private List<PausableThread> pausableThreads= new ArrayList<>();
     private LevelPanel levelPanel;
     private long lastHexCreationTime = 0;
 
@@ -268,17 +266,6 @@ public class LevelHandler {
         }
     }
 
-
-    
-
-    //temporarily replicated in this class
-
-
-
-
-    public List<PausableThread> getPausableThreads() {
-        return pausableThreads;
-    }
 
     public void setLevelPanel(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
