@@ -37,4 +37,8 @@ public class Hex extends Entity {
     public double getSpeed() {
         return speed;
     }
+
+    public double getRotationAngle() {
+        return rotationAngle;
+    }
 }
