@@ -3,14 +3,17 @@ package tr.edu.ku.comp302.domain.lanceofdestiny;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.chrono.Chronometer;
+import tr.edu.ku.comp302.client.GameInfo;
+import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
-import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
-import tr.edu.ku.comp302.domain.lanceofdestiny.state.PauseSPState;
-import tr.edu.ku.comp302.domain.lanceofdestiny.state.PlayingState;
-import tr.edu.ku.comp302.domain.lanceofdestiny.state.State;
+import tr.edu.ku.comp302.domain.lanceofdestiny.state.*;
+import tr.edu.ku.comp302.domain.listeners.Pausable;
+import tr.edu.ku.comp302.domain.listeners.PauseListener;
+import tr.edu.ku.comp302.domain.listeners.Resumable;
+import tr.edu.ku.comp302.domain.listeners.ResumeListener;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
-public class LanceOfDestiny implements Runnable {
+public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener {
     private static int screenWidth = 1280;
     private static int screenHeight = 800;
     private static GameState currentGameState;
@@ -25,6 +28,7 @@ public class LanceOfDestiny implements Runnable {
     private long updates = 0L;
     private long frames = 0L;
     private Chronometer chronometer;
+    private P2PConnection p2pConnection;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
@@ -51,7 +55,7 @@ public class LanceOfDestiny implements Runnable {
         while (true) {
             changeState();
             if (state != null) {
-                state.update();
+                state.update(p2pConnection);
             } else {  // TODO: Change this else statement whenever implemented other game states.
                 try {
                     Thread.sleep(1000 / UPS_SET);
@@ -66,6 +70,8 @@ public class LanceOfDestiny implements Runnable {
         switch (currentGameState){
             case PLAYING -> state = new PlayingState(this);
             case PAUSE -> state = new PauseSPState(this);
+            case MP_PAUSE -> state = new PauseMPState(this);
+            case MP_PLAYING -> state = new PlayingMPState(this);
             default -> state = null;
         }
     }
@@ -86,6 +92,7 @@ public class LanceOfDestiny implements Runnable {
     public LevelHandler getLevelHandler(){
         return levelHandler;
     }
+
     public static void setScreenWidth(int screenWidth) {
         LanceOfDestiny.screenWidth = screenWidth;
     }
@@ -144,5 +151,31 @@ public class LanceOfDestiny implements Runnable {
 
     public void setFrames(long frames) {
         this.frames = frames;
+    }
+
+    @Override
+    public void handlePauseRequest(Pausable p) {
+        if (!state.isMultiplayer()) {
+            p.pause();
+        }
+    }
+
+    @Override
+    public void handleResumeRequest(Resumable r) {
+        if (!state.isMultiplayer()) {
+            r.resume();
+        }
+    }
+
+    public void setConnection(P2PConnection conn) {
+        this.p2pConnection = conn;
+    }
+
+    public GameInfo getGameInfo() {
+        Level level = levelHandler.getLevel();
+        int score = level.getScore();
+        int chances = level.getChances();
+        int barrierCount = level.getBarriers().size();
+        return new GameInfo(score, chances, barrierCount);
     }
 }

@@ -11,17 +11,20 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class SelectLevelPanel extends JPanel {
     private final MainFrame mainFrame;
     private final JPanel levelsPanel;
     private final SelectLevelHandler selectLevelHandler;
+    private final boolean multiplayer;
     private BufferedImage backgroundImage;
 
 
-    public SelectLevelPanel(MainFrame mainFrame) {
+    public SelectLevelPanel(MainFrame mainFrame, boolean multiplayer) {
         this.mainFrame = mainFrame;
         this.selectLevelHandler = SelectLevelHandler.getInstance();
+        this.multiplayer = multiplayer;
 
         setLayout(new BorderLayout());
 
@@ -76,8 +79,20 @@ public class SelectLevelPanel extends JPanel {
             levelsPanel.add(noLevelsLabel);
             return;
         }
+        Consumer<Integer> onClick = multiplayer ? (levelId) -> {
+            mainFrame.setMultiplayerLevel(levelId);
+            mainFrame.showCreateGamePanel();
+        } : (levelId) -> {
+            Level level = selectLevelHandler.getLevel(levelId);
+            if (level != null) {
+                mainFrame.setCurrentLevel(selectLevelHandler.getLevel(levelId));
+                mainFrame.showLevelPanel();
+            } else {
+                JOptionPane.showMessageDialog(this, "Level could not be loaded", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        };
         for (int i = 0; i < levels.size(); i++) {
-            JPanel selectLevelButton = selectLevelHandler.generateSelectLevelButton(i + 1, levels.get(i), this::showLevel);
+            JPanel selectLevelButton = selectLevelHandler.generateSelectLevelButton(i + 1, levels.get(i), onClick);
             gbc.gridx = i % 4;
             gbc.gridy = i / 4;
             levelsPanel.add(selectLevelButton, gbc);
@@ -85,11 +100,6 @@ public class SelectLevelPanel extends JPanel {
 
         revalidate();
         repaint();
-    }
-
-    private void showLevel(Level level) {
-        mainFrame.setCurrentLevel(level);
-        mainFrame.showLevelPanel();
     }
 
     @Override

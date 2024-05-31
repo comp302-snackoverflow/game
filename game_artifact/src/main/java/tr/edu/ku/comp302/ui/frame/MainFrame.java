@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.frame;
 
+import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
@@ -20,6 +21,10 @@ public class MainFrame extends JFrame {
     private static final String PAUSE = "pause";
     private static final String SELECT_LEVEL = "select_level";
     private static final String SELECT_SAVE = "select_save";
+    private static final String MULTIPLAYER = "multiplayer";
+    private static final String MULTIPLAYER_SELECT_LEVEL = "multiplayer_select_level";
+    private static final String CREATE_GAME_PANEL = "create_game_panel";
+    private static final String JOIN_GAME_PANEL = "join_game_panel";
     private static final int frameWidth = 1294;
     private static final int frameHeight = 837;
     private final JPanel cards;
@@ -32,6 +37,11 @@ public class MainFrame extends JFrame {
     private PauseMenuPanel pausePanel;
     private SelectLevelPanel selectLevelPanel;
     private SelectLoadPanel selectLoadPanel;
+    private JPanel multiplayerPanel;
+    private SelectLevelPanel multiplayerSelectLevelPanel;
+    private CreateGamePanel createGamePanel;
+    private JPanel joinGamePanel;
+    private LanceOfDestiny lod;
     private GameOverPanel gameOverPanel;
 
     private MainFrame() {
@@ -56,6 +66,10 @@ public class MainFrame extends JFrame {
         self.prepareLevelPanel();
         self.preparePausePanel();
         self.prepareSelectLevelPanel();
+        self.prepareMultiplayerPanel();
+        self.prepareMultiplayerSelectLevelPanel();
+        self.prepareCreateGamePanel();
+        self.prepareJoinGamePanel();
         self.prepareSelectSavedGamePanel();
 
         self.cards.add(self.loginPanel, LOGIN);
@@ -65,6 +79,10 @@ public class MainFrame extends JFrame {
         self.cards.add(self.buildPanel, BUILD);
         self.cards.add(self.pausePanel, PAUSE);
         self.cards.add(self.selectLevelPanel, SELECT_LEVEL);
+        self.cards.add(self.multiplayerPanel, MULTIPLAYER);
+        self.cards.add(self.multiplayerSelectLevelPanel, MULTIPLAYER_SELECT_LEVEL);
+        self.cards.add(self.createGamePanel, CREATE_GAME_PANEL);
+        self.cards.add(self.joinGamePanel, JOIN_GAME_PANEL);
         self.cards.add(self.selectLoadPanel, SELECT_SAVE);
         self.setMinimumSize(new Dimension(frameWidth, frameHeight));
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -101,7 +119,8 @@ public class MainFrame extends JFrame {
         LevelHandler levelHandler = new LevelHandler(null);
         levelPanel = new LevelPanel(levelHandler, this);
         levelHandler.setLevelPanel(levelPanel);
-        new LanceOfDestiny(levelPanel);
+        lod = new LanceOfDestiny(levelPanel);
+        levelPanel.setPauseListener(lod);
         levelPanel.repaint();
         levelPanel.setFocusable(true);
         revalidate();
@@ -118,20 +137,44 @@ public class MainFrame extends JFrame {
 
     private void preparePausePanel() {
         pausePanel = new PauseMenuPanel(this);
+        pausePanel.setResumeListener(lod);
         pausePanel.setFocusable(true);
         revalidate();
         repaint();
     }
 
     private void prepareSelectLevelPanel() {
-        selectLevelPanel = new SelectLevelPanel(this);
+        selectLevelPanel = new SelectLevelPanel(this, false);
         selectLevelPanel.setFocusable(true);
         revalidate();
         repaint();
     }
 
+    private void prepareMultiplayerPanel() {
+        multiplayerPanel = new MultiplayerPanel(this);
+        multiplayerPanel.setFocusable(true);
+    }
+
     private void prepareSelectSavedGamePanel() {
         selectLoadPanel = new SelectLoadPanel(this);
+        selectLoadPanel.setFocusable(true);
+        revalidate();
+        repaint();
+    }
+
+    private void prepareMultiplayerSelectLevelPanel() {
+        multiplayerSelectLevelPanel = new SelectLevelPanel(this, true);
+        multiplayerSelectLevelPanel.setFocusable(true);
+    }
+
+    private void prepareCreateGamePanel() {
+        createGamePanel = new CreateGamePanel(this);
+        createGamePanel.setFocusable(true);
+    }
+
+    private void prepareJoinGamePanel() {
+        joinGamePanel = new JoinGamePanel(this);
+        joinGamePanel.setFocusable(true);
         revalidate();
         repaint();
     }
@@ -165,6 +208,18 @@ public class MainFrame extends JFrame {
         refresh();
     }
 
+    public void showLevelPanel(P2PConnection conn) {
+        layout.show(cards, LEVEL);
+        levelPanel.requestFocusInWindow();
+        levelPanel.setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()));
+        lod.setConnection(conn);
+        if (conn != null) {
+            LanceOfDestiny.setCurrentGameState(GameState.MP_PLAYING);
+        } else {
+            LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
+        }
+        refresh();
+    }
     public void showLevelPanel() {
         layout.show(cards, LEVEL);
         levelPanel.requestFocusInWindow();
@@ -177,6 +232,17 @@ public class MainFrame extends JFrame {
         layout.show(cards, BUILD);
         buildPanel.requestFocusInWindow();
         LanceOfDestiny.setCurrentGameState(GameState.MENU);
+        refresh();
+    }
+
+    public void showPausePanel(boolean isMultiplayer) {
+        layout.show(cards, PAUSE);
+        pausePanel.requestFocusInWindow();
+        if (isMultiplayer) {
+            LanceOfDestiny.setCurrentGameState(GameState.MP_PAUSE);
+        } else {
+            LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
+        }
         refresh();
     }
 
@@ -199,7 +265,41 @@ public class MainFrame extends JFrame {
         layout.show(cards, SELECT_SAVE);
         selectLoadPanel.updateLevels();
         LanceOfDestiny.setCurrentGameState(GameState.MENU);
+        selectLoadPanel.requestFocusInWindow();
         refresh();
+    }
+
+    public void showMultiplayerPanel() {
+        layout.show(cards, MULTIPLAYER);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
+        multiplayerPanel.requestFocusInWindow();
+        refresh();
+    }
+
+    public void showMultiplayerSelectLevelPanel() {
+        layout.show(cards, MULTIPLAYER_SELECT_LEVEL);
+        multiplayerSelectLevelPanel.updateLevels();
+        multiplayerSelectLevelPanel.requestFocusInWindow();
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
+        refresh();
+    }
+
+    public void showCreateGamePanel() {
+        layout.show(cards, CREATE_GAME_PANEL);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
+        createGamePanel.requestFocusInWindow();
+        refresh();
+    }
+
+    public void showJoinGamePanel() {
+        layout.show(cards, JOIN_GAME_PANEL);
+        LanceOfDestiny.setCurrentGameState(GameState.MENU);
+        joinGamePanel.requestFocusInWindow();
+        refresh();
+    }
+
+    public void setMultiplayerLevel(int levelId) {
+        createGamePanel.updateGameCode(levelId);
     }
 
     private void refresh() {
@@ -213,6 +313,9 @@ public class MainFrame extends JFrame {
 
     // FIXME: bad practice. Find a way to set the level without passing it to the UI
     public void setCurrentLevel(Level level) {
+        if (level == null) {
+            lod.setConnection(null);
+        }
         pausePanel.setSaveListener(level);
         levelPanel.getLevelHandler().setLevel(level);
     }
