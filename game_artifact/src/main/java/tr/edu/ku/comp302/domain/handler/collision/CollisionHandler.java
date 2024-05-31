@@ -366,8 +366,9 @@ public class CollisionHandler {
             for (Barrier barrier : barriers) {
                 if (isCollidingWith(currentHex, barrier)) {
                     hexIterator.remove();
-                    barrier.decreaseHealth();
-
+                    if (!barrier.isFrozen()) {
+                        barrier.decreaseHealth();
+                    }
                     System.out.println("Hex collided with barrier");
                     break;
                 }
