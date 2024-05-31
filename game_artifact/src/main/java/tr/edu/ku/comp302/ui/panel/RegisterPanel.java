@@ -3,10 +3,7 @@ package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.RegisterHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
@@ -15,7 +12,6 @@ public class RegisterPanel extends JPanel {
     private final JPasswordField pwdField;
     private final JPasswordField confirmPwdField;
     private final JTextArea errorTextArea;
-    private BufferedImage backgroundImage;
 
     public RegisterPanel(MainFrame mainFrame) {
         Font font = new Font("Segoe UI Semibold", Font.PLAIN, 22);
@@ -164,11 +160,6 @@ public class RegisterPanel extends JPanel {
         registrationSection.add(loginButton);
 
         add(registrationSection, gbc);
-                try {
-            backgroundImage = ImageIO.read(getClass().getResource("/assets/light_sat.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void clearInputs() {
@@ -176,14 +167,6 @@ public class RegisterPanel extends JPanel {
         pwdField.setText("");
         confirmPwdField.setText("");
         errorTextArea.setText("");
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-        }
     }
 }
 

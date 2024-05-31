@@ -13,6 +13,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.*;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 public class SpellHandler {
 
@@ -85,9 +86,9 @@ public class SpellHandler {
         levelHandler.resizeFireBallImage();
     }
 
-    public void handleYmir(Level level) {
+    public void handleYmir(Level level, LevelPanel levelPanel) {
         SecureRandom random = new SecureRandom();
-        if (ymirTime < 30) {
+        if (ymirTime < 3) {
             if (System.currentTimeMillis() - previousTime > 1000) {
                 previousTime = System.currentTimeMillis();
                 ymirTime++;
@@ -95,9 +96,13 @@ public class SpellHandler {
             }
         }
         else{
-            if (random.nextDouble() < 0.5) {
+            levelPanel.changeBackgroundToOrginal();
+            boolean randomDouble = random.nextBoolean();
+            if (randomDouble) {
+                System.out.println(randomDouble);
                 applyNewSpell(level);
                 SoundHandler.playLaughSound();
+                levelPanel.changeBackgroundToYmir();
                 previousTime = System.currentTimeMillis();
                 ymirTime = 0;
             }

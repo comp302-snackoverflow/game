@@ -3,9 +3,7 @@ package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.LoginHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -14,17 +12,11 @@ public class LoginPanel extends JPanel {
     private final JTextField usernameTextField;
     private final JTextArea errorTextArea;
     private final JButton loginButton;
-    private BufferedImage backgroundImage;
 
     public LoginPanel(MainFrame mainFrame) {
         Font buttonFont = new Font("Segoe UI Semibold", Font.PLAIN, 22);
 
         setLayout(new GridBagLayout());
-        try {
-            backgroundImage = ImageIO.read(getClass().getResource("/assets/light_sat.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         errorTextArea = new JTextArea();
         errorTextArea.setFocusable(false);
@@ -33,7 +25,8 @@ public class LoginPanel extends JPanel {
         errorTextArea.setLineWrap(true);
         errorTextArea.setEditable(false);
         errorTextArea.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        errorTextArea.setOpaque(false); // Make the error text area transparent
+        errorTextArea.setBackground(new Color(240, 240, 240));
+
 
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(e -> {
@@ -46,7 +39,6 @@ public class LoginPanel extends JPanel {
         JLabel dontHaveAnAccountLabel = new JLabel("Don't have an account?");
         dontHaveAnAccountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         dontHaveAnAccountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        dontHaveAnAccountLabel.setOpaque(false); // Ensure label background is transparent
 
         loginButton = new JButton("Login");
         loginButton.setFont(buttonFont);
@@ -59,6 +51,7 @@ public class LoginPanel extends JPanel {
         usernameTextField = new JTextField();
         usernameTextField.setFont(buttonFont);
         usernameTextField.setColumns(10);
+
 
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -128,7 +121,6 @@ public class LoginPanel extends JPanel {
 
         JPanel registrationSection = new JPanel();
         registrationSection.setLayout(new BoxLayout(registrationSection, BoxLayout.X_AXIS));
-        registrationSection.setOpaque(false); // Make the panel transparent
         registrationSection.add(dontHaveAnAccountLabel);
         registrationSection.add(Box.createHorizontalStrut(10));
         registrationSection.add(registerButton);
@@ -140,13 +132,5 @@ public class LoginPanel extends JPanel {
         usernameTextField.setText("");
         pwdField.setText("");
         errorTextArea.setText("");
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-        }
     }
 }

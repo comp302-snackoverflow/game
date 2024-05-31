@@ -21,7 +21,7 @@ public class GameOverPanel extends JPanel {
         if (isWon) {
             backgroundImage = new ImageIcon(getClass().getResource("/assets/light_sat.png")).getImage();
         } else {
-            backgroundImage = new ImageIcon(getClass().getResource("/assets/dark.png")).getImage();
+            backgroundImage = new ImageIcon(getClass().getResource("/assets/dark_sat.png")).getImage();
             iconImage = new ImageIcon(getClass().getResource("/assets/ymir.png")).getImage();
         }
         setLayout(null); 

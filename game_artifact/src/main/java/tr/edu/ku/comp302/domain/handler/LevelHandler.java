@@ -532,7 +532,7 @@ public class LevelHandler {
     }
 
     public void handleYmir() {
-        spellHandler.handleYmir(level);
+        spellHandler.handleYmir(level, levelPanel);
     }
 
     public long getRemainingTimeForYmir() {

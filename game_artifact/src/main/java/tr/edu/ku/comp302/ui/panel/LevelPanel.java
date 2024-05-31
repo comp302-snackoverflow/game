@@ -209,4 +209,22 @@ public class LevelPanel extends JPanel {
         hexSpellLabel.getParent().setBounds(xOffset, yOffsetHex, 100, 50);
     }
 
+
+
+    public void changeBackgroundToYmir(){
+        try {
+            backgroundImage = ImageIO.read(getClass().getResource("/assets/dark.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeBackgroundToOrginal(){
+        try {
+            backgroundImage = ImageIO.read(getClass().getResource("/assets/light.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
