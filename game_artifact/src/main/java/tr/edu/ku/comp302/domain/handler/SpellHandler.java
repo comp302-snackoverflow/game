@@ -32,11 +32,14 @@ public class SpellHandler {
     private long hexEndTime = 0;
     private long overwhelmingEndTime = 0;
 
-    private Random random = new Random();
+    private Random random ;
     LevelHandler levelHandler;
 
     public SpellHandler(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
+        random = new SecureRandom();
+        random.setSeed(System.currentTimeMillis());
+        
     }
 
 
@@ -87,27 +90,24 @@ public class SpellHandler {
     }
 
     public void handleYmir(Level level, LevelPanel levelPanel) {
-        SecureRandom random = new SecureRandom();
-        if (ymirTime < 3) {
-            if (System.currentTimeMillis() - previousTime > 1000) {
-                previousTime = System.currentTimeMillis();
-                ymirTime++;
 
-            }
-        }
-        else{
-            levelPanel.changeBackgroundToOrginal();
-            boolean randomDouble = random.nextBoolean();
-            if (randomDouble) {
-                System.out.println(randomDouble);
-                applyNewSpell(level);
-                SoundHandler.playLaughSound();
-                levelPanel.changeBackgroundToYmir();
-                previousTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - previousTime >= 1000) {
+            if (ymirTime < 30) {
+                ymirTime++;
+            } else {
+                levelPanel.changeBackgroundToOrginal();
+                
+                if (random.nextInt(10) % 2 == 0) {
+                    applyNewSpell(level);
+                    SoundHandler.playLaughSound();
+                    levelPanel.changeBackgroundToYmir();
+                }
+                previousTime = currentTime;
                 ymirTime = 0;
             }
+            previousTime = currentTime;
         }
-
 
     }
 
