@@ -44,12 +44,20 @@ public class SpellHandler {
 
 
     public void extendLance(Lance lance) {
-        lance.setLength(lance.getLength()*2);
-        lance.setXPosition(lance.getXPosition() - lance.getLength()/4);
+        double newLength = lance.getLength() * 2;
+        double newXPosition = lance.getXPosition() - newLength / 4;
+        if (newXPosition < 0) {
+            newXPosition = 0;
+        } else if (newXPosition + newLength > LanceOfDestiny.getScreenWidth()) {
+            newXPosition = LanceOfDestiny.getScreenWidth() - newLength;
+        }
+    
+        lance.setLength(newLength);
+        lance.setXPosition(newXPosition);
         levelHandler.resizeLanceImage();
         lanceExtensionEndTime = System.currentTimeMillis() + 30000;
-        
     }
+    
 
     public void shrinkLance(Lance lance) {
         lance.setXPosition(lance.getXPosition() + lance.getLength()/4);
