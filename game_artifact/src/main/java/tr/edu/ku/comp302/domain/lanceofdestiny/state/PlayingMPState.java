@@ -4,21 +4,24 @@ import tr.edu.ku.comp302.client.GameInfo;
 import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 public class PlayingMPState extends PlayingState implements MultiplayerState {
     public PlayingMPState(LanceOfDestiny lanceOfDestiny) {
         super(lanceOfDestiny);
     }
-
     @Override
     public void update(P2PConnection conn) {
         super.update(conn);
 
         GameInfo info = lanceOfDestiny.getGameInfo();
 
-        conn.send(String.format("SCORE:%d:CHANCES:%d:BARRIERS:%d", info.score(), info.chances(), info.barrierCount()));
+        if (lanceOfDestiny.getChronometer().canReceive()) {
+            conn.send(String.format("SCORE:%d:CHANCES:%d:BARRIERS:%d", info.score(), info.chances(), info.barrierCount()));
 
-        if (conn.receive() != null) {
-            System.out.println(conn.receive());
+            if (conn.receive() != null) {
+                System.out.println(conn.receive());
+            }
         }
     }
 

@@ -7,12 +7,14 @@ public class Chronometer {
     private boolean tapMoving;
     private Long pauseStartTime;
     private long previousTime;
+    private long lastSendReceiveTime;
 
     public Chronometer() {
         lastMovingTime = 0;
         tapMoving = false;
         pauseStartTime = null;
         previousTime = 0;
+        lastSendReceiveTime = 0;
     }
 
     public void addPauseTime(long pauseDuration) {
@@ -25,6 +27,16 @@ public class Chronometer {
         previousTime += pauseDuration;
         lastMovingTime += pauseDuration;
         pauseStartTime = null;
+    }
+
+    public boolean canReceive() {
+        boolean b = getCurrentTime() - lastSendReceiveTime > 100_000_000;
+
+        if (b) {
+            lastSendReceiveTime = getCurrentTime();
+        }
+
+        return b;
     }
 
 
