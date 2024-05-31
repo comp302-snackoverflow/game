@@ -63,9 +63,13 @@ public class P2PConnection {
                 if (queuedMessages.isEmpty()) {
                     sendMessage("HEARTBEAT");
                 } else {
-                    sendMessage(queuedMessages.poll());
+                    while (!queuedMessages.isEmpty()) {
+                        sendMessage(queuedMessages.poll());
+                    }
                 }
-                receivedMessages.add(receiveMessage());
+                while (socket.getInputStream().available() > 0) {
+                    receivedMessages.add(receiveMessage());
+                }
             } catch (Exception e) {
                 logger.error("Heartbeat failed", e);
                 reconnect();

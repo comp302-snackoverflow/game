@@ -17,7 +17,9 @@ public class PlayingMPState extends PlayingState implements MultiplayerState {
 
         conn.send(String.format("SCORE:%d:CHANCES:%d:BARRIERS:%d", info.score(), info.chances(), info.barrierCount()));
 
-        System.out.println(conn.receive());
+        if (conn.receive() != null) {
+            System.out.println(conn.receive());
+        }
     }
 
     public boolean isMultiplayer() {
