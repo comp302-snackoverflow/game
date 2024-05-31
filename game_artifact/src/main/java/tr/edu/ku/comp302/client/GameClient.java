@@ -49,6 +49,7 @@ public class GameClient {
             if (response.equals("FAILED")) {
                 return null;
             } else {
+                out.println("REMOVE:" + gameCode);
                 String[] parts = response.split(":");
                 return new PlayerInfo(parts[1], Integer.parseInt(parts[2]));
             }
