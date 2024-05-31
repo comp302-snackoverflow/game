@@ -10,8 +10,6 @@ public class KeyboardHandler implements KeyListener {
     public static boolean buttonAPressed = false;
     public static boolean buttonDPressed = false;
     public static boolean buttonWPressed = false;
-    public static boolean buttonTPressed = false;
-    public static boolean buttonHPressed = false;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -36,12 +34,6 @@ public class KeyboardHandler implements KeyListener {
             case KeyEvent.VK_W:
                 buttonWPressed = true;
                 break;
-            case KeyEvent.VK_T:
-                buttonTPressed = true;
-                break;
-            case KeyEvent.VK_H:
-                buttonHPressed = true;
-                break;
         }
     }
 
@@ -62,12 +54,6 @@ public class KeyboardHandler implements KeyListener {
                 break;
             case KeyEvent.VK_W:
                 buttonWPressed = false;
-                break;
-            case KeyEvent.VK_T:
-                buttonTPressed = false;
-                break;
-            case KeyEvent.VK_H:
-                buttonHPressed = false;
                 break;
         }
     }

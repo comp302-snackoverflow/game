@@ -45,6 +45,8 @@ public class LevelPanel extends JPanel {
         pauseButton.setBounds(0, 0, 10, 20);
 
         KeyPressHandler.bindKeyPressAction(this, "ESCAPE", e -> pauseButton.doClick());
+        KeyPressHandler.bindKeyPressAction(this, "T", e -> levelHandler.useSpell(SpellBox.EXTENSION_SPELL));
+        KeyPressHandler.bindKeyPressAction(this, "H", e -> levelHandler.useSpell(SpellBox.HEX_SPELL));
 
         addButtons();
 
