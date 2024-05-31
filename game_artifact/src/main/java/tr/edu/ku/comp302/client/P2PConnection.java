@@ -10,9 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class P2PConnection {
     private static final Logger logger = LogManager.getLogger(P2PConnection.class);
@@ -21,8 +18,6 @@ public class P2PConnection {
     private ServerSocket serverSocket;
     private Socket socket;
     private static final int PORT = 3132;
-    private static final int HEARTBEAT_INTERVAL = 5; // seconds
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public P2PConnection(String peerAddress, int peerPort) {
         this.peerAddress = peerAddress;
@@ -36,45 +31,21 @@ public class P2PConnection {
 
     public void startServer() throws IOException {
         serverSocket = new ServerSocket(PORT);
+
         socket = serverSocket.accept();
-        socket.setKeepAlive(true);
-//        this.peerAddress = socket.getInetAddress().getHostAddress();
-//        this.peerPort = socket.getPort();
-        startHeartbeat();
+
+        this.peerAddress = socket.getInetAddress().getHostAddress();
+        this.peerPort = socket.getPort();
     }
 
     public void connectToPeer() throws IOException {
+
         socket = new Socket(peerAddress, peerPort);
-        socket.setKeepAlive(true);
-        startHeartbeat();
-    }
-
-    private void startHeartbeat() {
-        scheduler.scheduleAtFixedRate(() -> {
-            try {
-                send("heartbeat");
-            } catch (Exception e) {
-                logger.error("Heartbeat failed, attempting to reconnect...", e);
-                reconnect();
-            }
-        }, 0, HEARTBEAT_INTERVAL, TimeUnit.SECONDS);
-    }
-
-    private void reconnect() {
-        close();
-        try {
-            if (peerAddress != null && peerPort != 0) {
-                connectToPeer();
-            } else {
-                startServer();
-            }
-        } catch (IOException e) {
-            logger.error("Reconnection failed", e);
-        }
+        System.out.println(socket);
     }
 
     public void send(String message) {
-        if (socket == null || socket.isClosed()) {
+        if (socket == null) {
             throw new RuntimeException("Connection is not established");
         }
 
@@ -86,7 +57,7 @@ public class P2PConnection {
     }
 
     public String receive() {
-        if (socket == null || socket.isClosed()) {
+        if (socket == null) {
             throw new RuntimeException("Connection is not established");
         }
 
@@ -99,20 +70,17 @@ public class P2PConnection {
         }
     }
 
+
     public void close() {
         try {
-            if (socket != null && !socket.isClosed()) {
+            if (socket != null) {
                 socket.close();
             }
-            if (serverSocket != null && !serverSocket.isClosed()) {
+            if (serverSocket != null) {
                 serverSocket.close();
             }
         } catch (IOException e) {
             logger.error("An error occurred while closing the connection", e);
-        } finally {
-            if (scheduler != null && !scheduler.isShutdown()) {
-                scheduler.shutdown();
-            }
         }
     }
 
