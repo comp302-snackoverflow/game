@@ -64,7 +64,7 @@ public class JoinGamePanel extends JPanel {
         });
 
         backButton = new JButton("Back");
-        backButton.addActionListener(e -> mainFrame.showMultiplayerSelectLevelPanel());
+        backButton.addActionListener(e -> mainFrame.showMultiplayerPanel());
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
