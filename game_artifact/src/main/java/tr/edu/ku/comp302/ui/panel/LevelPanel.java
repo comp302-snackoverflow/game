@@ -40,6 +40,7 @@ public class LevelPanel extends JPanel {
         this.levelHandler = levelHandler;
         addKeyListener(new KeyboardHandler());
         setFocusable(true);
+        setLayout(null);
         pauseButton = new JButton("PAUSE");
 
         pauseButton.addActionListener(e -> mainFrame.showPausePanel());
@@ -72,6 +73,9 @@ public class LevelPanel extends JPanel {
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 5, y + heartHeight / 2 + 6);
     }
+
+
+
 
     private void finishGame() {
         if (levelHandler.isFinished()) {
@@ -160,6 +164,7 @@ public class LevelPanel extends JPanel {
         buttonPanel.setOpaque(false);
 
         add(buttonPanel);
+
         buttonPanel.setVisible(true);
 
         return spellCountLabel;
