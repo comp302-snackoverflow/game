@@ -61,11 +61,11 @@ public class P2PConnection {
         scheduler.scheduleAtFixedRate(() -> {
             try {
                 if (queuedMessages.isEmpty()) {
-                    send("HEARTBEAT");
+                    sendMessage("HEARTBEAT");
                 } else {
-                    send(queuedMessages.poll());
+                    sendMessage(queuedMessages.poll());
                 }
-                receivedMessages.add(receive());
+                receivedMessages.add(receiveMessage());
             } catch (Exception e) {
                 logger.error("Heartbeat failed", e);
                 reconnect();
@@ -112,6 +112,16 @@ public class P2PConnection {
                 scheduler.shutdown();
             }
         }
+    }
+
+    private void sendMessage(String message) throws IOException {
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        out.println(message);
+    }
+
+    private String receiveMessage() throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        return in.readLine();
     }
 
     public PlayerInfo getPeer() {
