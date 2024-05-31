@@ -14,7 +14,7 @@ import java.net.Socket;
 
 public class GameClient {
     private static final Logger logger = LogManager.getLogger(GameClient.class);
-    private static final String SERVER_ADDRESS = "localhost";
+    private static final String SERVER_ADDRESS = "172.20.148.238";
     private static final int SERVER_PORT = 3131;
     private static final int PORT = 3132;
 
@@ -62,7 +62,7 @@ public class GameClient {
                 try {
                     conn.startServer();
                     conn.send("Hello World!");
-                    listener.onJoin(conn.getPeer());
+                    listener.onJoin(conn);
                 } catch (IOException e) {
                     logger.error("An error occurred while listening for peer", e);
                 }

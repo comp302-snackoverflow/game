@@ -9,6 +9,8 @@ import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.domain.listeners.Pausable;
+import tr.edu.ku.comp302.domain.listeners.PauseListener;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.CircularButton;
 import tr.edu.ku.comp302.ui.view.View;
@@ -19,28 +21,35 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
-public class LevelPanel extends JPanel {
+public class LevelPanel extends JPanel implements Pausable {
     private static final Logger logger = LogManager.getLogger(LevelPanel.class);
+    private static final View heartView = View.of(View.HEART);
     private final JButton pauseButton;
-    private LevelHandler levelHandler;
-    private JLabel extensionSpellLabel;
-    private JLabel hexSpellLabel;
     private final int heartWidth = 20;
     private final int heartHeight = 20;
     private final int iconSize = 40;
     private final int iconSpacing = 10;
-    private static final View heartView = View.of(View.HEART);
+    private LevelHandler levelHandler;
+    private JLabel extensionSpellLabel;
+    private JLabel hexSpellLabel;
+    private PauseListener pauseListener;
+    private MainFrame mainFrame;
 
     public LevelPanel(LevelHandler levelHandler, MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         this.levelHandler = levelHandler;
         addKeyListener(new KeyboardHandler());
         setFocusable(true);
         pauseButton = new JButton("PAUSE");
 
-        pauseButton.addActionListener(e -> mainFrame.showPausePanel());
+        pauseButton.addActionListener(e -> {
+            if (pauseListener == null) {
+                logger.warn("Pause listener is not set.");
+            } else {
+                pauseListener.handlePauseRequest(this);
+            }
+        });
 
         pauseButton.setBounds(0, 0, 10, 20);
 
@@ -178,5 +187,13 @@ public class LevelPanel extends JPanel {
         int yOffsetHex = yOffsetBase + iconSize + iconSpacing;
         extensionSpellLabel.getParent().setBounds(xOffset, yOffsetBase, 100, 50);
         hexSpellLabel.getParent().setBounds(xOffset, yOffsetHex, 100, 50);
+    }
+
+    public void setPauseListener(PauseListener listener) {
+        this.pauseListener = listener;
+    }
+
+    public void pause() {
+        mainFrame.showPausePanel(true);
     }
 }

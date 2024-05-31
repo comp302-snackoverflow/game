@@ -2,7 +2,9 @@ package tr.edu.ku.comp302.ui.panel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tr.edu.ku.comp302.client.JoinInfo;
 import tr.edu.ku.comp302.domain.handler.JoinGameHandler;
+import tr.edu.ku.comp302.domain.services.save.LoadService;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
@@ -50,11 +52,13 @@ public class JoinGamePanel extends JPanel {
             if (gameCode.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter a game code.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                Integer levelId = joinGameHandler.joinGame(gameCode);
-                if (levelId == null) {
+                JoinInfo gameInfo = joinGameHandler.joinGame(gameCode);
+                if (gameInfo == null) {
                     JOptionPane.showMessageDialog(this, "An error occurred while joining the game. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    System.out.println("Joined game with level ID: " + levelId);
+                    int levelId = gameInfo.levelId();
+                    mainFrame.setCurrentLevel(LoadService.getInstance().loadMap(levelId));
+                    mainFrame.showLevelPanel(gameInfo.conn());
                 }
             }
         });

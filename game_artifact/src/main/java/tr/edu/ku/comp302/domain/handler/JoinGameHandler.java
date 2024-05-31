@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.domain.handler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.client.GameClient;
+import tr.edu.ku.comp302.client.JoinInfo;
 import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.server.PlayerInfo;
 
@@ -31,7 +32,7 @@ public class JoinGameHandler {
         return null;
     }
 
-    public Integer joinGame(String gameCode) {
+    public JoinInfo joinGame(String gameCode) {
         try {
             PlayerInfo peer = GameClient.joinGame(gameCode);
             if (peer == null) {
@@ -53,7 +54,7 @@ public class JoinGameHandler {
                     Thread.sleep(500);
                 }
             }
-            return levelId;
+            return new JoinInfo(levelId, connection);
         } catch (IOException | InterruptedException e) {
             logger.error("An error occurred while joining the game. Game code: " + gameCode, e);
             return null;

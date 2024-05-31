@@ -90,10 +90,4 @@ public class SelectLevelPanel extends JPanel {
         revalidate();
         repaint();
     }
-
-    private void showLevel(int levelId) {
-
-        mainFrame.setCurrentLevel(selectLevelHandler.getLevel(levelId));
-        mainFrame.showLevelPanel();
-    }
 }

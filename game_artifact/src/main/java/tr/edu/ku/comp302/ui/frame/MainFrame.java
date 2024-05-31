@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.frame;
 
+import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
@@ -39,6 +40,7 @@ public class MainFrame extends JFrame {
     private SelectLevelPanel multiplayerSelectLevelPanel;
     private CreateGamePanel createGamePanel;
     private JPanel joinGamePanel;
+    private LanceOfDestiny lod;
 
     private MainFrame() {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
@@ -102,7 +104,8 @@ public class MainFrame extends JFrame {
 
     private void prepareLevelPanel() {
         levelPanel = new LevelPanel(new LevelHandler(null), this);
-        new LanceOfDestiny(levelPanel);
+        lod = new LanceOfDestiny(levelPanel);
+        levelPanel.setPauseListener(lod);
         levelPanel.repaint();
         levelPanel.setFocusable(true);
     }
@@ -115,6 +118,7 @@ public class MainFrame extends JFrame {
 
     private void preparePausePanel() {
         pausePanel = new PauseMenuPanel(this);
+        pausePanel.setResumeListener(lod);
         pausePanel.setFocusable(true);
     }
 
@@ -169,6 +173,19 @@ public class MainFrame extends JFrame {
         refresh();
     }
 
+    public void showLevelPanel(P2PConnection conn) {
+        layout.show(cards, LEVEL);
+        levelPanel.requestFocusInWindow();
+        levelPanel.setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()));
+        if (conn != null) {
+            LanceOfDestiny.setCurrentGameState(GameState.MP_PLAYING);
+            lod.setConnection(conn);
+        } else {
+            LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
+            lod.setConnection(null);
+        }
+        refresh();
+    }
     public void showLevelPanel() {
         layout.show(cards, LEVEL);
         levelPanel.requestFocusInWindow();
@@ -184,10 +201,14 @@ public class MainFrame extends JFrame {
         refresh();
     }
 
-    public void showPausePanel() {
+    public void showPausePanel(boolean isMultiplayer) {
         layout.show(cards, PAUSE);
         pausePanel.requestFocusInWindow();
-        LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
+        if (isMultiplayer) {
+            LanceOfDestiny.setCurrentGameState(GameState.MP_PAUSE);
+        } else {
+            LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
+        }
         refresh();
     }
 
@@ -251,6 +272,9 @@ public class MainFrame extends JFrame {
 
     // FIXME: bad practice. Find a way to set the level without passing it to the UI
     public void setCurrentLevel(Level level) {
+        if (level == null) {
+            lod.setConnection(null);
+        }
         pausePanel.setSaveListener(level);
         levelPanel.getLevelHandler().setLevel(level);
     }

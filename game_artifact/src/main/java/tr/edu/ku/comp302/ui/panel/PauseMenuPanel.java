@@ -1,19 +1,25 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.event.KeyPressHandler;
+import tr.edu.ku.comp302.domain.listeners.Resumable;
+import tr.edu.ku.comp302.domain.listeners.ResumeListener;
 import tr.edu.ku.comp302.domain.listeners.SaveListener;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class PauseMenuPanel extends JPanel {
+public class PauseMenuPanel extends JPanel implements Resumable {
+    private static final Logger logger = LogManager.getLogger(PauseMenuPanel.class);
     private final JButton resumeGameButton;
     private final JButton optionsButton;
     private final JButton saveButton;
     private final JButton mainMenuButton;
     private final MainFrame mainFrame;
     private SaveListener saveListener;
+    private ResumeListener resumeListener;
 
     public PauseMenuPanel(MainFrame mainFrame) {
         GridBagLayout gridBagLayout = new GridBagLayout();
@@ -25,8 +31,13 @@ public class PauseMenuPanel extends JPanel {
         optionsButton = new JButton("Options");
         saveButton = new JButton("Save");
         mainMenuButton = new JButton("Return to Main Menu");
-
-        resumeGameButton.addActionListener(e -> mainFrame.showLevelPanel());
+        resumeGameButton.addActionListener(e -> {
+            if (resumeListener == null) {
+                logger.warn("Pause listener is not set.");
+            } else {
+                resumeListener.handleResumeRequest(this);
+            }
+        });
         optionsButton.addActionListener(e -> {
             // mainFrame.showOptionsPanel();
         });
@@ -91,5 +102,14 @@ public class PauseMenuPanel extends JPanel {
         } else {
             JOptionPane.showMessageDialog(this, "Game could not be saved!", "Save", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    @Override
+    public void resume() {
+        mainFrame.showLevelPanel();
+    }
+
+    public void setResumeListener(ResumeListener listener) {
+        this.resumeListener = listener;
     }
 }

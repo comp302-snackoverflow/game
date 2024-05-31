@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
-    private static final Logger logger = LogManager.getLogger(ClientHandler.class);
+//    private static final Logger logger = LogManager.getLogger(ClientHandler.class);
     private final Socket socket;
 
     public ClientHandler(Socket socket) {
@@ -49,7 +49,8 @@ public class ClientHandler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            logger.error("An error occurred while handling the client", e);
+            e.printStackTrace();
+//            logger.error("An error occurred while handling the client", e);
         }
     }
 }

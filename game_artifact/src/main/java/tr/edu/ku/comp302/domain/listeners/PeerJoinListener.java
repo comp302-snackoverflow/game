@@ -1,7 +1,7 @@
 package tr.edu.ku.comp302.domain.listeners;
 
-import tr.edu.ku.comp302.server.PlayerInfo;
+import tr.edu.ku.comp302.client.P2PConnection;
 
 public interface PeerJoinListener {
-    void onJoin(PlayerInfo playerInfo);
+    void onJoin(P2PConnection conn);
 }
