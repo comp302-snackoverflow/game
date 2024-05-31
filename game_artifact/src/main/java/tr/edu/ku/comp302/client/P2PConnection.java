@@ -47,36 +47,35 @@ public class P2PConnection {
             @Override
             public void run() {
                 while (true) {
-                    try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-                        String message;
-                        while ((message = messageQueue.poll()) != null) {
-                            out.println(message);
-                            logger.info("Sent message: {}", message);
+                    try {
+                        socket = serverSocket.accept();
+                        try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+                            String message;
+                            while ((message = messageQueue.poll()) != null) {
+                                out.println(message);
+                                logger.info("Sent message: {}", message);
+                            }
                         }
                     } catch (IOException e) {
                         logger.error("An error occurred while sending a message to the peer", e);
-                        close();
-                    }
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        break;
                     }
                 }
             }
-        }).start();
+        });
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-                    String message;
-                    while ((message = in.readLine()) != null) {
-                        logger.info("Received message: {}", message);
-                        receivedMessages.add(message);
+                try {
+                    socket = serverSocket.accept();
+                    try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                        String message;
+                        while ((message = in.readLine()) != null) {
+                            logger.info("Received message: {}", message);
+                            receivedMessages.add(message);
+                        }
                     }
                 } catch (IOException e) {
                     logger.error("An error occurred while receiving a message from the peer", e);
-                    close();
                 }
             }
         }).start();
@@ -84,41 +83,52 @@ public class P2PConnection {
 
     public void connectToPeer() throws IOException {
         socket = new Socket(peerAddress, peerPort);
-
+        socket.setKeepAlive(true);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
-                    try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-                        String message;
-                        while ((message = messageQueue.poll()) != null) {
-                            out.println(message);
-                            logger.info("Sent message: {}", message);
+                    try {
+                        close();
+                        socket = new Socket(peerAddress, peerPort);
+                        try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+                            String message;
+                            while ((message = messageQueue.poll()) != null) {
+                                out.println(message);
+                                logger.info("Sent message: {}", message);
+                            }
+                        } catch (IOException e) {
+                            logger.error("An error occurred while sending a message to the peer", e);
+                            close();
                         }
+
+                        Thread.sleep(500);
+
                     } catch (IOException e) {
                         logger.error("An error occurred while sending a message to the peer", e);
                         close();
-                    }
-                    try {
-                        Thread.sleep(500);
                     } catch (InterruptedException e) {
-                        break;
+
                     }
                 }
             }
         }).start();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-                    String message;
-                    while ((message = in.readLine()) != null) {
-                        logger.info("Received message: {}", message);
-                        receivedMessages.add(message);
+                try {
+                    close();
+                    socket = new Socket(peerAddress, peerPort);
+                    try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                        String message;
+                        while ((message = in.readLine()) != null) {
+                            logger.info("Received message: {}", message);
+                            receivedMessages.add(message);
+                        }
                     }
                 } catch (IOException e) {
                     logger.error("An error occurred while receiving a message from the peer", e);
-                    close();
                 }
             }
         }).start();
