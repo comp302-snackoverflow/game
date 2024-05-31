@@ -33,7 +33,7 @@ public class P2PConnection {
         serverSocket = new ServerSocket(PORT);
 
         socket = serverSocket.accept();
-
+        socket.setKeepAlive(true);
         this.peerAddress = socket.getInetAddress().getHostAddress();
         this.peerPort = socket.getPort();
     }
@@ -41,6 +41,7 @@ public class P2PConnection {
     public void connectToPeer() throws IOException {
 
         socket = new Socket(peerAddress, peerPort);
+        socket.setKeepAlive(true);
         System.out.println(socket);
     }
 
