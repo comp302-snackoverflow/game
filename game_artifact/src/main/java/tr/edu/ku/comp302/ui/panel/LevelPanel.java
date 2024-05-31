@@ -33,8 +33,10 @@ public class LevelPanel extends JPanel {
     private final int iconSize = 40;
     private final int iconSpacing = 10;
     private static final View heartView = View.of(View.HEART);
+    private MainFrame mainFrame;
 
     public LevelPanel(LevelHandler levelHandler, MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         this.levelHandler = levelHandler;
         addKeyListener(new KeyboardHandler());
         setFocusable(true);
@@ -61,6 +63,7 @@ public class LevelPanel extends JPanel {
         levelHandler.renderSpellBox(g);
         showYmir(g);
         showScore(g);
+        finishGame();
 
         int x = (int) (getWidth() * 0.05);
         int y = getHeight() - heartHeight - 20;
@@ -68,6 +71,13 @@ public class LevelPanel extends JPanel {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 5, y + heartHeight / 2 + 6);
+    }
+
+    private void finishGame() {
+        if (levelHandler.isFinished()) {
+            
+            mainFrame.showGameOverPanel(levelHandler.isWon(), levelHandler.getScore());
+        }
     }
 
     private void showScore(Graphics g) {

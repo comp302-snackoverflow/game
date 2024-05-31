@@ -15,6 +15,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.View;
 
@@ -548,5 +549,21 @@ public class LevelHandler {
 
     private void decreaseChances() {
         level.decreaseChances();
+    }
+
+
+    public boolean isFinished() {
+        if (level.getChances() == 0)   {
+            LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isWon(){
+        if (level.getBarriers().isEmpty()) return true;
+
+        return false;
     }
 }

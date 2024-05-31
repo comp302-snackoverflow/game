@@ -12,6 +12,7 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
     private static final String LOGIN = "login";
+    private static final String GAMEOVER = "login";
     private static final String REGISTER = "register";
     private static final String MAINMENU = "mainmenu";
     private static final String LEVEL = "level";
@@ -31,6 +32,7 @@ public class MainFrame extends JFrame {
     private PauseMenuPanel pausePanel;
     private SelectLevelPanel selectLevelPanel;
     private SelectLoadPanel selectLoadPanel;
+    private GameOverPanel gameOverPanel;
 
     private MainFrame() {
         setTitle("Lance of Destiny"); // TODO: Maybe change the title in every page
@@ -67,6 +69,11 @@ public class MainFrame extends JFrame {
         self.setMinimumSize(new Dimension(frameWidth, frameHeight));
         JFrame.setDefaultLookAndFeelDecorated(true);
         return self;
+    }
+
+    private void prepareGameOverPanel(boolean isWon, int score) {
+        gameOverPanel = new GameOverPanel(isWon, score, this);
+        gameOverPanel.setFocusable(true);
     }
 
     private void prepareLoginPanel() {
@@ -109,6 +116,14 @@ public class MainFrame extends JFrame {
 
     private void prepareSelectSavedGamePanel() {
         selectLoadPanel = new SelectLoadPanel(this);
+    }
+
+    public void showGameOverPanel(boolean isWon, int score) {
+        prepareGameOverPanel(isWon, score);
+        cards.add(gameOverPanel, GAMEOVER);
+        layout.show(cards, GAMEOVER);
+        gameOverPanel.requestFocusInWindow();
+        refresh();
     }
 
     public void showLoginPanel() {

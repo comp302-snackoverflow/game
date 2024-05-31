@@ -11,7 +11,9 @@ import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.ui.view.View;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
+
 
 public class BarrierRenderer {
     private static final View simpleBarrierView = View.of(View.SIMPLE_BARRIER);
@@ -38,7 +40,19 @@ public class BarrierRenderer {
     }
 
     public void renderBarriers(Graphics g, List<Barrier> barriers) {
-        for (Barrier barrier : barriers) {
+        if (barriers == null) {
+            logger.warn("Barriers list is null");
+            return;
+        }
+    
+        Iterator<Barrier> iterator = barriers.iterator();
+        while (iterator.hasNext()) {
+            Barrier barrier = iterator.next();
+            if (barrier == null) {
+                logger.warn("Barrier is null");
+                iterator.remove(); // Remove the null barrier from the list
+                continue;
+            }
             renderBarrier(g, barrier);
         }
     }

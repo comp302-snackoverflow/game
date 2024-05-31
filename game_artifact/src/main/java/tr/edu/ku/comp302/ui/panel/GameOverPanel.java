@@ -2,6 +2,8 @@ package tr.edu.ku.comp302.ui.panel;
 
 import javax.swing.*;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
+
 import java.awt.*;
 
 public class GameOverPanel extends JPanel {
@@ -9,8 +11,10 @@ public class GameOverPanel extends JPanel {
     private int score;
     private Image backgroundImage;
     private Image iconImage;
+    private MainFrame mainFrame;
     
-    public GameOverPanel(boolean isWon, int score) {
+    public GameOverPanel(boolean isWon, int score, MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         this.isWon = isWon;
         this.score = score;
         this.setPreferredSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()));
@@ -22,11 +26,12 @@ public class GameOverPanel extends JPanel {
         }
         setLayout(null); 
         JButton backButton = new JButton("Back to the Main Menu");
+        backButton.addActionListener(e -> backToMainMenu());
         add(backButton);
     }
 
     private void backToMainMenu() {
-        // TODO: Implement navigation back to the main menu
+        mainFrame.showMainMenuPanel();
     }
 
     @Override
