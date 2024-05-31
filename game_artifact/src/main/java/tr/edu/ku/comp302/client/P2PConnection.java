@@ -38,8 +38,8 @@ public class P2PConnection {
         serverSocket = new ServerSocket(PORT);
         socket = serverSocket.accept();
         socket.setKeepAlive(true);
-        this.peerAddress = socket.getInetAddress().getHostAddress();
-        this.peerPort = socket.getPort();
+//        this.peerAddress = socket.getInetAddress().getHostAddress();
+//        this.peerPort = socket.getPort();
         startHeartbeat();
     }
 
@@ -109,6 +109,10 @@ public class P2PConnection {
             }
         } catch (IOException e) {
             logger.error("An error occurred while closing the connection", e);
+        } finally {
+            if (scheduler != null && !scheduler.isShutdown()) {
+                scheduler.shutdown();
+            }
         }
     }
 
