@@ -23,7 +23,13 @@ public class CollisionHandler {
 
     public static void checkFireballBarriersCollisions(FireBall fireBall, List<Barrier> barriers) {
         for (Barrier barrier : barriers) {
-            checkFireBallEntityCollisions(fireBall, barrier);
+            long currentTime = System.currentTimeMillis();
+            if (barrier.canCollide(currentTime)) {
+                if (checkFireBallEntityCollisions(fireBall, barrier)) {
+                    barrier.setLastCollisionTimeInMillis(currentTime / 1e6);
+                }
+            }
+
         }
     }
 

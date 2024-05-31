@@ -19,6 +19,10 @@ public abstract class Barrier extends Entity {
     private long lastDiceRollTimeNs;
     private boolean isFrozen = false;
 
+    private final long collisionCooldownInMillis = 50;
+
+    private Double lastCollisionTimeInMillis;
+
     public Barrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         thickness = DEFAULT_THICKNESS;
@@ -27,6 +31,7 @@ public abstract class Barrier extends Entity {
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
         random = new SecureRandom();
         lastDiceRollTimeNs = 0;
+        lastCollisionTimeInMillis = null;
     }
 
     public void adjustPositionAndSize(double oldWidth, double oldHeight, double newWidth, double newHeight) {
@@ -138,4 +143,17 @@ public abstract class Barrier extends Entity {
     public RectangularShape getExtendedHitbox() {
         return movementStrategy.getExtendedHitbox(this);
     }
+
+    public boolean canCollide(double timeInMillis) {
+        return lastCollisionTimeInMillis == null || timeInMillis - lastCollisionTimeInMillis >= collisionCooldownInMillis;
+    }
+
+    public void setLastCollisionTimeInMillis(double timeInMillis) {
+        lastCollisionTimeInMillis = timeInMillis;
+    }
+
+    public Double getLastCollisionTimeInMillis() {
+        return lastCollisionTimeInMillis;
+    }
+
 }
