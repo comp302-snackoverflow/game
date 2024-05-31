@@ -96,12 +96,18 @@ public class BuildPanel extends JPanel {
         barriersPanel.deleteButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.DELETE_MODE));
     }
 
+    
+
     private void addButtonsActions() {
         buttonsPanel.saveButton.addActionListener(e -> buildHandler.saveMap(buildSection.getWidth(), buildSection.getHeight()));
         buttonsPanel.playButton.addActionListener(e -> {
-            mainFrame.setCurrentLevel(buildHandler.getLevel());
-            mainFrame.showLevelPanel();
-            buildHandler.clearMap();
+            if (buildHandler.countsSatisfied()){
+                mainFrame.setCurrentLevel(buildHandler.getLevel());
+                mainFrame.showLevelPanel();
+                buildHandler.clearMap();
+            }else{
+                alertBarrierInputs();
+            }
         });
         buttonsPanel.clearButton.addActionListener(e -> buildHandler.clearMap());
         buttonsPanel.exitButton.addActionListener(e -> mainFrame.showMainMenuPanel());
