@@ -42,6 +42,7 @@ public class P2PConnection {
 
         socket = new Socket(peerAddress, peerPort);
         socket.setKeepAlive(true);
+
         System.out.println(socket);
     }
 
@@ -50,6 +51,9 @@ public class P2PConnection {
             throw new RuntimeException("Connection is not established");
         }
 
+        if (socket.isClosed()) {
+            reconnect();
+        }
         try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
             out.println(message);
         } catch (IOException e) {
@@ -87,5 +91,13 @@ public class P2PConnection {
 
     public PlayerInfo getPeer() {
         return new PlayerInfo(peerAddress, peerPort);
+    }
+
+    public void reconnect() {
+        try {
+            socket.connect(socket.getRemoteSocketAddress());
+        } catch (IOException ignored) {
+            reconnect();
+        }
     }
 }
