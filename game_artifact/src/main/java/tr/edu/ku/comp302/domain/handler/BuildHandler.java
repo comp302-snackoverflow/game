@@ -5,7 +5,10 @@ import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.save.SaveService;
@@ -54,12 +57,7 @@ public class BuildHandler {
                 Component component = e.getComponent();
                 if (component instanceof BuildPanel panel) {
                     JPanel buildSection = panel.getBuildSection();
-                    if (buildPanel.getWidth() < 720) {
-                        buildPanel.setSize(new Dimension(720, buildPanel.getHeight()));
-                    }
-                    if (buildPanel.getHeight() < 540) {
-                        buildPanel.setSize(new Dimension(buildPanel.getWidth(), 540));
-                    }
+
                     int newWidth = buildSection.getWidth();
                     int newHeight = buildSection.getHeight();
                     resizeBarriersOnMap(newWidth, newHeight);
@@ -87,9 +85,8 @@ public class BuildHandler {
                 case SimpleBarrier ignored -> simpleBarrierCount++;
                 case FirmBarrier ignored -> firmBarrierCount++;
                 case ExplosiveBarrier ignored -> explosiveBarrierCount++;
-//                case GiftingBarrier ignored -> giftingBarrierCount++;
-                default -> {
-                }
+                case GiftBarrier ignored -> giftBarrierCount++;
+                default -> {}
             }
         }
     }
@@ -99,8 +96,10 @@ public class BuildHandler {
     }
 
     public boolean countsSatisfied(int simpleBarrierCount, int firmBarrierCount, int explosiveBarrierCount, int giftBarrierCount) {
-        return simpleBarrierCount >= REQUIRED_SIMPLE_BARRIER_COUNT && firmBarrierCount >= REQUIRED_FIRM_BARRIER_COUNT && explosiveBarrierCount >= REQUIRED_EXPLOSIVE_BARRIER_COUNT /* &&
-                giftBarrierCount >= REQUIRED_GIFT_BARRIER_COUNT */ &&
+        return simpleBarrierCount >= REQUIRED_SIMPLE_BARRIER_COUNT &&
+                firmBarrierCount >= REQUIRED_FIRM_BARRIER_COUNT &&
+                explosiveBarrierCount >= REQUIRED_EXPLOSIVE_BARRIER_COUNT &&
+                giftBarrierCount >= REQUIRED_GIFT_BARRIER_COUNT &&
                 // FIXME: Decide on below constant later.
                 simpleBarrierCount + firmBarrierCount + explosiveBarrierCount + giftBarrierCount <= 200;
     }
@@ -146,15 +145,16 @@ public class BuildHandler {
     private void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom) {
         int buildSectionWidth = buildPanel.getBuildSection().getWidth();
         int buildSectionHeight = buildPanel.getBuildSection().getHeight() * 4 / 8; // TODO: Change ratio later to a constant value
-        Barrier collidedBarrier;
+        boolean collided;
         int x, y;
         Barrier randomBarrier;
         do {
             x = (int) barrierWidth / 2 + secureRandom.nextInt(buildSectionWidth - (int) barrierWidth - (int) barrierWidth / 2);
             y = 20 + secureRandom.nextInt(buildSectionHeight - 40);  // -20 barrier -20 padding
             randomBarrier = createBarrier(barrierType, x, y, barrierWidth);
-            collidedBarrier = checkBarrierCollisionWithBarriers(randomBarrier);
-        } while (collidedBarrier != null);
+            // collided = checkBarrierCollisionWithBarriers(randomBarrier);
+            collided = CollisionHandler.checkBarrierCollisionWithBarriers(randomBarrier, barriersOnMap);
+        }while(collided);
         barriersOnMap.add(randomBarrier);
     }
 
@@ -164,7 +164,8 @@ public class BuildHandler {
             case SIMPLE_BARRIER -> barrier = new SimpleBarrier(x, y);
             case FIRM_BARRIER -> barrier = new FirmBarrier(x, y);
             case EXPLOSIVE_BARRIER -> barrier = new ExplosiveBarrier(x, y);
-            // case GIFT_BARRIER -> barrier = new GiftBarrier(x, y);
+            case GIFT_BARRIER -> barrier = new GiftBarrier(x, y);
+            case HOLLOW_BARRIER -> barrier = new HollowBarrier(x, y);
             default -> barrier = new SimpleBarrier(x, y);
         }
         barrier.setLength(barrierWidth);
@@ -209,8 +210,7 @@ public class BuildHandler {
     public void handlePress(int x, int y) {
         if (selectionMode == -2) {
             return;
-        }
-        if (selectionMode == -1){
+        } else if (selectionMode == -1) {
             deleteBarrier(x, y);
         }
         else{
@@ -238,7 +238,8 @@ public class BuildHandler {
         int yMin = 20;
         if (x <= xMax && y <= yMax && x >= xMin && y >= yMin) {
             Barrier createdBarrier = createBarrier(buildSection.getWidth() / 50, x, y, selectionMode);
-            if (checkBarrierCollisionWithBarriers(createdBarrier) == null) {
+            // if (!checkBarrierCollisionWithBarriers(createdBarrier)){
+            if (!CollisionHandler.checkBarrierCollisionWithBarriers(createdBarrier, barriersOnMap)) {
                 barriersOnMap.add(createdBarrier);
             } else {
                 // TODO: Add logger message.
@@ -260,7 +261,7 @@ public class BuildHandler {
             case BuildHandler.SIMPLE_MODE -> new SimpleBarrier(x, y);
             case BuildHandler.FIRM_MODE -> new FirmBarrier(x, y);
             case BuildHandler.EXPLOSIVE_MODE -> new ExplosiveBarrier(x, y);
-            // case BuildHandler.GIFT_MODE -> new GiftBarrier(x, y);
+            case BuildHandler.GIFT_MODE -> new GiftBarrier(x, y);
             default -> {
                 logger.warn("Unknown selection mode: {}", selectionMode);
                 yield new SimpleBarrier(x, y);
@@ -282,6 +283,7 @@ public class BuildHandler {
     private boolean checkBarrierCollision(Barrier b1, Barrier b2) {
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
+    //TODO: delete the two above when tested correctly !
 
     public int getOldWidth() {
         return oldWidth;
@@ -300,6 +302,6 @@ public class BuildHandler {
     }
 
     private enum BarrierType {
-        SIMPLE_BARRIER, EXPLOSIVE_BARRIER, FIRM_BARRIER, GIFT_BARRIER
+        SIMPLE_BARRIER, EXPLOSIVE_BARRIER, FIRM_BARRIER, GIFT_BARRIER, HOLLOW_BARRIER
     }
 }

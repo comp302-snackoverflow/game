@@ -100,11 +100,11 @@ public class Chronometer {
         this.previousTime = previousTime;
     }
 
-    public double nsToMs(long timeWithNs) {
+    public static double nsToMs(long timeWithNs) {
         return timeWithNs / 1_000_000.0;
     }
 
-    public double nsToSeconds(long timeWithNs) {
+    public static double nsToSeconds(long timeWithNs) {
         return timeWithNs / 1_000_000_000.0;
     }
 

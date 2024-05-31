@@ -91,11 +91,9 @@ public class Lance extends Entity {
         return LanceOfDestiny.getScreenWidth() * 0.2; // = 2L
     }
 
-
     public double getSpeedWithTap() {
         return LanceOfDestiny.getScreenWidth() * 0.1; // = L
     }
-
 
     public double getRotationAngle() {
         return rotationAngle;

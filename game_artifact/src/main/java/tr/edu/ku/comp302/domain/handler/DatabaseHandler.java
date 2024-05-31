@@ -343,7 +343,7 @@ public class DatabaseHandler {
         String query = "SELECT * FROM Save WHERE id = ?";
         FireballData fireball = null;
         LanceData lance = null;
-        double score = 0.0;
+        int score = 0;
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -352,7 +352,7 @@ public class DatabaseHandler {
                     if (rs.next()) {
                         fireball = new FireballData(rs.getDouble("fireball_x"), rs.getDouble("fireball_y"), rs.getDouble("fireball_dx"), rs.getDouble("fireball_dy"));
                         lance = new LanceData(rs.getDouble("lance_x"), rs.getDouble("lance_y"), rs.getDouble("lance_angle"));
-                        score = rs.getDouble("score");
+                        score = rs.getInt("score");
                     }
                 }
             }

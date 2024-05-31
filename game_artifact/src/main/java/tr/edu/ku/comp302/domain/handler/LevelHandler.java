@@ -4,49 +4,75 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.chrono.Chronometer;
 import tr.edu.ku.comp302.domain.entity.FireBall;
+import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import tr.edu.ku.comp302.ui.view.View;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 
+
 public class LevelHandler {
     private static final View fireBallView = View.of(View.FIREBALL);
+    private static View currentFireBallView = View.of(View.FIREBALL);
+    private static final View overwhelmedFireBallView = View.of(View.OVERWHELMED_FIREBALL);
     private static final View lanceView = View.of(View.LANCE);
     private static final View remainView = View.of(View.REMAIN);
     private static final Logger logger = LogManager.getLogger(LevelHandler.class);
     private final BarrierRenderer barrierRenderer = new BarrierRenderer();
+    private static final View hexView = View.of(View.HEX);
+    private static final View spellBoxView = View.of(View.SPELL_BOX);
     private Level level;
+    private SpellHandler spellHandler;
+    private LevelPanel levelPanel;
+    private long lastHexCreationTime = 0;
 
     private Character lastMoving;
     private boolean tapMoving;
 
     public LevelHandler(Level level) {
         this.level = level;
-        lastMoving = null;
-        tapMoving = false;
+        spellHandler = new SpellHandler(this);
     }
 
 
     public void resizeLanceImage() {
         Lance lance = getLance();
         lanceView.resizeImage((int) lance.getLength(), (int) lance.getThickness());
+        tapMoving = false;
+        lastMoving = null;
     }
 
     public void resizeFireBallImage() {
         FireBall fireBall = getFireBall();
-        fireBallView.resizeImage(fireBall.getSize(), fireBall.getSize());
+        if(fireBall.isOverwhelming()){
+            currentFireBallView = overwhelmedFireBallView;
+        }
+        else{
+            currentFireBallView = fireBallView;
+        }
+        currentFireBallView.resizeImage(fireBall.getSize(), fireBall.getSize());
     }
 
     public void resizeBarrierImages() {
         barrierRenderer.resizeBarrierImages(getBarriers());
+    }
+
+    public void resizeSpellBoxImage(){
+        if (!getSpellBoxes().isEmpty()) {
+            spellBoxView.resizeImage(level.getSpellBoxes().getFirst().getSize(), level.getSpellBoxes().getFirst().getSize());
+        }
     }
 
     public void resizeRemainImage() {
@@ -71,7 +97,7 @@ public class LevelHandler {
 
     public void renderFireBall(Graphics g) {
         FireBall fireBall = level.getFireBall();
-        g.drawImage(fireBallView.getImage(), (int) fireBall.getXPosition(), (int) fireBall.getYPosition(), null);
+        g.drawImage(currentFireBallView.getImage(), (int) fireBall.getXPosition(), (int) fireBall.getYPosition(), null);
         // uncomment the below line to see FireBall hit box
         // g.drawRect((int) fireBall.getXPosition(), (int) fireBall.getYPosition(), fireBall.getSize(), fireBall.getSize());
     }
@@ -80,10 +106,32 @@ public class LevelHandler {
         barrierRenderer.renderBarriers(g, getBarriers());
     }
 
+    public void renderSpellBox(Graphics g){
+        List<SpellBox> spellBoxes = level.getSpellBoxes();
+
+        // Output the number of remains for debugging purposes
+        //System.out.println(remains.size());
+
+        // Iterate through the remains and render those that are marked as dropped
+        for (SpellBox spellBox : spellBoxes.stream().filter(SpellBox::isDropped).toList()) {
+            renderSpellBoxView(g, spellBox);
+        }
+    }
+
     public void renderRemains(Graphics g) {
         List<Remain> remains = level.getRemains();
         for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
             renderRemainView(g, remain);
+        }
+    }
+
+    public void renderHexes(Graphics g) {
+        // Retrieve the hexes from the current level
+        List<Hex> hexes = level.getHexes();
+        if (hexes != null){
+            for (Hex hex : hexes) {
+                g.drawImage(hexView.getImage(), (int) hex.getXPosition(), (int) hex.getYPosition(), null);
+            }
         }
     }
 
@@ -95,11 +143,12 @@ public class LevelHandler {
         Lance lance = getLance();
         boolean moveLeft = KeyboardHandler.leftArrowPressed && !KeyboardHandler.rightArrowPressed;
         boolean moveRight = KeyboardHandler.rightArrowPressed && !KeyboardHandler.leftArrowPressed;
-        double holdSpeed = lance.getSpeedWithHold();
-        double tapSpeed = lance.getSpeedWithTap();
         boolean rotateCCW = KeyboardHandler.buttonAPressed && !KeyboardHandler.buttonDPressed;
         boolean rotateCW = KeyboardHandler.buttonDPressed && !KeyboardHandler.buttonAPressed;
-        handleLanceMovement(moveLeft, moveRight,tapSpeed, holdSpeed, chronometer, upsSet);
+        double holdSpeed = lance.getSpeedWithHold();
+        double tapSpeed = lance.getSpeedWithTap();
+
+        handleLanceMovement(moveLeft, moveRight, tapSpeed, holdSpeed, chronometer, upsSet);
         handleRotationLogic(rotateCCW, -Lance.rotationSpeed, upsSet);
         handleRotationLogic(rotateCW, Lance.rotationSpeed, upsSet);
         handleSteadyStateLogic(!rotateCCW && !rotateCW, Lance.horizontalRecoverySpeed, upsSet);
@@ -108,7 +157,32 @@ public class LevelHandler {
 
         handleBarriersMovement(currentTime, upsSet);
 
-        handleCollisionLogic(currentTime);
+        handleCollisionLogic(currentTime, chronometer);
+
+        handleHexMovement(upsSet);
+
+        handleChanceReductionLogic();
+        handleRemainLogic(upsSet);
+        handleSpellBoxLogic();
+
+        handleYmir();
+        handleSpellLogic();
+        updateTimeInSeconds(chronometer);
+        updateSpells();
+
+        createHex(currentTime / 1000000);
+
+    }
+
+    private void updateTimeInSeconds(Chronometer chronometer){
+        level.updateTimeInSeconds((long) (chronometer.getCurrentTime() / 1e6));
+    }
+
+    private void handleScoreLogic(Chronometer chronometer) {
+        // FIXME: chronometer's elapsed time must be saved into DB
+        int score = getScore() +  300 / (level.getSecondsPassed() + 1);
+        level.setScore(score);
+        // newScore = oldScore + 300 / (currentTime - gameStartingTime) //TODO: is gameStartingTime needed ? Ask this to meriç/mert/ömer.
     }
 
     // Warning: DO NOT try to make this method clean. You will most likely fail.
@@ -211,7 +285,7 @@ public class LevelHandler {
         fb.move(fb.getDx() / upsSet, fb.getDy() / upsSet);
     }
 
-    private void handleCollisionLogic(long currentTime) {
+    private void handleCollisionLogic(long currentTime, Chronometer chronometer) {
         Lance lance = getLance();
         if (lance.canCollide(currentTime)) {
             if (CollisionHandler.checkFireBallEntityCollisions(getFireBall(), lance)) {
@@ -220,14 +294,21 @@ public class LevelHandler {
         }
 
         CollisionHandler.checkFireBallBorderCollisions(getFireBall(), LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        CollisionHandler.handleHexCollision(getHexes(), getBarriers());
 
         List<Barrier> barriers = getBarriers();
         CollisionHandler.checkFireballBarriersCollisions(getFireBall(), barriers);
 
         for (Barrier barrier : barriers.stream().toList()) {
             if (barrier.isDead()) {
+                if (!(barrier instanceof HollowBarrier)){
+                    handleScoreLogic(chronometer);
+                }
                 if (barrier instanceof ExplosiveBarrier b) {
                     b.dropRemains();
+                }
+                if (barrier instanceof GiftBarrier b) {
+                    b.dropSpellBox();
                 }
                 barriers.remove(barrier);
             }
@@ -250,16 +331,40 @@ public class LevelHandler {
                 barrier.move(barrier.getSpeed() / upsSet);
             }
         }
+    }
 
+    private void handleRemainLogic(int upsSet) {
         List<Remain> remains = getRemains();
         for (Remain remain : remains.stream().filter(Remain::isDropped).toList()) {
             remain.move(remain.getSpeed() / upsSet);
             if (remain.getYPosition() > LanceOfDestiny.getScreenHeight()) {
                 remains.remove(remain);
+            } else if (CollisionHandler.checkRemainLanceCollisions(getLance(), remain)) {
+                SoundHandler.playRemainHitSound();
+                decreaseChances();
+                remains.remove(remain);
             }
-            //TODO: handle collision with lance
         }
     }
+
+    private void handleSpellBoxLogic() {
+        List<SpellBox> spellBoxes = getSpellBoxes();
+        for (SpellBox spellBox : spellBoxes.stream().filter(SpellBox::isDropped).toList()) {
+            spellBox.move();
+
+            if (CollisionHandler.checkSpellBoxLanceCollisions(getLance(), spellBox)){
+                SoundHandler.playGiftSound();
+                spellBoxes.remove(spellBox);
+                collectSpell(spellBox.getSpell());
+            }
+
+            if (spellBox.getYPosition() > LanceOfDestiny.getScreenHeight()) {
+                spellBoxes.remove(spellBox);
+            }
+        }
+    }
+
+
 
     private double calculateAngularChangePerUpdate(double angularSpeed, int upsSet) {
         return angularSpeed * getMsPerUpdate(upsSet) / 1000.0;
@@ -276,8 +381,38 @@ public class LevelHandler {
         }
     }
 
+    private void handleHexMovement(int upsSet) {
+        for (Hex hex: getHexes()){
+            hex.move(hex.getSpeed() / upsSet);
+        }
+    }
+
+    private void handleChanceReductionLogic() {
+        FireBall fb = getFireBall();
+        if (fb.getYPosition() + fb.getSize() >= LanceOfDestiny.getScreenHeight()) {
+            decreaseChances();
+            //TODO: Stop the game if the chances become 0!
+            fb.stopFireball();
+            fb.stickToLance(getLance());
+        }
+    }
+
+    private void handleSpellLogic() {
+        // FIXME: use key bindings.
+        if (KeyboardHandler.buttonHPressed) {
+            useSpell(SpellBox.HEX_SPELL);
+        }
+        if (KeyboardHandler.buttonTPressed) {
+            useSpell(SpellBox.EXTENSION_SPELL);
+        }
+    }
+
     private double getMsPerUpdate(int upsSet) {
         return 1000.0 / upsSet;
+    }
+
+    private void renderSpellBoxView(Graphics g, SpellBox spellBox) {
+        g.drawImage(spellBoxView.getImage(), (int) spellBox.getXPosition(), (int) spellBox.getYPosition(), null);
     }
 
     public Level getLevel() {
@@ -302,5 +437,116 @@ public class LevelHandler {
 
     public Lance getLance() {
         return level.getLance();
+    }
+    public List<SpellBox> getSpellBoxes(){
+        return level.getSpellBoxes();
+    }
+
+    /**
+     * Creates a new hex at a position relative to the lance.
+     */
+
+    public void startCreatingHex() {
+        spellHandler.startCreatingHex(level);
+    }
+
+    public List<Hex> getHexes(){
+        return level.getHexes();
+    }
+
+    public void extendLance() {
+        spellHandler.extendLance(getLance());
+    }
+
+    /**
+     * Applies the Overwhelming Spell. This spell creates a massive fireball that
+     * travels across the screen, damaging and destroying barriers in its path.
+     */
+    public void applyOverwhelmingSpell() {
+        spellHandler.overwhelmingSpell(level);
+    }
+
+    public void updateSpells() {
+        spellHandler.updateSpells(level);
+    }
+
+    public void createHex(long currentTime) {
+        spellHandler.createHex(level, currentTime, lastHexCreationTime);
+    }
+
+    public void collectSpell(char spell){
+        SpellBox.incrementSpellCount(spell);
+        switch(spell) {
+            case(SpellBox.EXTENSION_SPELL), (SpellBox.HEX_SPELL):
+                level.collectSpell(spell);
+                break;
+            case(SpellBox.OVERWHELMING_SPELL):
+                applyOverwhelmingSpell();
+                break;
+            case(SpellBox.FELIX_FELICIS_SPELL):
+                spellHandler.felixFelicis(level);
+                break;
+            default:
+                return;
+        }
+        if (levelPanel != null) {
+            levelPanel.updateSpellCounts();
+        }
+    }
+    public void useSpell(char spell) {
+        if (!level.inventoryHasSpell(spell)) return;
+
+        if (SpellBox.decrementSpellCount(spell)) {
+            switch (spell) {
+                case SpellBox.EXTENSION_SPELL:
+                    extendLance();
+                    level.removeSpell(spell);
+                    break;
+                case SpellBox.HEX_SPELL:
+                    startCreatingHex();
+                    level.removeSpell(spell);
+                    break;
+                case SpellBox.OVERWHELMING_SPELL:
+                    applyOverwhelmingSpell();
+                    break;
+                default:
+                    return;
+            }
+            // Update the spell counts in the LevelPanel
+            if (levelPanel != null) {
+                levelPanel.updateSpellCounts();
+            }
+        } else {
+            // Handle the case where there are no more spells left
+            System.out.println("No more spells left of type: " + spell);
+        }
+    }
+
+
+    public void setLevelPanel(LevelPanel levelPanel) {
+        this.levelPanel = levelPanel;
+    }
+
+    public void setLastHexCreationTime(long currentTime) {
+        lastHexCreationTime = currentTime;
+    }
+
+    public void handleYmir() {
+        spellHandler.handleYmir(level);
+    }
+
+    public long getRemainingTimeForYmir() {
+        return 30 - spellHandler.getYmirTime();
+    }
+    public SpellHandler getSpellHandler() {
+        return spellHandler;
+    }
+
+    public int getScore(){
+        return level.getScore();
+    }
+
+    private void decreaseChances() {
+        level.decreaseChances();
     }
 }

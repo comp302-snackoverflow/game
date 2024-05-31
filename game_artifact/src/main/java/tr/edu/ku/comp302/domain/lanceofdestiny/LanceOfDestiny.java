@@ -63,7 +63,7 @@ public class LanceOfDestiny implements Runnable {
     }
 
     public void changeState(){
-        switch(currentGameState){
+        switch (currentGameState){
             case PLAYING -> state = new PlayingState(this);
             case PAUSE -> state = new PauseSPState(this);
             default -> state = null;

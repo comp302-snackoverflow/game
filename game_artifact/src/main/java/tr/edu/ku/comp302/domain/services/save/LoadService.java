@@ -2,13 +2,8 @@ package tr.edu.ku.comp302.domain.services.save;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tr.edu.ku.comp302.domain.entity.FireBall;
-import tr.edu.ku.comp302.domain.entity.Lance;
-import tr.edu.ku.comp302.domain.entity.Remain;
-import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
-import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.entity.*;
+import tr.edu.ku.comp302.domain.entity.barrier.*;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
@@ -44,7 +39,8 @@ public class LoadService {
         Lance lance = loadLance(data.lanceData());
         List<Barrier> barriers = loadBarriers(data.barrierData());
         List<Remain> remains = loadRemains(data.remainData());
-        return new Level(lance, fb, barriers, remains, data.score());
+        // FIXME load hexes, spell boxes and chances
+        return new Level(lance, fb, barriers, remains, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), data.score(), 0, 0, 3);
     }
 
     public Level loadMap(int mapId) {
@@ -80,6 +76,8 @@ public class LoadService {
             barrier = new FirmBarrier(xPos, yPos);
         } else if (type.equals(ExplosiveBarrier.class.getSimpleName())) {
             barrier = new ExplosiveBarrier(xPos, yPos);
+        } else if (type.equals(GiftBarrier.class.getSimpleName())) {
+            barrier = new GiftBarrier(xPos, yPos);
         } else {
             barrier = new SimpleBarrier(xPos, yPos);
             logger.warn("Unknown barrier type: {}, creating a simple barrier.", type);

@@ -27,7 +27,7 @@ public class SaveService {
         return instance;
     }
 
-    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers, List<Remain> remains, double score) {
+    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers, List<Remain> remains, int score) {
         FireballData fireballData = getFireballData(fireball, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         LanceData lanceData = getLanceData(lance, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
