@@ -84,8 +84,8 @@ public class P2PConnection {
         receiverThread.start();
     }
 
-    public void send() {
-        messageQueue.add("Hello World!");
+    public void send(String msg) {
+        messageQueue.add(msg);
     }
 
     public String receive() {

@@ -17,17 +17,13 @@ public class PlayingMPState extends PlayingState implements MultiplayerState {
 
         GameInfo info = lanceOfDestiny.getGameInfo();
 
-        try {
-            if (lanceOfDestiny.getChronometer().canReceive()) {
-                conn.sendMessage(String.format("SCORE:%d:CHANCES:%d:BARRIERS:%d", info.score(), info.chances(), info.barrierCount()));
+        if (lanceOfDestiny.getChronometer().canReceive()) {
+            conn.send(String.format("SCORE:%d:CHANCES:%d:BARRIERS:%d", info.score(), info.chances(), info.barrierCount()));
 
-                String s = conn.receiveMessage();
-                if (conn.receiveMessage() != null) {
-                    System.out.println(s);
-                }
+            String s = conn.receive();
+            if (conn.receive() != null) {
+                System.out.println(s);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

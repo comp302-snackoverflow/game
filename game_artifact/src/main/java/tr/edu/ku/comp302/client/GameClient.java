@@ -61,7 +61,7 @@ public class GameClient {
                 P2PConnection conn = new P2PConnection();
                 try {
                     conn.startServer();
-                    conn.sendMessage("Hello World!");
+                    conn.send("Hello World!");
                     listener.onJoin(conn);
                 } catch (IOException e) {
                     logger.error("An error occurred while listening for peer", e);
