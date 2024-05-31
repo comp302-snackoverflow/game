@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302.domain.entity;
 
-
 import tr.edu.ku.comp302.domain.handler.collision.Collision;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
@@ -12,43 +11,23 @@ public class FireBall extends Entity {
     private double dx = 0;
     private double dy = 0;
     private double speed = 0.2 * LanceOfDestiny.getScreenWidth(); // in px/s
-    //TODO: Add the player!
-    private boolean moving;
 
     public FireBall(double xPosition, double yPosition) {
         super(xPosition, yPosition);
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
-        moving = false;
     }
 
-    // for handling reflections with steady surfaces
-    // need to pass the surface angle
-    public void handleReflection(double surfaceAngleDegrees) {
-        double surfaceAngle = Math.toRadians(surfaceAngleDegrees);
-        double totalSpeedAngle = Math.atan2(-dy, dx);
-
-        double newAngle = 2 * surfaceAngle - totalSpeedAngle;
-
-        double totalSpeed = Math.sqrt(dx * dx + dy * dy);
-
-        dx = totalSpeed * Math.cos(newAngle);
-        dy = totalSpeed * -Math.sin(newAngle);
+    public void adjustPositionAndSpeed(double oldWidth, double oldHeight, double newWidth, double newHeight) {
+        updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
+        speed = speed * newWidth / oldWidth;
+        dx = dx * newWidth / oldWidth;
+        dy = dy * newHeight / oldHeight;
     }
 
     // for handling reflections with moving surfaces
     // need to pass the surface angle and the surface speed
     // works for steady surfaces as well
     public void handleReflection(double surfaceAngleDegrees, double surfaceXSpeed) {
-        // REQUIRES: surfaceAngleDegrees to be between -90 and 90
-        // MODIFIES: dx, Fire Ball x-speed; dy, Fire Ball y-speed
-        // EFFECTS: calculates and modifies the x and y speed of the Fire Ball
-        // according to its current speed magnitude and speed direction
-        // as well as surface angle and surface speed
-        //
-        // example: if the Fire Ball is going to the right (dx = 1, dy = 0)
-        // and the collided surface angle is 45, with surface speed 0,
-        // the Fire Ball should reflect upwards (new dx = 0, new dy = -1)
-
         /*
         double DX,myDX,DY,myDY;
         System.out.print("\nBEFORE REFLECTION: ");
@@ -77,8 +56,8 @@ public class FireBall extends Entity {
                 dy = -dy / Math.sqrt(2);
             }
             else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
-                double newSpeed = totalSpeed + 5; // increase total speed by 5
-                //double newSpeed = totalSpeed; // because permanent +5 speed boost looks bad
+                //double newSpeed = totalSpeed + 5; // increase total speed by 5
+                double newSpeed = totalSpeed; // because permanent +5 speed boost looks bad
                 dx = newSpeed * Math.cos(newAngle);
                 dy = newSpeed * -Math.sin(newAngle);
             } else { // in the opposite direction
@@ -106,20 +85,6 @@ public class FireBall extends Entity {
         */
     }
 
-    public void handleCornerReflection(double surfaceAngleDegrees, Collision corner) {
-        switch (corner) {
-            case TOP_RIGHT, BOTTOM_LEFT:
-                handleReflection(surfaceAngleDegrees + 45);
-                break;
-            case TOP_LEFT, BOTTOM_RIGHT:
-                handleReflection(surfaceAngleDegrees - 45);
-                break;
-            default:
-                handleReflection(surfaceAngleDegrees);
-                break;
-        }
-    }
-
     // for handling reflections at a surface's corner
     // need to pass which corner the collision happened
     public void handleCornerReflection(double surfaceAngleDegrees, double surfaceXSpeed, Collision corner) {
@@ -144,12 +109,11 @@ public class FireBall extends Entity {
 
     public void stickToLance(Lance lance) {
         this.xPosition = lance.getXPosition() + lance.getLength() / 2 - (int) (size / 2.0);
-        this.yPosition = lance.getYPosition() - size;
+        this.yPosition = lance.getYPosition() - size - 2; // 2 more pxs to prevent fireball from getting stuck
         this.boundingBox.setRect(xPosition, yPosition, size, size);
     }
 
     public void launchFireball() {
-        moving = true;
         this.dy = speed;
     }
 
@@ -210,6 +174,6 @@ public class FireBall extends Entity {
     }
 
     public boolean isMoving() {
-        return moving;
+        return dx != 0 || dy != 0;
     }
 }

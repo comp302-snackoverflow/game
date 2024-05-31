@@ -1,126 +1,134 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.LoginHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class LoginPanel extends JPanel {
-
-    private final MainFrame mainFrame;
-    protected JPasswordField pwdField;
-    protected JTextField usernameTextField;
-    protected JTextArea errorTextArea;
+    private final JPasswordField pwdField;
+    private final JTextField usernameTextField;
+    private final JTextArea errorTextArea;
+    private final JButton loginButton;
 
     public LoginPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
-        setLayout(null);
+        Font buttonFont = new Font("Segoe UI Semibold", Font.PLAIN, 22);
+
+        setLayout(new GridBagLayout());
 
         errorTextArea = new JTextArea();
+        errorTextArea.setFocusable(false);
         errorTextArea.setWrapStyleWord(true);
         errorTextArea.setForeground(Color.RED);
         errorTextArea.setLineWrap(true);
         errorTextArea.setEditable(false);
         errorTextArea.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        errorTextArea.setBounds(381, 217, 216, 77);
         errorTextArea.setBackground(new Color(240, 240, 240));
-        add(errorTextArea);
+
 
         JButton registerButton = new JButton("Register");
-        registerButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                clearInputs();
-                mainFrame.showRegisterPanel();
-
-            }
+        registerButton.addActionListener(e -> {
+            clearInputs();
+            mainFrame.showRegisterPanel();
         });
+
         registerButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 16));
-        registerButton.setBounds(479, 356, 118, 35);
-        add(registerButton);
 
         JLabel dontHaveAnAccountLabel = new JLabel("Don't have an account?");
         dontHaveAnAccountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         dontHaveAnAccountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        dontHaveAnAccountLabel.setBounds(263, 355, 206, 35);
-        add(dontHaveAnAccountLabel);
 
-        JButton loginButton = new JButton("Login");
+        loginButton = new JButton("Login");
+        loginButton.setFont(buttonFont);
+
+        KeyPressHandler.bindKeyPressAction(this, "ENTER", e -> loginButton.doClick());
+
+        pwdField = new JPasswordField();
+        pwdField.setFont(buttonFont);
+
+        usernameTextField = new JTextField();
+        usernameTextField.setFont(buttonFont);
+        usernameTextField.setColumns(10);
+
+
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        usernameLabel.setFont(buttonFont);
+
+        JLabel pwdLabel = new JLabel("Password:");
+        pwdLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        pwdLabel.setFont(buttonFont);
+
         loginButton.addActionListener(e -> {
             String username = usernameTextField.getText();
             String password = new String(pwdField.getPassword());
             int response = LoginHandler.getInstance().login(username, password);
-            switch(response) {
-                case LoginHandler.SUCCESS:
-                    JOptionPane.showMessageDialog(null, "Successfully logged in.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            switch (response) {
+                case LoginHandler.SUCCESS -> {
                     clearInputs();
                     mainFrame.showMainMenuPanel();
-                    // TODO: Create user instance and open his game frame.
-                    break;
-                case LoginHandler.USERNAME_EMPTY:
-                    errorTextArea.setText("You must enter a username!");
-                    break;
-                case LoginHandler.PASSWORD_EMPTY:
-                    errorTextArea.setText("You must enter a password!");
-                    break;
-                case LoginHandler.USER_NOT_FOUND:
-                    errorTextArea.setText("Username or password is not valid!");
-                    break;
-                default:
-                    errorTextArea.setText("Womp womp");
-                    break;
+                }
+                case LoginHandler.USERNAME_EMPTY -> errorTextArea.setText("You must enter a username!");
+                case LoginHandler.PASSWORD_EMPTY -> errorTextArea.setText("You must enter a password!");
+                case LoginHandler.USER_NOT_FOUND -> errorTextArea.setText("Username or password is not valid!");
+                default -> errorTextArea.setText("Womp womp");
             }
         });
-        loginButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        loginButton.setBounds(417, 305, 147, 43);
-        add(loginButton);
 
-        pwdField = new JPasswordField();
-        pwdField.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        pwdField.setBounds(381, 168, 216, 38);
-        add(pwdField);
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        usernameTextField = new JTextField();
-        usernameTextField.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        usernameTextField.setColumns(10);
-        usernameTextField.setBounds(381, 122, 216, 38);
-        add(usernameTextField);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 10, 5);
+        add(usernameLabel, gbc);
 
-        JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        usernameLabel.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        usernameLabel.setBounds(251, 122, 125, 38);
-        add(usernameLabel);
+        gbc.gridx = 2;
+        gbc.gridwidth = 3;
+        gbc.insets = new Insets(0, 5, 10, 0);
+        add(usernameTextField, gbc);
 
-        JLabel pwdLabel = new JLabel("Password:");
-        pwdLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        pwdLabel.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        pwdLabel.setBounds(251, 165, 125, 41);
-        add(pwdLabel);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 0, 10, 5);
+        add(pwdLabel, gbc);
 
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        gbc.insets = new Insets(0, 5, 10, 0);
+        add(pwdField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 5;
+        gbc.insets = new Insets(0, 0, 10, 0);
+        add(errorTextArea, gbc);
+
+        gbc.gridy = 3;
+        gbc.insets = new Insets(0, 0, 10, 0);
+        add(loginButton, gbc);
+
+        gbc.gridy = 4;
+        gbc.gridwidth = 5;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.EAST;
+
+        JPanel registrationSection = new JPanel();
+        registrationSection.setLayout(new BoxLayout(registrationSection, BoxLayout.X_AXIS));
+        registrationSection.add(dontHaveAnAccountLabel);
+        registrationSection.add(Box.createHorizontalStrut(10));
+        registrationSection.add(registerButton);
+
+        add(registrationSection, gbc);
     }
 
-    // Are getters necessary?
-    // Also, I think Swing elements should be final in UI classes.
-    public JPasswordField getPwdField() {
-        return pwdField;
-    }
-
-    public void setPwdField(JPasswordField pwdField) {
-        this.pwdField = pwdField;
-    }
-
-    public JTextField getUsernameTextField() {
-        return usernameTextField;
-    }
-
-    public void setUsernameTextField(JTextField usernameTextField) {
-        this.usernameTextField = usernameTextField;
-    }
-
-    private void clearInputs(){
+    private void clearInputs() {
         usernameTextField.setText("");
         pwdField.setText("");
         errorTextArea.setText("");

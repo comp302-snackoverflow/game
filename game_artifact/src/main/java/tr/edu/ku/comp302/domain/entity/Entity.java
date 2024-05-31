@@ -7,24 +7,15 @@ public abstract class Entity {
     protected double yPosition;
     protected Rectangle2D boundingBox;
 
-    // TODO: screen size something
     public Entity(double xPosition, double yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }
 
-    public void updatePositionRelativeToScreen(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-        if (newWidth < 0 || newHeight < 0){
-            throw new IllegalArgumentException("Width & Height should > 0");
-        }
-        if (oldWidth != 0 && oldHeight != 0){
-            xPosition = xPosition * newWidth / oldWidth;
-            yPosition = yPosition * newHeight / oldHeight;
-            boundingBox.setRect(xPosition, yPosition, boundingBox.getWidth(), boundingBox.getHeight());
-        }else{
-            // TODO: Add logger message.
-            return;
-        }
+    public void updatePositionRelativeToScreen(double oldWidth, double oldHeight, double newWidth, double newHeight) {
+        xPosition = xPosition * newWidth / oldWidth;
+        yPosition = yPosition * newHeight / oldHeight;
+        boundingBox.setRect(xPosition, yPosition, boundingBox.getWidth(), boundingBox.getHeight());
     }
 
     public double getXPosition() {
@@ -46,6 +37,5 @@ public abstract class Entity {
     public Rectangle2D getBoundingBox() {
         return boundingBox;
     }
-
 }
 

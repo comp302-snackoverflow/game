@@ -1,12 +1,10 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.services.SessionManager;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
+
 import javax.swing.*;
 import java.awt.*;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
-import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
-import tr.edu.ku.comp302.domain.services.save.LoadService;
-import tr.edu.ku.comp302.domain.services.save.SaveService;
-import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 public class MainMenuPanel extends JPanel {
     protected JButton newGameButton;
@@ -14,7 +12,7 @@ public class MainMenuPanel extends JPanel {
     protected JButton createCustomMapButton;
     protected JButton helpButton;
     protected JButton optionsButton;
-    protected JButton quitButton;
+    protected JButton logOutButton;
 
     public MainMenuPanel(MainFrame mainFrame) {
         GridBagLayout gridBagLayout = new GridBagLayout();
@@ -26,36 +24,28 @@ public class MainMenuPanel extends JPanel {
         createCustomMapButton = new JButton("Create Custom Map");
         helpButton = new JButton("Help");
         optionsButton = new JButton("Options");
-        quitButton = new JButton("Quit");
+        logOutButton = new JButton("Log Out");
 
         newGameButton.addActionListener(e -> {
-            mainFrame.showLevelPanel();
-//            LanceOfDestiny.setCurrentGameState(GameState.NEW_GAME);
-            LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
+            mainFrame.showSelectLevelPanel();
         });
         loadGameButton.addActionListener(e -> {
+            mainFrame.showSelectSavedGamePanel();
 
-//            LevelPanel lp = LoadService.getInstance().loadMap(9, mainFrame);
-//            mainFrame.setLevelPanel(lp);
-//            mainFrame.showLevelPanel();
-//            LanceOfDestiny.setCurrentGameState(GameState.LOAD_GAME);
-//            LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
         });
         createCustomMapButton.addActionListener(e -> {
             mainFrame.showBuildPanel();
-            LanceOfDestiny.setCurrentGameState(GameState.CREATE_CUSTOM_MAP);
         });
         helpButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.HELP);
-
+//            mainFrame.showHelpPanel();
         });
         optionsButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.OPTIONS);
             System.out.println("Options");
+//            mainFrame.showOptionsPanel();
         });
-        quitButton.addActionListener(e -> {
-            System.exit(0);
-            // TODO: Change this later.
+        logOutButton.addActionListener(e -> {
+            SessionManager.getSession().clear();
+            mainFrame.showLoginPanel();
         });
 
         Dimension buttonSize = new Dimension(150, 30);
@@ -64,7 +54,7 @@ public class MainMenuPanel extends JPanel {
         createCustomMapButton.setPreferredSize(buttonSize);
         helpButton.setPreferredSize(buttonSize);
         optionsButton.setPreferredSize(buttonSize);
-        quitButton.setPreferredSize(buttonSize);
+        logOutButton.setPreferredSize(buttonSize);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -88,6 +78,6 @@ public class MainMenuPanel extends JPanel {
         this.add(optionsButton, gbc);
 
         gbc.gridy = 5;
-        this.add(quitButton, gbc);
+        this.add(logOutButton, gbc);
     }
 }

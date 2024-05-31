@@ -7,10 +7,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
-import tr.edu.ku.comp302.domain.services.save.BarrierData;
-import tr.edu.ku.comp302.domain.services.save.FireballData;
-import tr.edu.ku.comp302.domain.services.save.GameData;
-import tr.edu.ku.comp302.domain.services.save.LanceData;
+import tr.edu.ku.comp302.domain.services.SessionManager;
+import tr.edu.ku.comp302.domain.services.save.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,42 +18,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHandler {
+    private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
     private static DatabaseHandler instance;
     private final HikariDataSource dataSource;
     private final LoadingCache<Integer, String> barrierTypeCache;
     private final LoadingCache<String, Integer> barrierIdCache;
-    private final Logger logger = LogManager.getLogger(DatabaseHandler.class);
 
     private DatabaseHandler() {
-        barrierTypeCache =
-            Caffeine.newBuilder()
-                    .maximumSize(128)
-                    .weakValues()
-                    .build(this::getBarrierType);
-        barrierIdCache =
-            Caffeine.newBuilder()
-                    .maximumSize(128)
-                    .weakValues()
-                    .build(this::getBarrierFromType);
+        barrierTypeCache = Caffeine.newBuilder().maximumSize(128).weakValues().build(this::getBarrierType);
+        barrierIdCache = Caffeine.newBuilder().maximumSize(128).weakValues().build(this::getBarrierFromType);
 
         HikariConfig config = new HikariConfig("/hikari.properties");
         dataSource = new HikariDataSource(config);
     }
 
+    public static void init() {
+        instance = new DatabaseHandler();
+    }
+
     public static DatabaseHandler getInstance() {
-        if (instance == null) {
-            instance = new DatabaseHandler();
-        }
         return instance;
     }
 
     public Connection getConnection() {
         try {
-            return dataSource.getConnection();
+            return getConnection(5);
         } catch (SQLException e) {
             logger.error(e);
             return null;
         }
+    }
+
+    /**
+     * Get a connection from the connection pool. Used for extra rigidity
+     *
+     * @param retries Number of retries left
+     * @return A connection from the connection pool, or null if retries are exhausted
+     * @throws SQLException If the connection cannot be established
+     */
+    public Connection getConnection(int retries) throws SQLException {
+        if (retries <= 0) {
+            logger.error("Failed to get connection");
+            return null;
+        }
+        Connection conn = dataSource.getConnection();
+        if (conn == null) {
+            logger.error("Failed to get connection, retrying");
+            return getConnection(retries - 1);
+        }
+        return conn;
     }
 
     public String getSaltByUsername(String username) {
@@ -77,8 +88,15 @@ public class DatabaseHandler {
         return null;
     }
 
-    public boolean validateLogin(String username, String password) {
-        final String query = "SELECT * FROM Player WHERE username = ? AND password = ?";
+    /**
+     * Returns the user id if a user with the given username and password exists
+     *
+     * @param username The username of the user
+     * @param password The password of the user
+     * @return The user id if the user exists, null otherwise
+     */
+    public Integer validateLogin(String username, String password) {
+        final String query = "SELECT uid FROM Player WHERE username = ? AND password = ?";
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -86,14 +104,16 @@ public class DatabaseHandler {
                 ps.setString(2, password);
 
                 try (ResultSet rs = ps.executeQuery()) {
-                    return rs.next();
+                    if (rs.next()) {
+                        return rs.getInt("uid");
+                    }
                 }
 
             }
         } catch (SQLException e) {
             logger.error(e);
         }
-        return false;
+        return null;
     }
 
     public boolean isUsernameUnique(String username) {
@@ -133,10 +153,10 @@ public class DatabaseHandler {
         return false;
     }
 
-    public boolean saveMap(String username, List<BarrierData> barriers) {
+    public boolean saveMap(List<BarrierData> barriers) {
         final String saveMap = "INSERT INTO Map (owner) VALUES (?);";
-        int uid = getUidFromUsername(username);
-        if (uid == -1) {
+        Integer uid = (Integer) SessionManager.getSession().getSessionData("userID");
+        if (uid == null) {
             return false;
         }
         // insert the map
@@ -159,6 +179,47 @@ public class DatabaseHandler {
         }
         return false;
     }
+
+    public List<Integer> getMaps(int uid) {
+        final String query = "SELECT id FROM Map WHERE owner = ?";
+        List<Integer> maps = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, uid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        maps.add(rs.getInt("id"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+        return maps;
+    }
+
+    public List<Integer> getSavedLevels(int uid) {
+        final String query = "SELECT id FROM Save WHERE player_ref = ?";
+        List<Integer> savedLevels = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setInt(1, uid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        savedLevels.add(rs.getInt("id"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+        return savedLevels;
+    }
+
 
     /**
      * Load barriers from the database from a save or a map
@@ -186,11 +247,12 @@ public class DatabaseHandler {
                 ps.setInt(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        double x = rs.getDouble("x");
-                        double y = rs.getDouble("y");
-                        int health = rs.getInt("health");
-                        int barrierType = rs.getInt("type");
-                        barriers.add(new BarrierData(x, y, health, barrierType));
+                        barriers.add(new BarrierData(
+                                rs.getDouble("x"),
+                                rs.getDouble("y"),
+                                rs.getInt("health"),
+                                rs.getInt("type")
+                        ));
                     }
                 }
             }
@@ -201,18 +263,17 @@ public class DatabaseHandler {
         return barriers;
     }
 
-    public boolean saveGame(String username, GameData data) {
+    public boolean saveGame(GameData data) {
         FireballData fireball = data.fireballData();
         LanceData lance = data.lanceData();
-        List<BarrierData> barriers = data.barriersData();
+        List<BarrierData> barriers = data.barrierData();
+        List<RemainData> remains = data.remainData();
         double score = data.score();
 
-        final String saveGame = "INSERT INTO Save " +
-                "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " +
-                "lance_x, lance_y, lance_angle, score) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        int uid = getUidFromUsername(username);
-        if (uid == -1) {
+        final String saveGame = "INSERT INTO Save " + "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " + "lance_x, lance_y, lance_angle, score) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        Integer uid = (Integer) SessionManager.getSession().getSessionData("userID");
+        if (uid == null) {
             return false;
         }
         try (Connection connection = getConnection()) {
@@ -232,7 +293,9 @@ public class DatabaseHandler {
             try (PreparedStatement ps = connection.prepareStatement("SELECT LAST_INSERT_ID()")) {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return saveBarriers(barriers, rs.getInt(1), "save");
+                        int saveId = rs.getInt(1);
+                        return saveBarriers(barriers, saveId, "save")
+                                && saveRemains(remains, saveId);
                     }
                 }
             }
@@ -241,6 +304,39 @@ public class DatabaseHandler {
             return false;
         }
         return false;
+    }
+
+    private boolean saveRemains(List<RemainData> remains, int saveId) {
+        final String saveRemain = "INSERT INTO Remain (x, y, is_dropped, save_ref) VALUES (?, ?, ?, ?)";
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(saveRemain)) {
+                for (RemainData remain : remains) {
+                    ps.setDouble(1, remain.x());
+                    ps.setDouble(2, remain.y());
+                    ps.setBoolean(3, remain.isDropped());
+                    ps.setInt(4, saveId);
+                    ps.addBatch();
+                }
+                return executeBatch(ps);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return false;
+        }
+    }
+
+    private boolean executeBatch(PreparedStatement ps) throws SQLException {
+        int[] numUpdates = ps.executeBatch();
+        for (int i = 0; i < numUpdates.length; i++) {
+            if (numUpdates[i] == -2) {
+                logger.debug("Execution {}: unknown number of rows updated", i);
+            } else {
+                logger.debug("Execution {} successful: {} rows updated", i, numUpdates[i]);
+            }
+        }
+
+        return true;
     }
 
     public GameData loadGame(int saveId) {
@@ -254,13 +350,8 @@ public class DatabaseHandler {
                 ps.setInt(1, saveId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        fireball = new FireballData(rs.getDouble("fireball_x"),
-                                rs.getDouble("fireball_y"),
-                                rs.getDouble("fireball_dx"),
-                                rs.getDouble("fireball_dy"));
-                        lance = new LanceData(rs.getDouble("lance_x"),
-                                rs.getDouble("lance_y"),
-                                rs.getDouble("lance_angle"));
+                        fireball = new FireballData(rs.getDouble("fireball_x"), rs.getDouble("fireball_y"), rs.getDouble("fireball_dx"), rs.getDouble("fireball_dy"));
+                        lance = new LanceData(rs.getDouble("lance_x"), rs.getDouble("lance_y"), rs.getDouble("lance_angle"));
                         score = rs.getDouble("score");
                     }
                 }
@@ -271,7 +362,32 @@ public class DatabaseHandler {
         }
 
         List<BarrierData> barriers = loadBarriers(saveId, "save");
-        return new GameData(fireball, lance, barriers, score);
+        List<RemainData> remains = loadRemains(saveId);
+
+        return new GameData(fireball, lance, barriers, remains, score);
+    }
+
+    private List<RemainData> loadRemains(int saveId) {
+        List<RemainData> remains = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Remain WHERE save_ref = ?")) {
+                ps.setInt(1, saveId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        remains.add(new RemainData(
+                                rs.getDouble("x"),
+                                rs.getDouble("y"),
+                                rs.getBoolean("is_dropped")));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+
+        return remains;
     }
 
     private boolean saveBarriers(List<BarrierData> barriers, int id, String to) {
@@ -295,16 +411,7 @@ public class DatabaseHandler {
                     }
                     ps.addBatch();
                 }
-                int[] numUpdates = ps.executeBatch();
-                for (int i = 0; i < numUpdates.length; i++) {
-                    if (numUpdates[i] == -2) {
-                        logger.debug("Execution {}: unknown number of rows updated", i);
-                    } else {
-                        logger.debug("Execution {} successful: {} rows updated", i, numUpdates[i]);
-                    }
-                }
-
-                return true;
+                return executeBatch(ps);
             }
         } catch (SQLException e) {
             logger.error(e);
@@ -366,7 +473,7 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             logger.error(e);
         }
-        return SimpleBarrier.TYPE; // default to simple barrier
+        return SimpleBarrier.class.getSimpleName(); // default to simple barrier
     }
 
     public String getBarrierTypeFromId(int id) {
@@ -376,5 +483,4 @@ public class DatabaseHandler {
     public int getBarrierIdFromType(String type) {
         return barrierIdCache.get(type);
     }
-
 }

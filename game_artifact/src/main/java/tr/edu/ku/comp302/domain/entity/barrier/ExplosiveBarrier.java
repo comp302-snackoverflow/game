@@ -5,7 +5,6 @@ import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.Circula
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 public class ExplosiveBarrier extends Barrier {
-    public static final String TYPE = "explosive";
     private final Remain remain;
 
     public ExplosiveBarrier(double xPosition, double yPosition) {

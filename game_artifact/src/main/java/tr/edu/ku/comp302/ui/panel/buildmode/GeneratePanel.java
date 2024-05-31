@@ -61,5 +61,4 @@ public class GeneratePanel extends JPanel {
         gbc.gridy = 4;
         add(generateButton, gbc);
     }
-
 }

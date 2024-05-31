@@ -1,18 +1,20 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import javax.swing.*;
-import java.awt.*;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
-import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
+import tr.edu.ku.comp302.domain.event.KeyPressHandler;
+import tr.edu.ku.comp302.domain.listeners.SaveListener;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
-public class PauseMenuPanel extends JPanel {
-    protected JButton resumeGameButton;
-    protected JButton optionsButton;
-    protected JButton saveButton;
-    protected JButton mainMenuButton;
+import javax.swing.*;
+import java.awt.*;
 
-    protected MainFrame mainFrame;
+public class PauseMenuPanel extends JPanel {
+    private final JButton resumeGameButton;
+    private final JButton optionsButton;
+    private final JButton saveButton;
+    private final JButton mainMenuButton;
+    private final MainFrame mainFrame;
+    private SaveListener saveListener;
+
     public PauseMenuPanel(MainFrame mainFrame) {
         GridBagLayout gridBagLayout = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -24,21 +26,21 @@ public class PauseMenuPanel extends JPanel {
         saveButton = new JButton("Save");
         mainMenuButton = new JButton("Return to Main Menu");
 
-        resumeGameButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
-            mainFrame.showLevelPanel();
+        resumeGameButton.addActionListener(e -> mainFrame.showLevelPanel());
+        optionsButton.addActionListener(e -> {
+            // mainFrame.showOptionsPanel();
+        });
+        optionsButton.addActionListener(e -> {
+            // FIXME: @ayazici21
+        });
+        saveButton.addActionListener(e -> this.handleSave());
 
-        });
-        optionsButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.OPTIONS);
-        });
-        optionsButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.SAVE_GAME);
-        });
         mainMenuButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.MAIN_MENU);
+            mainFrame.setCurrentLevel(null);
+            mainFrame.showMainMenuPanel();
         });
 
+        KeyPressHandler.bindKeyPressAction(this, "ESCAPE", e -> resumeGameButton.doClick());
 
         Dimension buttonSize = new Dimension(150, 30);
         resumeGameButton.setPreferredSize(buttonSize);
@@ -76,4 +78,18 @@ public class PauseMenuPanel extends JPanel {
         this.add(mainMenuButton, gbc);
     }
 
+    public void setSaveListener(SaveListener saveListener) {
+        this.saveListener = saveListener;
+    }
+
+    public void handleSave() {
+        if (saveListener == null) {
+            throw new IllegalStateException("This should not have happened. Debug me!");
+        }
+        if (saveListener.save()) {
+            JOptionPane.showMessageDialog(this, "Game saved successfully!", "Save", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Game could not be saved!", "Save", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }

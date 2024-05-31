@@ -5,6 +5,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.IMoveme
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.security.SecureRandom;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public abstract class Barrier extends Entity {
         lastDiceRollTimeNs = 0;
     }
 
-    public void adjustPositionAndSize(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+    public void adjustPositionAndSize(double oldWidth, double oldHeight, double newWidth, double newHeight) {
         updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
         setLength(newWidth / 50.); // changes other size-relative instances too.
         movementStrategy.adjustMovementParameters(this);
@@ -123,5 +124,9 @@ public abstract class Barrier extends Entity {
         if (movementStrategy != null) {
             movementStrategy.handleCloseCalls(this, barriers);
         }
+    }
+
+    public RectangularShape getExtendedHitbox() {
+        return movementStrategy.getExtendedHitbox(this);
     }
 }

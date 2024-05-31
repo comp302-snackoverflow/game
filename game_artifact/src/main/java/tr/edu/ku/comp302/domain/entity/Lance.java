@@ -6,12 +6,10 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 public class Lance extends Entity {
-    private static final long collisionCooldownInMillis = 50;
     public static final double rotationSpeed = 20.0;
     public static final double horizontalRecoverySpeed = 45.0;
+    private final long collisionCooldownInMillis = 50;
     private double length;
-    private double speedWithHold;
-    private double speedWithTap;
     private double thickness;
     private short direction;
     private double rotationAngle;
@@ -22,8 +20,6 @@ public class Lance extends Entity {
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, length, thickness);
         direction = 0;
         length = LanceOfDestiny.getScreenWidth() / 10.;
-        speedWithHold = 2 * length;
-        speedWithTap = length;
         thickness = 20;
         lastCollisionTimeInMillis = null;
     }
@@ -48,8 +44,7 @@ public class Lance extends Entity {
         }
     }
 
-    // TODO: set bounding box in these methods
-    public void adjustPositionAndSize(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+    public void adjustPositionAndSize(double oldWidth, double oldHeight, double newWidth, double newHeight) {
         updatePositionRelativeToScreen(oldWidth, oldHeight, newWidth, newHeight);
         setLength(newWidth / 10.);      // changes other size-relative instances too.
     }
@@ -81,8 +76,6 @@ public class Lance extends Entity {
 
     public void setLength(double length) {
         this.length = length;
-        speedWithHold = length * 2;
-        speedWithTap = length;
         boundingBox.setRect(xPosition, yPosition, length, thickness);
     }
 
@@ -95,20 +88,14 @@ public class Lance extends Entity {
     }
 
     public double getSpeedWithHold() {
-        return speedWithHold;
+        return LanceOfDestiny.getScreenWidth() * 0.2; // = 2L
     }
 
-    public void setSpeedWithHold(double speedWithHold) {
-        this.speedWithHold = speedWithHold;
-    }
 
     public double getSpeedWithTap() {
-        return speedWithTap;
+        return LanceOfDestiny.getScreenWidth() * 0.1; // = L
     }
 
-    public void setSpeedWithTap(double speedWithTap) {
-        this.speedWithTap = speedWithTap;
-    }
 
     public double getRotationAngle() {
         return rotationAngle;
@@ -118,15 +105,15 @@ public class Lance extends Entity {
         this.rotationAngle = rotationAngle;
     }
 
+    public short getDirection() {
+        return direction;
+    }
+
     public void setDirection(int direction) {
         if (direction > 1 || direction < -1) {
             throw new IllegalArgumentException("Direction can be -1 for left, 0 for no movement, 1 for right");
         }
         this.direction = (short) direction;
-    }
-
-    public short getDirection() {
-        return direction;
     }
 
     // TODO: FINISH THIS METHOD
@@ -182,8 +169,7 @@ public class Lance extends Entity {
     }
 
     public boolean canCollide(double timeInMillis) {
-        return lastCollisionTimeInMillis == null
-                || timeInMillis - lastCollisionTimeInMillis >= collisionCooldownInMillis;
+        return lastCollisionTimeInMillis == null || timeInMillis - lastCollisionTimeInMillis >= collisionCooldownInMillis;
     }
 
     public void setLastCollisionTimeInMillis(double timeInMillis) {

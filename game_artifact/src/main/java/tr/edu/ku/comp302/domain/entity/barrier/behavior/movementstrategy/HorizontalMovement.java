@@ -4,12 +4,11 @@ import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.security.SecureRandom;
 import java.util.List;
 
-/**
- * This strategy class calculates the movements and collisions of the horizontal moving barriers
- */
 public class HorizontalMovement implements IMovementStrategy {
     private final SecureRandom random;
     private int direction;
@@ -21,14 +20,23 @@ public class HorizontalMovement implements IMovementStrategy {
 
     @Override
     public double getXPadding() {
-        return LanceOfDestiny.getScreenWidth() / 52.0;
+        return LanceOfDestiny.getScreenWidth() * 0.01;
     }
 
     @Override
     public double getYPadding() {
-        return LanceOfDestiny.getScreenHeight() / 52.0;
+        return LanceOfDestiny.getScreenHeight() / 0.01;
     }
 
+    @Override
+    public RectangularShape getExtendedHitbox(Barrier barrier) {
+        return new Rectangle2D.Double(
+            barrier.getXPosition() - getXPadding(),
+            barrier.getYPosition() - getYPadding(),
+            barrier.getLength() + 2 * getXPadding(),
+            barrier.getThickness() + 2 * getYPadding()
+        );
+    }
     /**
      * If the barrier is not stiff and the determined direction for movement is left,
      * moves with a speed of L/4 to the left, otherwise, the same logic applies to the right.
@@ -46,13 +54,11 @@ public class HorizontalMovement implements IMovementStrategy {
 
     @Override
     public void handleCloseCalls(Barrier barrier, List<Barrier> barriers) {
-        int sides = CollisionHandler.checkCloseCalls(barrier, barriers,
-                getXPadding(), getYPadding()); // the bit order is `lbrt`
+        int sides = CollisionHandler.checkCloseCalls(barrier, barriers); // the bit order is `lbrt`
 
         if ((sides & 0b1010) == 0b1010) {
             barrier.stopMoving();
-        } else if ((direction == 1 && (sides & 0b0010) != 0)
-                || (direction == -1 && (sides & 0b1000) != 0)) {
+        } else if ((direction == 1 && (sides & 0b0010) != 0) || (direction == -1 && (sides & 0b1000) != 0)) {
             barrier.turnBack();
         }
     }

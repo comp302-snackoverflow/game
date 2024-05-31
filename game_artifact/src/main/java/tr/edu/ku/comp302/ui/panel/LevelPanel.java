@@ -1,33 +1,34 @@
 package tr.edu.ku.comp302.ui.panel;
+
+import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
-import tr.edu.ku.comp302.domain.lanceofdestiny.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
-
 
 import javax.swing.*;
 import java.awt.*;
 
-
 public class LevelPanel extends JPanel {
+    private final JButton pauseButton;
     private LevelHandler levelHandler;
-    private MainFrame mainFrame;
-    private JButton pauseButton;
 
     public LevelPanel(LevelHandler levelHandler, MainFrame mainFrame) {
         this.levelHandler = levelHandler;
         addKeyListener(new KeyboardHandler());
+        setFocusable(true);
         pauseButton = new JButton("PAUSE");
-        pauseButton.addActionListener(e -> {
-            LanceOfDestiny.setCurrentGameState(GameState.PAUSE_MENU);
-            mainFrame.showPausePanel();
-        });
-        pauseButton.setBounds(0,0, 10, 20);
+
+        pauseButton.addActionListener(e -> mainFrame.showPausePanel());
+
+        pauseButton.setBounds(0, 0, 10, 20);
+
+        KeyPressHandler.bindKeyPressAction(this, "ESCAPE", e -> pauseButton.doClick());
+
         this.add(pauseButton);
     }
 
-    public void paintComponent(Graphics g){
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
         levelHandler.renderLance(g);
         levelHandler.renderFireBall(g);
@@ -35,29 +36,21 @@ public class LevelPanel extends JPanel {
         levelHandler.renderRemains(g);
     }
 
-    // TODO: Handle this method later.
-    public void setPanelSize(Dimension size){
+    public void setPanelSize(Dimension size) {
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
-        // TODO: Add other entities
-        levelHandler.getLance().adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
-                (int) size.getWidth(), (int) size.getHeight());
+
+        levelHandler.getLance().adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), (int) size.getWidth(), (int) size.getHeight());
         levelHandler.resizeLanceImage();
-        levelHandler.getFireBall().updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
-                (int) size.getWidth(), (int) size.getHeight());
+        levelHandler.getFireBall().updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), (int) size.getWidth(), (int) size.getHeight());
         levelHandler.resizeFireBallImage();
 
         levelHandler.resizeBarrierImages();
-        levelHandler.getBarriers().forEach(barrier -> {
-            barrier.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
-                    (int) size.getWidth(), (int) size.getHeight());
-        });
+        levelHandler.getBarriers().forEach(barrier -> barrier.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), (int) size.getWidth(), (int) size.getHeight()));
 
         levelHandler.resizeRemainImage();
-        levelHandler.getRemains().forEach(remain ->
-            remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(),
-                    (int) size.getWidth(), (int) size.getHeight()));
+        levelHandler.getRemains().forEach(remain -> remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), (int) size.getWidth(), (int) size.getHeight()));
     }
 
     public LevelHandler getLevelHandler() {

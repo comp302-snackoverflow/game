@@ -1,18 +1,19 @@
 package tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.RectangularShape;
 import java.security.SecureRandom;
 import java.util.List;
 
 public class CircularMovement implements IMovementStrategy {
     private static final double INITIAL_ANGLE = Math.PI / 2;
-    private final Logger logger = LogManager.getLogger(CircularMovement.class);
+    private static final Logger logger = LogManager.getLogger(CircularMovement.class);
     private final SecureRandom random;
     private Direction direction = Direction.STIFF;
     private double angle;
@@ -34,12 +35,22 @@ public class CircularMovement implements IMovementStrategy {
 
     @Override
     public double getXPadding() {
-        return LanceOfDestiny.getScreenWidth() / 50.0;
+        return LanceOfDestiny.getScreenWidth() * 0.01;
     }
 
     @Override
     public double getYPadding() {
-        return LanceOfDestiny.getScreenHeight() / 20.0;
+        return LanceOfDestiny.getScreenHeight() * 0.015;
+    }
+
+    @Override
+    public RectangularShape getExtendedHitbox(Barrier barrier) {
+        return new Ellipse2D.Double(
+            barrier.getXPosition() - getXPadding(),
+            barrier.getYPosition() - getYPadding(),
+            barrier.getLength() + 2 * getXPadding(),
+            barrier.getThickness() + 2 * getYPadding()
+        );
     }
 
     @Override
@@ -126,8 +137,7 @@ public class CircularMovement implements IMovementStrategy {
 
     @Override
     public void handleCloseCalls(Barrier barrier, List<Barrier> barriers) {
-        int sides = CollisionHandler.checkCloseCalls(barrier, barriers,
-                getXPadding(), getYPadding());
+        int sides = CollisionHandler.checkCloseCalls(barrier, barriers);
 
         if (isStuck(sides)) {
             barrier.stopMoving();
@@ -161,9 +171,7 @@ public class CircularMovement implements IMovementStrategy {
     }
 
     private boolean shouldTurnBack(int sides) {
-        return !(direction == Direction.STIFF)
-                && (direction == Direction.CLOCKWISE && !canGoClockwise(sides))
-                || (direction == Direction.COUNTER_CLOCKWISE && !canGoCounterClockwise(sides));
+        return !(direction == Direction.STIFF) && (direction == Direction.CLOCKWISE && !canGoClockwise(sides)) || (direction == Direction.COUNTER_CLOCKWISE && !canGoCounterClockwise(sides));
     }
 
     private boolean canGoClockwise(int sides) { // sides = `lbrt`
@@ -218,8 +226,6 @@ public class CircularMovement implements IMovementStrategy {
     }
 
     private enum Direction {
-        CLOCKWISE,
-        STIFF,
-        COUNTER_CLOCKWISE
+        CLOCKWISE, STIFF, COUNTER_CLOCKWISE
     }
 }

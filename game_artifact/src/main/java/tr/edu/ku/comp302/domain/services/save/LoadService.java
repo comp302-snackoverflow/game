@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.entity.Remain;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
@@ -17,8 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LoadService {
+    private static final Logger logger = LogManager.getLogger(LoadService.class);
     private static LoadService instance;
-    private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
     private LoadService() {
@@ -38,14 +39,12 @@ public class LoadService {
             return null;
         }
 
-        double windowWidth = 1280;
-        double windowHeight = 720;
-        FireBall fb = loadFireBall(data.fireballData(), windowWidth, windowHeight);
-        Lance lance = loadLance(data.lanceData(), windowWidth, windowHeight);
-        List<Barrier> barriers = loadBarriers(data.barriersData(), windowWidth, windowHeight);
-        // TODO: score must be loaded into LanceOfDestiny (probably),
-        //  find a way to do it because its stupid to statically set it
-        return new Level(lance, fb, barriers);
+        FireBall fb = loadFireBall(data.fireballData());
+        fb.setSpeed(Math.hypot(fb.getDx(), fb.getDy()));
+        Lance lance = loadLance(data.lanceData());
+        List<Barrier> barriers = loadBarriers(data.barrierData());
+        List<Remain> remains = loadRemains(data.remainData());
+        return new Level(lance, fb, barriers, remains, data.score());
     }
 
     public Level loadMap(int mapId) {
@@ -53,7 +52,6 @@ public class LoadService {
          * FIXME: this works but has at least two issues:
          *  - barrier sizes are not consistent with the window size
          *  - the lance and fireball are positioned absolutely
-         *  - just for the demo adding MainFrame to parameters
          *  but at least it works so yay
          */
         List<BarrierData> barriersData = dbHandler.loadBarriers(mapId, "map");
@@ -61,13 +59,14 @@ public class LoadService {
             return null;
         }
 
-        Lance lance = new Lance(576, 600);
+        Lance lance = new Lance(0.45 * LanceOfDestiny.getScreenWidth(), 0.875 * LanceOfDestiny.getScreenHeight());
 
-        FireBall fireball = new FireBall(632, 560);
-
+        FireBall fireball = new FireBall(1, 1);
         List<Barrier> barriers = barriersData.stream().map(this::createBarrier).collect(Collectors.toCollection(ArrayList::new));
 
-        return new Level(lance, fireball, barriers);    }
+        return new Level(lance, fireball, barriers);
+    }
+
 
     private Barrier createBarrier(BarrierData bd) {
         double xPos = bd.x();
@@ -91,49 +90,47 @@ public class LoadService {
         return barrier;
     }
 
-    private Lance loadLance(LanceData ld, double windowWidth, double windowHeight) {
-        double x = ld.x() * windowWidth;
-        double y = ld.y() * windowHeight;
+    private Remain createRemain(RemainData rd) {
+        double xPos = rd.x();
+        double yPos = rd.y();
+        Remain remain = new Remain(xPos, yPos);
+        remain.updatePositionRelativeToScreen(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        if (rd.isDropped()) {
+            remain.drop();
+        }
+        return remain;
+    }
+
+
+    private Lance loadLance(LanceData ld) {
+        double x = ld.x();
+        double y = ld.y();
         double angle = ld.angle();
         Lance lance = new Lance(x, y);
         lance.setRotationAngle(angle);
+        lance.adjustPositionAndSize(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         return lance;
     }
 
-    private FireBall loadFireBall(FireballData fd, double windowWidth, double windowHeight) {
-        double x = fd.x() * windowWidth;
-        double y = fd.y() * windowHeight;
-        double dx = fd.dx() * windowWidth;
-        double dy = fd.dy() * windowHeight;
+    private FireBall loadFireBall(FireballData fd) {
+        double x = fd.x();
+        double y = fd.y();
+        double dx = fd.dx();
+        double dy = fd.dy();
         FireBall fb = new FireBall(x, y);
         fb.setDx(dx);
         fb.setDy(dy);
+
+        fb.adjustPositionAndSpeed(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         return fb;
     }
 
-    private Barrier loadBarrier(BarrierData bd, double windowWidth, double windowHeight) {
-        double x = bd.x() * windowWidth;
-        double y = bd.y() * windowHeight;
-        int health = bd.health();
-        int barrierId = bd.type();
 
-        String type = dbHandler.getBarrierTypeFromId(barrierId);
-
-        Barrier barrier = switch (type) {
-            case SimpleBarrier.TYPE -> new SimpleBarrier(x, y);
-            case FirmBarrier.TYPE -> new FirmBarrier(x, y);
-            case ExplosiveBarrier.TYPE -> new ExplosiveBarrier(x, y);
-            default -> new SimpleBarrier(x, y);
-        };
-
-        barrier.setHealth(health);
-
-        return barrier;
+    private List<Barrier> loadBarriers(List<BarrierData> barrierData) {
+        return barrierData.stream().map(this::createBarrier).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private List<Barrier> loadBarriers(List<BarrierData> barrierData, double windowWidth, double windowHeight) {
-        return barrierData.stream().map(
-                bd -> loadBarrier(bd, windowWidth, windowHeight)
-        ).toList();
+    private List<Remain> loadRemains(List<RemainData> remainData) {
+        return remainData.stream().map(this::createRemain).collect(Collectors.toCollection(ArrayList::new));
     }
 }

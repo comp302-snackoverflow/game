@@ -12,8 +12,7 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 
 public class Hash {
-
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Hash.class);
 
     public static String generateSalt() {
         SecureRandom random = new SecureRandom();

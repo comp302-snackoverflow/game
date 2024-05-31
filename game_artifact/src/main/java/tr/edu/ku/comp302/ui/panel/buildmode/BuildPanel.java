@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.ui.panel.buildmode;
 
 import tr.edu.ku.comp302.domain.handler.BuildHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
@@ -9,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class BuildPanel extends JPanel {
-    private MainFrame mainFrame;
+    private final MainFrame mainFrame;
     private BuildHandler buildHandler;
     private JPanel buildSection;
     private JPanel controlsSection;
@@ -30,16 +31,13 @@ public class BuildPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
 
         self.buildSection = new JPanel();
-        self.buildSection.setBackground(new Color(0xA34E4E4E, true));
-        self.buildSection.setLayout(null); // TODO: see if a grid layout can be used and barriers can be put into it directly
-        //  If it can be used, just a simple mouse listener can be used to
-        //  add/remove barriers. Also would make drawing gridlines easier.
+        self.buildSection.setBackground(new Color(0x534E4E4E, true));
+        self.buildSection.setLayout(null);
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.weightx = 1;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         self.add(self.buildSection, gbc);
-
 
         self.controlsSection = new JPanel();
         self.controlsSection.setLayout(new BorderLayout());
@@ -56,6 +54,7 @@ public class BuildPanel extends JPanel {
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         self.add(self.controlsSection, gbc);
+
         self.addBuildListeners();
         self.addSelectBarrierActions();
         self.addGenerateAction();
@@ -72,11 +71,15 @@ public class BuildPanel extends JPanel {
 
     private void addGenerateAction() {
         generatePanel.generateButton.addActionListener(e -> {
-            int simpleCount = Integer.parseInt(generatePanel.simpleBarrierCount.getText());
-            int firmCount = Integer.parseInt(generatePanel.firmBarrierCount.getText());
-            int explosiveCount = Integer.parseInt(generatePanel.explosiveBarrierCount.getText());
-            int giftingCount = Integer.parseInt(generatePanel.giftingBarrierCount.getText());
-            buildHandler.generateRandomMap(simpleCount, firmCount, explosiveCount, giftingCount);
+            try{
+                int simpleCount = Integer.parseInt(generatePanel.simpleBarrierCount.getText());
+                int firmCount = Integer.parseInt(generatePanel.firmBarrierCount.getText());
+                int explosiveCount = Integer.parseInt(generatePanel.explosiveBarrierCount.getText());
+                int giftingCount = Integer.parseInt(generatePanel.giftingBarrierCount.getText());
+                buildHandler.generateRandomMap(simpleCount, firmCount, explosiveCount, giftingCount);
+            }catch (NumberFormatException nfe){
+                alertBarrierInputs();
+            }
         });
     }
 
@@ -85,26 +88,35 @@ public class BuildPanel extends JPanel {
         barriersPanel.firmBarrierButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.FIRM_MODE));
         barriersPanel.explosiveBarrierButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.EXPLOSIVE_MODE));
         barriersPanel.giftingBarrierButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.GIFT_MODE));
+        barriersPanel.deleteButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.DELETE_MODE));
     }
 
     private void addButtonsActions() {
-        buttonsPanel.saveButton.addActionListener(e -> buildHandler.saveMap());
-        buttonsPanel.playButton.addActionListener(e -> {}); // TODO: start game
+        buttonsPanel.saveButton.addActionListener(e -> buildHandler.saveMap(buildSection.getWidth(), buildSection.getHeight()));
+        buttonsPanel.playButton.addActionListener(e -> {
+            mainFrame.setCurrentLevel(buildHandler.getLevel());
+            mainFrame.showLevelPanel();
+            buildHandler.clearMap();
+        });
         buttonsPanel.clearButton.addActionListener(e -> buildHandler.clearMap());
         buttonsPanel.exitButton.addActionListener(e -> mainFrame.showMainMenuPanel());
     }
 
     public void addBuildListeners() {
         buildSection.addMouseListener(new MouseAdapter() {
-
             @Override
             public void mousePressed(MouseEvent e) {
                 buildHandler.handlePress(e.getX(), e.getY());
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
-                // TODO: is this needed?
+            public void mouseDragged(MouseEvent e) {
+                buildHandler.handlePress(e.getX(), e.getY());
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                buildHandler.handlePress(e.getX(), e.getY());
             }
         });
 
@@ -123,5 +135,21 @@ public class BuildPanel extends JPanel {
 
     public JPanel getBuildSection() {
         return buildSection;
+    }
+
+    public void alertSaveSuccess() {
+        JOptionPane.showMessageDialog(this, "Map saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void alertSaveFailure() {
+        JOptionPane.showMessageDialog(this, "Map could not be saved.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void alertFullMap() {
+        JOptionPane.showMessageDialog(this, "Map is full. Please clear some barriers before inserting more barriers.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void alertBarrierInputs(){
+        JOptionPane.showMessageDialog(this, "Invalid input. Please enter non-negative integer.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }

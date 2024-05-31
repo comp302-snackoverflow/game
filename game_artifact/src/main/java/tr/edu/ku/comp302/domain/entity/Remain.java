@@ -1,9 +1,11 @@
 package tr.edu.ku.comp302.domain.entity;
 
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+
 import java.awt.geom.Rectangle2D;
 
-public class Remain extends Entity{
-    private double speed = 1.5;     // TODO: Change speed
+public class Remain extends Entity {
+    private double speed = 0.2 * LanceOfDestiny.getScreenWidth(); // 2L, selected randomly. Changed so the unit is px/s
     private int size = 50;
     private boolean isDropped = false;
 
@@ -20,8 +22,8 @@ public class Remain extends Entity{
         this.speed = speed;
     }
 
-    public void move() {
-        yPosition += speed;
+    public void move(double dy) {
+        yPosition += dy;
         boundingBox.setRect(xPosition, yPosition, size, size);
     }
 

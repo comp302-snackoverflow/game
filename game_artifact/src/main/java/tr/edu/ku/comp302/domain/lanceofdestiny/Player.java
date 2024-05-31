@@ -19,9 +19,6 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player{" +
-                "ID=" + ID +
-                ", name='" + name + '\'' +
-                '}';
+        return "Player{" + "ID=" + ID + ", name='" + name + '\'' + '}';
     }
 }

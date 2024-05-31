@@ -2,19 +2,18 @@ package tr.edu.ku.comp302.domain.services.save;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
-import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Lance;
+import tr.edu.ku.comp302.domain.entity.Remain;
+import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
+import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 import java.util.List;
 
 public class SaveService {
+    private static final Logger logger = LogManager.getLogger(SaveService.class);
     private static SaveService instance;
-    private static final Logger logger = LogManager.getLogger();
     private final DatabaseHandler dbHandler;
 
     private SaveService() {
@@ -28,54 +27,62 @@ public class SaveService {
         return instance;
     }
 
-    // TODO Save with the actual username and game score
-    public boolean saveGame(FireBall fireball, Lance lance,
-                            List<Barrier> barriers, double windowWidth, double windowHeight) {
-        FireballData fireballData = getFireballData(fireball, windowWidth, windowHeight);
-        LanceData lanceData = getLanceData(lance, windowWidth, windowHeight);
-        List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, windowWidth, windowHeight)).toList();
-        GameData data = new GameData(fireballData, lanceData, barrierData, 0.0);
+    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers, List<Remain> remains, double score) {
+        FireballData fireballData = getFireballData(fireball, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        LanceData lanceData = getLanceData(lance, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
+        List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
+        List<RemainData> remainData = remains.stream().map(remain -> getRemainData(remain, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
+        GameData data = new GameData(fireballData, lanceData, barrierData, remainData, score);
 
-        return dbHandler.saveGame("test", data);
+        return dbHandler.saveGame(data);
     }
 
-    // TODO Save with the actual username
-    public boolean saveMap(List<Barrier> barriers, double windowWidth, double windowHeight) {
-        List<BarrierData> barrierData = barriers.stream().map(
-                barrier -> getBarrierData(barrier, windowWidth, windowHeight)
-        ).toList();
-        return dbHandler.saveMap("test", barrierData);
+    public boolean saveMap(List<Barrier> barriers) {
+        return saveMap(barriers, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
     }
 
-    private FireballData getFireballData(FireBall fireball, double windowWidth, double windowHeight) {
-        double x = fireball.getXPosition() / windowWidth;
-        double y = fireball.getYPosition() / windowHeight;
-        double dx = fireball.getDx() / windowWidth;
-        double dy = fireball.getDy() / windowHeight;
+    public boolean saveMap(List<Barrier> barriers, double width, double height) {
+        List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, width, height)).toList();
+        return dbHandler.saveMap(barrierData);
+    }
+
+    private FireballData getFireballData(FireBall fireball, double width, double height) {
+        fireball.adjustPositionAndSpeed(width, height, 1, 1);
+        double x = fireball.getXPosition();
+        double y = fireball.getYPosition();
+        double dx = fireball.getDx();
+        double dy = fireball.getDy();
+        // Retrieve the old size in case the user resumes the game
+        fireball.adjustPositionAndSpeed(1, 1, width, height);
         return new FireballData(x, y, dx, dy);
     }
 
-    private LanceData getLanceData(Lance lance, double windowWidth, double windowHeight) {
-        double x = lance.getXPosition() / windowWidth;
-        double y = lance.getYPosition() / windowHeight;
+    private LanceData getLanceData(Lance lance, double width, double height) {
+        lance.adjustPositionAndSize(width, height, 1, 1);
+        double x = lance.getXPosition();
+        double y = lance.getYPosition();
         double angle = lance.getRotationAngle();
+        lance.adjustPositionAndSize(1, 1, width, height);
         return new LanceData(x, y, angle);
     }
 
-    private BarrierData getBarrierData(Barrier barrier, double windowWidth, double windowHeight) {
-        double x = barrier.getXPosition() / windowWidth;
-        double y = barrier.getYPosition() / windowHeight;
+    private BarrierData getBarrierData(Barrier barrier, double width, double height) {
+        barrier.adjustPositionAndSize(width, height, 1, 1);
+        double x = barrier.getXPosition();
+        double y = barrier.getYPosition();
         int health = barrier.getHealth();
-        String type = switch (barrier) {
-            case SimpleBarrier ignored -> SimpleBarrier.TYPE;
-            case FirmBarrier ignored -> FirmBarrier.TYPE;
-            case ExplosiveBarrier ignored -> ExplosiveBarrier.TYPE;
-            default -> {
-                logger.warn("Unknown barrier type: " + barrier.getClass().getName() + ". Saving as simple barrier.");
-                yield SimpleBarrier.TYPE; // Barriers of unknown type will be saved as simple barriers
-            }
-        };
+        String type = barrier.getClass().getSimpleName();
         int barrierID = dbHandler.getBarrierIdFromType(type);
+        barrier.adjustPositionAndSize(1, 1, width, height);
         return new BarrierData(x, y, health, barrierID);
+    }
+
+    private RemainData getRemainData(Remain remain, double width, double height) {
+        remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
+        double x = remain.getXPosition();
+        double y = remain.getYPosition();
+        boolean isDropped = remain.isDropped();
+        remain.updatePositionRelativeToScreen(1, 1, width, height);
+        return new RemainData(x, y, isDropped);
     }
 }
