@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,7 +82,8 @@ public class CollisionHandler {
             sides |= 0b0100; // bottom side
         }
 
-        for (Barrier b : barriers) {
+        List<Barrier> barriersCopy = new ArrayList<>(barriers); // make a copy to avoid concurrent modification error
+        for (Barrier b : barriersCopy) {
             if (b == target) {
                 continue;
             }

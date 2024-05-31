@@ -13,12 +13,14 @@ import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.CircularButton;
 import tr.edu.ku.comp302.ui.view.View;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,11 +35,15 @@ public class LevelPanel extends JPanel {
     private final int iconSize = 40;
     private final int iconSpacing = 10;
     private static final View heartView = View.of(View.HEART);
+    private MainFrame mainFrame;
+    private BufferedImage backgroundImage;
 
     public LevelPanel(LevelHandler levelHandler, MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         this.levelHandler = levelHandler;
         addKeyListener(new KeyboardHandler());
         setFocusable(true);
+        setLayout(null);
         pauseButton = new JButton("PAUSE");
 
         pauseButton.addActionListener(e -> mainFrame.showPausePanel());
@@ -51,10 +57,19 @@ public class LevelPanel extends JPanel {
         addButtons();
 
         this.add(pauseButton);
+                try {
+            backgroundImage = ImageIO.read(getClass().getResource("/assets/light.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if (backgroundImage != null ) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
         levelHandler.renderLance(g);
         levelHandler.renderFireBall(g);
         levelHandler.renderBarriers(g);
@@ -63,13 +78,24 @@ public class LevelPanel extends JPanel {
         levelHandler.renderSpellBox(g);
         showYmir(g);
         showScore(g);
+        finishGame();
 
         int x = (int) (getWidth() * 0.05);
         int y = getHeight() - heartHeight - 20;
         g.drawImage(heartView.getImage(), x, y, null);
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 18));
-        g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 5, y + heartHeight / 2 + 6);
+        g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 30, getHeight() - 14);
+    }
+
+
+
+
+    private void finishGame() {
+        if (levelHandler.isFinished()) {
+            
+            mainFrame.showGameOverPanel(levelHandler.isWon(), levelHandler.getScore());
+        }
     }
 
     private void showScore(Graphics g) {
@@ -129,32 +155,33 @@ public class LevelPanel extends JPanel {
         repaint();
     }
 
-    private JLabel addCircularButtonWithLabel(String iconPath, int x, int y, ActionListener action) {
-        BufferedImage icon = ImageHandler.getImageFromPath(iconPath);
-        if (icon == null) {
-            System.err.println("Icon not found: " + iconPath);
-            return null;
+    private JLabel addCircularButtonWithLabel(String iconPath, int xPosition, int yPosition, ActionListener action) {
+        BufferedImage iconImage = ImageHandler.getImageFromPath(iconPath);
+        if (iconImage == null) {
+            throw new IllegalArgumentException("Icon not found: " + iconPath);
         }
 
-        // Resize the icon
-        int iconSize = 40; // Adjust size as needed
-        BufferedImage resizedIcon = ImageHandler.resizeImage(icon, iconSize, iconSize);
+        int buttonSize = 40;
+        BufferedImage resizedIconImage = ImageHandler.resizeImage(iconImage, buttonSize, buttonSize);
 
-        CircularButton button = new CircularButton(resizedIcon);
-        button.setBounds(0, 0, 50, 50); // Set position and size
+        CircularButton button = new CircularButton(resizedIconImage);
+        button.setBounds(0, 0, buttonSize, buttonSize);
         button.addActionListener(action);
 
-        JLabel label = new JLabel("0");
-        label.setBounds(60, 15, 30, 20); // Adjust position relative to button
+        JLabel spellCountLabel = new JLabel("0");
+        spellCountLabel.setBounds(buttonSize + 10, 0, 30, 20);
 
-        JPanel panel = new JPanel(null); // Use null layout for custom positioning
-        panel.setBounds(x, y, 100, 50); // Set panel size to fit button and label
-        panel.add(button);
-        panel.add(label);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buttonPanel.setBounds(xPosition, yPosition, buttonSize + 40, buttonSize);
+        buttonPanel.add(button);
+        buttonPanel.add(spellCountLabel);
+        buttonPanel.setOpaque(false);
 
-        add(panel);
+        add(buttonPanel);
 
-        return label;
+        buttonPanel.setVisible(true);
+
+        return spellCountLabel;
     }
 
     public void updateSpellCounts() {
@@ -181,4 +208,5 @@ public class LevelPanel extends JPanel {
         extensionSpellLabel.getParent().setBounds(xOffset, yOffsetBase, 100, 50);
         hexSpellLabel.getParent().setBounds(xOffset, yOffsetHex, 100, 50);
     }
+
 }
