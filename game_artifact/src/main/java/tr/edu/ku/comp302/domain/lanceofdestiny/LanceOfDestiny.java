@@ -11,23 +11,14 @@ import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.FireBall;
 import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
-import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.handler.SoundHandler;
-import tr.edu.ku.comp302.domain.handler.SpellHandler;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
-import tr.edu.ku.comp302.domain.services.threads.PausableThread;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
-
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 
@@ -133,7 +124,6 @@ public class LanceOfDestiny implements Runnable {
         handleRemainLogic();
         handleSpellBoxLogic();
         handleYmir();
-        managePausableThreads();
         handleSpellLogic();
         updateTimeInSeconds();
         updateSpells();
@@ -379,20 +369,6 @@ public class LanceOfDestiny implements Runnable {
         // newScore = oldScore + 300 / (currentTime - gameStartingTime) //TODO: is gameStartingTime needed ? Ask this to meriç/mert/ömer.
     }
 
-
-    private void managePausableThreads() {
-        List<PausableThread> pausableThreads = levelHandler.getPausableThreads();
-        List<PausableThread> threadsToRemove = new ArrayList<>();
-        for (PausableThread thread : pausableThreads) {
-            if (thread.isScheduled()) {
-                thread.checkRateState();
-            }
-            if (thread.checkFinishState()) {
-                threadsToRemove.add(thread);
-            }
-        }
-        pausableThreads.removeAll(threadsToRemove);
-    }
 
     // Cleaned up the code by using a list to store threads to remove, and then removing all of them at once.
     // Removed the unnecessary comments. Also improved the readability of the code by breaking it up into smaller statements.
