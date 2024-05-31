@@ -83,7 +83,7 @@ public class LevelPanel extends JPanel {
         g.drawImage(heartView.getImage(), x, y, null);
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 18));
-        g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 5, y + heartHeight / 2 + 6);
+        g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 30, getHeight() - 14);
     }
 
 
