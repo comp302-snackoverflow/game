@@ -1,62 +1,43 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.event.KeyPressEventFactory;
 import tr.edu.ku.comp302.domain.handler.RegisterHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class RegisterPanel extends JPanel {
-    private final MainFrame mainFrame;
-    protected JTextField usernameTextField;
-    protected JPasswordField pwdField;
-    protected JPasswordField confirmPwdField;
-    protected JTextArea errorTextArea;
-    private JLabel confirmPwdLabel;
+    private final JTextField usernameTextField;
+    private final JPasswordField pwdField;
+    private final JPasswordField confirmPwdField;
+    private final JTextArea errorTextArea;
 
     public RegisterPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
-        setLayout(null);
+        Font font = new Font("Segoe UI Semibold", Font.PLAIN, 22);
+        setLayout(new GridBagLayout());
 
         JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setBounds(232, 68, 137, 38);
         usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        usernameLabel.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        add(usernameLabel);
+        usernameLabel.setFont(font);
 
         usernameTextField = new JTextField();
-        usernameTextField.setBounds(374, 68, 216, 38);
-        usernameTextField.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        add(usernameTextField);
+        usernameTextField.setFont(font);
         usernameTextField.setColumns(10);
 
-        Component horizontalStrut = Box.createHorizontalStrut(20);
-        horizontalStrut.setBounds(0, 0, 0, 0);
-        add(horizontalStrut);
-
         JLabel pwdLabel = new JLabel("Password:");
-        pwdLabel.setBounds(232, 111, 137, 41);
         pwdLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        pwdLabel.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        add(pwdLabel);
+        pwdLabel.setFont(font);
 
         pwdField = new JPasswordField();
-        pwdField.setBounds(374, 114, 216, 38);
-        pwdField.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        add(pwdField);
+        pwdField.setFont(font);
 
-        confirmPwdLabel = new JLabel("Confirm Password:");
-        confirmPwdLabel.setBounds(153, 157, 216, 43);
+        JLabel confirmPwdLabel = new JLabel("Confirm Password:");
         confirmPwdLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        confirmPwdLabel.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        add(confirmPwdLabel);
+        confirmPwdLabel.setFont(font);
 
         confirmPwdField = new JPasswordField();
-        confirmPwdField.setBounds(374, 162, 216, 38);
-        confirmPwdField.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        add(confirmPwdField);
+        confirmPwdField.setFont(font);
 
         errorTextArea = new JTextArea();
         errorTextArea.setWrapStyleWord(true);
@@ -65,10 +46,9 @@ public class RegisterPanel extends JPanel {
         errorTextArea.setFont(new Font("Segoe UI", Font.BOLD, 16));
         errorTextArea.setEditable(false);
         errorTextArea.setBackground(UIManager.getColor("Button.background"));
-        errorTextArea.setBounds(374, 211, 216, 77);
-        add(errorTextArea);
 
         JButton registerButton = new JButton("Register");
+
         registerButton.addActionListener(e -> {
             String username = usernameTextField.getText();
             String password = new String(pwdField.getPassword());
@@ -76,91 +56,110 @@ public class RegisterPanel extends JPanel {
             int response = RegisterHandler.getInstance().register(username, password, passwordRepeat);
 
             switch (response) {
-                case RegisterHandler.SUCCESS:
-                    // TODO: Create user object
+                case RegisterHandler.SUCCESS -> {
                     JOptionPane.showMessageDialog(null, "Account created", "Success", JOptionPane.INFORMATION_MESSAGE);
                     clearInputs();
                     mainFrame.showLoginPanel();
-                    break;
-                case RegisterHandler.USERNAME_TOO_SHORT:
-                    errorTextArea.setText("Number of characters in username must be greater than 2");
-                    break;
-                case RegisterHandler.USERNAME_TOO_LONG:
-                    errorTextArea.setText("Number of characters in username must be smaller than 33");
-                    break;
-                case RegisterHandler.USERNAME_NOT_UNIQUE:
-                    errorTextArea.setText("Account already exists with that username");
-                    break;
-                case RegisterHandler.PASSWORD_TOO_SHORT:
-                    errorTextArea.setText("Number of characters in password must be greater than 8");
-                    break;
-                case RegisterHandler.PASSWORD_TOO_LONG:
-                    errorTextArea.setText("Number of characters in password must be greater than 8");
-                    break;
-                case RegisterHandler.PASSWORDS_DO_NOT_MATCH:
-                    errorTextArea.setText("Passwords do not match");
-                    break;
-                default:
-                    errorTextArea.setText("Womp Womp");
-                    break;
+                }
+                case RegisterHandler.USERNAME_TOO_SHORT ->
+                        errorTextArea.setText("Number of characters in username must be greater than 2");
+
+                case RegisterHandler.USERNAME_TOO_LONG ->
+                        errorTextArea.setText("Number of characters in username must be at most 32");
+
+                case RegisterHandler.USERNAME_NOT_UNIQUE ->
+                        errorTextArea.setText("Account already exists with that username");
+
+                case RegisterHandler.PASSWORD_TOO_SHORT ->
+                        errorTextArea.setText("Number of characters in password must be greater than 8");
+
+                case RegisterHandler.PASSWORD_TOO_LONG ->
+                        errorTextArea.setText("Number of characters in password must be at most 32");
+
+                case RegisterHandler.PASSWORDS_DO_NOT_MATCH -> errorTextArea.setText("Passwords do not match");
+                default -> errorTextArea.setText("Womp Womp");
             }
         });
-        registerButton.setBounds(418, 311, 147, 43);
-        registerButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 22));
-        add(registerButton);
 
-        JLabel hasAccountLabel = new JLabel("Do you have an account?");
-        hasAccountLabel.setBounds(253, 361, 227, 35);
+        KeyPressEventFactory.createKeyReleasedHandler(this, "ENTER", e -> registerButton.doClick());
+
+        registerButton.setFont(font);
+
+        JLabel hasAccountLabel = new JLabel("Already have an account?");
         hasAccountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         hasAccountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        add(hasAccountLabel);
 
         JButton loginButton = new JButton("Login");
 
-        loginButton.setBounds(490, 362, 108, 35);
         loginButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 16));
-        add(loginButton);
 
-
-        loginButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                clearInputs();
-                setVisible(false);
-                mainFrame.showLoginPanel();
-            }
+        loginButton.addActionListener(e -> {
+            clearInputs();
+            setVisible(false);
+            mainFrame.showLoginPanel();
         });
-    }
 
-    public JTextField getUsernameTextField() {
-        return usernameTextField;
-    }
+        GridBagConstraints gbc = new GridBagConstraints();
 
-    public void setUsernameTextField(JTextField usernameTextField) {
-        this.usernameTextField = usernameTextField;
-    }
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 10, 5);
+        add(usernameLabel, gbc);
 
-    public JLabel getConfirmPwdLabel() {
-        return confirmPwdLabel;
-    }
+        gbc.gridx = 2;
+        gbc.gridwidth = 3;
+        gbc.insets = new Insets(0, 5, 10, 0);
+        add(usernameTextField, gbc);
 
-    public void setConfirmPwdLabel(JLabel confirmPwdLabel) {
-        this.confirmPwdLabel = confirmPwdLabel;
-    }
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 0, 10, 5);
+        add(pwdLabel, gbc);
 
-    public JPasswordField getPwdField() {
-        return pwdField;
-    }
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        gbc.insets = new Insets(0, 5, 10, 0);
+        add(pwdField, gbc);
 
-    public void setPwdField(JPasswordField pwdField) {
-        this.pwdField = pwdField;
-    }
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 0, 10, 5);
+        add(confirmPwdLabel, gbc);
 
-    public JPasswordField getConfirmPwdField() {
-        return confirmPwdField;
-    }
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.gridwidth = 3;
+        gbc.insets = new Insets(0, 5, 10, 0);
+        add(confirmPwdField, gbc);
 
-    public void setConfirmPwdField(JPasswordField confirmPwdField) {
-        this.confirmPwdField = confirmPwdField;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 5;
+        gbc.insets = new Insets(0, 0, 10, 0);
+        add(errorTextArea, gbc);
+
+        gbc.gridy = 4;
+        gbc.insets = new Insets(0, 0, 10, 0);
+        add(registerButton, gbc);
+
+        gbc.gridy = 5;
+        gbc.gridwidth = 5;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.EAST;
+
+        JPanel registrationSection = new JPanel();
+        registrationSection.setLayout(new BoxLayout(registrationSection, BoxLayout.X_AXIS));
+        registrationSection.add(hasAccountLabel);
+        registrationSection.add(Box.createHorizontalStrut(10));
+        registrationSection.add(loginButton);
+
+        add(registrationSection, gbc);
     }
 
     private void clearInputs() {

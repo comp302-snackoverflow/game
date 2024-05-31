@@ -1,14 +1,11 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.domain.event.KeyPressEventFactory;
 import tr.edu.ku.comp302.domain.listeners.SaveListener;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class PauseMenuPanel extends JPanel {
     private final JButton resumeGameButton;
@@ -29,9 +26,7 @@ public class PauseMenuPanel extends JPanel {
         saveButton = new JButton("Save");
         mainMenuButton = new JButton("Return to Main Menu");
 
-        resumeGameButton.addActionListener(e -> {
-            mainFrame.showLevelPanel();
-        });
+        resumeGameButton.addActionListener(e -> mainFrame.showLevelPanel());
         optionsButton.addActionListener(e -> {
             // mainFrame.showOptionsPanel();
         });
@@ -45,14 +40,7 @@ public class PauseMenuPanel extends JPanel {
             mainFrame.showMainMenuPanel();
         });
 
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    resumeGameButton.doClick();
-                }
-            }
-        });
+        KeyPressEventFactory.createKeyReleasedHandler(this, "ESCAPE", e -> resumeGameButton.doClick());
 
         Dimension buttonSize = new Dimension(150, 30);
         resumeGameButton.setPreferredSize(buttonSize);

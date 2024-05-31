@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.event.KeyPressEventFactory;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
@@ -7,8 +8,6 @@ import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class LevelPanel extends JPanel {
     private final JButton pauseButton;
@@ -20,20 +19,11 @@ public class LevelPanel extends JPanel {
         setFocusable(true);
         pauseButton = new JButton("PAUSE");
 
-        pauseButton.addActionListener(e -> {
-            mainFrame.showPausePanel();
-        });
+        pauseButton.addActionListener(e -> mainFrame.showPausePanel());
 
         pauseButton.setBounds(0, 0, 10, 20);
 
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    pauseButton.doClick();
-                }
-            }
-        });
+        KeyPressEventFactory.createKeyReleasedHandler(this, "ESCAPE", e -> pauseButton.doClick());
 
         this.add(pauseButton);
     }
@@ -57,9 +47,7 @@ public class LevelPanel extends JPanel {
         levelHandler.resizeFireBallImage();
 
         levelHandler.resizeBarrierImages();
-        levelHandler.getBarriers().forEach(barrier -> {
-            barrier.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), (int) size.getWidth(), (int) size.getHeight());
-        });
+        levelHandler.getBarriers().forEach(barrier -> barrier.adjustPositionAndSize(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), (int) size.getWidth(), (int) size.getHeight()));
 
         levelHandler.resizeRemainImage();
         levelHandler.getRemains().forEach(remain -> remain.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), (int) size.getWidth(), (int) size.getHeight()));

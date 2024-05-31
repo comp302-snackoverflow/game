@@ -1,10 +1,9 @@
 package tr.edu.ku.comp302.ui.frame;
 
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
-import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
-import tr.edu.ku.comp302.domain.listeners.SaveListener;
+import tr.edu.ku.comp302.domain.lanceofdestiny.state.GameState;
 import tr.edu.ku.comp302.ui.panel.*;
 import tr.edu.ku.comp302.ui.panel.buildmode.BuildPanel;
 
@@ -67,7 +66,6 @@ public class MainFrame extends JFrame {
         self.cards.add(self.selectLoadPanel, SELECT_SAVE);
         self.setMinimumSize(new Dimension(frameWidth, frameHeight));
         JFrame.setDefaultLookAndFeelDecorated(true);
-        self.loginPanel.registerEnterClick();
         return self;
     }
 
