@@ -75,7 +75,6 @@ public class P2PConnection {
         }
     }
 
-
     public void close() {
         try {
             if (socket != null) {
@@ -94,8 +93,9 @@ public class P2PConnection {
     }
 
     public void reconnect() {
+        close();
         try {
-            socket.connect(socket.getRemoteSocketAddress());
+            connectToPeer();
         } catch (IOException ignored) {
             reconnect();
         }
