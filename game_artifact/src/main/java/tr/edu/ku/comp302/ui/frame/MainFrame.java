@@ -177,12 +177,11 @@ public class MainFrame extends JFrame {
         layout.show(cards, LEVEL);
         levelPanel.requestFocusInWindow();
         levelPanel.setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()));
+        lod.setConnection(conn);
         if (conn != null) {
             LanceOfDestiny.setCurrentGameState(GameState.MP_PLAYING);
-            lod.setConnection(conn);
         } else {
             LanceOfDestiny.setCurrentGameState(GameState.PLAYING);
-            lod.setConnection(null);
         }
         refresh();
     }
@@ -209,6 +208,13 @@ public class MainFrame extends JFrame {
         } else {
             LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
         }
+        refresh();
+    }
+
+    public void showPausePanel() {
+        layout.show(cards, PAUSE);
+        pausePanel.requestFocusInWindow();
+        LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
         refresh();
     }
 

@@ -194,6 +194,6 @@ public class LevelPanel extends JPanel implements Pausable {
     }
 
     public void pause() {
-        mainFrame.showPausePanel(true);
+        mainFrame.showPausePanel();
     }
 }
