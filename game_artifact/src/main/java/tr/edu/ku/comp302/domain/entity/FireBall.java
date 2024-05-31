@@ -24,19 +24,6 @@ public class FireBall extends Entity {
         dy = dy * newHeight / oldHeight;
     }
 
-    // for handling reflections with steady surfaces
-    // need to pass the surface angle
-    public void handleReflection(double surfaceAngleDegrees) {
-        double surfaceAngle = Math.toRadians(surfaceAngleDegrees);
-        double totalSpeedAngle = Math.atan2(-dy, dx);
-
-        double newAngle = 2 * surfaceAngle - totalSpeedAngle;
-
-        double totalSpeed = Math.sqrt(dx * dx + dy * dy);
-
-        dx = totalSpeed * Math.cos(newAngle);
-        dy = totalSpeed * -Math.sin(newAngle);
-    }
     // for handling reflections with moving surfaces
     // need to pass the surface angle and the surface speed
     // works for steady surfaces as well
@@ -96,20 +83,6 @@ public class FireBall extends Entity {
         myDY = myDY / 1000;
         System.out.println(myDX+ " " + myDY);
         */
-    }
-
-    public void handleCornerReflection(double surfaceAngleDegrees, Collision corner) {
-        switch (corner) {
-            case TOP_RIGHT, BOTTOM_LEFT:
-                handleReflection(surfaceAngleDegrees + 45);
-                break;
-            case TOP_LEFT, BOTTOM_RIGHT:
-                handleReflection(surfaceAngleDegrees - 45);
-                break;
-            default:
-                handleReflection(surfaceAngleDegrees);
-                break;
-        }
     }
 
     // for handling reflections at a surface's corner

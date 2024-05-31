@@ -71,12 +71,7 @@ public class CollisionHandler {
                 break;
             }
             Rectangle2D box = b.getBoundingBox();
-            // FIXME: since build and load map methods are broken now, commenting out these lines to avoid spamming logs
-//            if (box.intersects(target.getBoundingBox())) {
-//                logger.warn("checkCloseCalls: Barrier bounding boxes intersect");
-//                logger.warn("Target: " + target.getBoundingBox());
-//                logger.warn("Barrier: " + box);
-//            }
+
             if (ellipse.intersects(box)) {
                 int outcode = ellipseOutcode(ellipse, box.getCenterX(), box.getCenterY());
                 sides |= outcode;
@@ -99,7 +94,6 @@ public class CollisionHandler {
         }
         if (rect.getMaxY() >= LanceOfDestiny.getScreenHeight() >> 1) {
             sides |= 0b0100; // bottom side
-            logger.warn("checkCloseCalls: Barrier is at the bottom of the screen");
         }
 
         for (Barrier barrier : barriers) {
@@ -251,9 +245,9 @@ public class CollisionHandler {
 
     private static void resolveCollision(FireBall fireBall, Lance lance, Collision side) {
         switch (side) {
-            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(-lance.getRotationAngle());
+            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(-lance.getRotationAngle(), lance.getDirection());
             case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                    fireBall.handleCornerReflection(-lance.getRotationAngle(), side);
+                    fireBall.handleCornerReflection(-lance.getRotationAngle(), lance.getDirection(), side);
         }
     }
 
