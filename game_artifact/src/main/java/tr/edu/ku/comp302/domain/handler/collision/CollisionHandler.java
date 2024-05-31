@@ -26,9 +26,7 @@ public class CollisionHandler {
         Iterator<Barrier> iterator = barriers.iterator();
         while (iterator.hasNext()) {
             Barrier barrier = iterator.next();
-            if (checkFireBallEntityCollisions(fireBall, barrier)) {
-                iterator.remove();
-            }
+            checkFireBallEntityCollisions(fireBall, barrier);
         }
     }
 
