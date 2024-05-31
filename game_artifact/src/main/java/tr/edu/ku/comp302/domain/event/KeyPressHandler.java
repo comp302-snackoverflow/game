@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.function.Consumer;
 
-public class KeyPressEventFactory {
-    public static void createKeyReleasedHandler(JComponent component, String keyType, Consumer<ActionEvent> consumer) {
+public class KeyPressHandler {
+    public static void bindKeyPressAction(JComponent component, String keyType, Consumer<ActionEvent> consumer) {
         InputMap inputMap = component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = component.getActionMap();
 

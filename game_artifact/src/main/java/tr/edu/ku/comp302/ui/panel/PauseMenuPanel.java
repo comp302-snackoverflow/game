@@ -1,6 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import tr.edu.ku.comp302.domain.event.KeyPressEventFactory;
+import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.listeners.SaveListener;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
@@ -40,7 +40,7 @@ public class PauseMenuPanel extends JPanel {
             mainFrame.showMainMenuPanel();
         });
 
-        KeyPressEventFactory.createKeyReleasedHandler(this, "ESCAPE", e -> resumeGameButton.doClick());
+        KeyPressHandler.bindKeyPressAction(this, "ESCAPE", e -> resumeGameButton.doClick());
 
         Dimension buttonSize = new Dimension(150, 30);
         resumeGameButton.setPreferredSize(buttonSize);

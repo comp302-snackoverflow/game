@@ -1,6 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import tr.edu.ku.comp302.domain.event.KeyPressEventFactory;
+import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.LoginHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
@@ -43,7 +43,7 @@ public class LoginPanel extends JPanel {
         loginButton = new JButton("Login");
         loginButton.setFont(buttonFont);
 
-        KeyPressEventFactory.createKeyReleasedHandler(this, "ENTER", e -> loginButton.doClick());
+        KeyPressHandler.bindKeyPressAction(this, "ENTER", e -> loginButton.doClick());
 
         pwdField = new JPasswordField();
         pwdField.setFont(buttonFont);

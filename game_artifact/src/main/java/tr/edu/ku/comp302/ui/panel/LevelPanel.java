@@ -1,6 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import tr.edu.ku.comp302.domain.event.KeyPressEventFactory;
+import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
@@ -23,7 +23,7 @@ public class LevelPanel extends JPanel {
 
         pauseButton.setBounds(0, 0, 10, 20);
 
-        KeyPressEventFactory.createKeyReleasedHandler(this, "ESCAPE", e -> pauseButton.doClick());
+        KeyPressHandler.bindKeyPressAction(this, "ESCAPE", e -> pauseButton.doClick());
 
         this.add(pauseButton);
     }

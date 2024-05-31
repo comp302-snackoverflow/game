@@ -1,6 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
-import tr.edu.ku.comp302.domain.event.KeyPressEventFactory;
+import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.RegisterHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
@@ -81,7 +81,7 @@ public class RegisterPanel extends JPanel {
             }
         });
 
-        KeyPressEventFactory.createKeyReleasedHandler(this, "ENTER", e -> registerButton.doClick());
+        KeyPressHandler.bindKeyPressAction(this, "ENTER", e -> registerButton.doClick());
 
         registerButton.setFont(font);
 
