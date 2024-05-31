@@ -23,9 +23,6 @@ public class P2PConnection {
     private Socket socket;
     private static final int PORT = 3132;
     private static final int HEARTBEAT_INTERVAL = 3; // seconds
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private ConcurrentLinkedQueue<String> queuedMessages = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<String> receivedMessages = new ConcurrentLinkedQueue<>();
 
     public P2PConnection(String peerAddress, int peerPort) {
         this.peerAddress = peerAddress;
@@ -38,13 +35,9 @@ public class P2PConnection {
     }
 
     public void startServer() throws IOException {
-        if (serverSocket != null && !serverSocket.isClosed()) {
-            close();
-        }
         serverSocket = new ServerSocket(PORT);
         socket = serverSocket.accept();
         socket.setKeepAlive(true);
-        startHeartBeat();
     }
 
     public void connectToPeer() throws IOException {
@@ -53,51 +46,6 @@ public class P2PConnection {
         }
         socket = new Socket(peerAddress, peerPort);
         socket.setKeepAlive(true);
-
-        startHeartBeat();
-    }
-
-    private void startHeartBeat() {
-        scheduler.scheduleAtFixedRate(() -> {
-            try {
-                if (queuedMessages.isEmpty()) {
-                    sendMessage("HEARTBEAT");
-                } else {
-                    while (!queuedMessages.isEmpty()) {
-                        sendMessage(queuedMessages.poll());
-                    }
-                }
-                while (socket.getInputStream().available() > 0) {
-                    receivedMessages.add(receiveMessage());
-                }
-            } catch (Exception e) {
-                logger.error("Heartbeat failed", e);
-                reconnect();
-            }
-        }, 0, HEARTBEAT_INTERVAL, TimeUnit.SECONDS);
-    }
-    private void reconnect() {
-        close();
-        try {
-            if (peerAddress != null && peerPort != 0) {
-                connectToPeer();
-            } else {
-                startServer();
-            }
-        } catch (IOException e) {
-            logger.error("Reconnection failed", e);
-        }
-    }
-
-    public void send(String message) {
-        queuedMessages.add(message);
-    }
-
-    public String receive() {
-        if (receivedMessages.isEmpty()) {
-            return null;
-        }
-        return receivedMessages.poll();
     }
 
     public void close() {
@@ -111,19 +59,27 @@ public class P2PConnection {
             }
         } catch (IOException e) {
             logger.error("An error occurred while closing the connection", e);
-        } finally {
-            if (scheduler != null && !scheduler.isShutdown()) {
-                scheduler.shutdown();
-            }
         }
     }
 
-    private void sendMessage(String message) throws IOException {
+    public void sendMessage(String message) throws IOException {
+        if (serverSocket != null) {
+            socket = serverSocket.accept();
+        } else {
+            connectToPeer();
+        }
+
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         out.println(message);
     }
 
-    private String receiveMessage() throws IOException {
+    public String receiveMessage() throws IOException {
+        if (serverSocket != null) {
+            socket = serverSocket.accept();
+        } else {
+            connectToPeer();
+        }
+
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         return in.readLine();
     }

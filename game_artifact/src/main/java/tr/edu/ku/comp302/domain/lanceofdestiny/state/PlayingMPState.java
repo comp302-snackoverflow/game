@@ -4,6 +4,7 @@ import tr.edu.ku.comp302.client.GameInfo;
 import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
+import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class PlayingMPState extends PlayingState implements MultiplayerState {
@@ -16,12 +17,17 @@ public class PlayingMPState extends PlayingState implements MultiplayerState {
 
         GameInfo info = lanceOfDestiny.getGameInfo();
 
-        if (lanceOfDestiny.getChronometer().canReceive()) {
-            conn.send(String.format("SCORE:%d:CHANCES:%d:BARRIERS:%d", info.score(), info.chances(), info.barrierCount()));
+        try {
+            if (lanceOfDestiny.getChronometer().canReceive()) {
+                conn.sendMessage(String.format("SCORE:%d:CHANCES:%d:BARRIERS:%d", info.score(), info.chances(), info.barrierCount()));
 
-            if (conn.receive() != null) {
-                System.out.println(conn.receive());
+                String s = conn.receiveMessage();
+                if (conn.receiveMessage() != null) {
+                    System.out.println(s);
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
