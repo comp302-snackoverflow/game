@@ -157,12 +157,12 @@ public class CollisionHandler {
                     try {
                         Collision side = hitBoxCollision(fireBall, barrier);
                         if (side != null) {
-                            if (!fireBall.isOverwhelming()) {
-                                resolveCollision(fireBall, barrier, side);
-                                return true;
+                            if (barrier.isFrozen()) {
+                                reflectFireBall(fireBall, barrier, side);
                             } else {
-                                barrier.decreaseHealth();
+                                resolveCollision(fireBall, barrier, side);
                             }
+                            return true;
                         }
                     } catch (CollisionError ignored) {
                     }
