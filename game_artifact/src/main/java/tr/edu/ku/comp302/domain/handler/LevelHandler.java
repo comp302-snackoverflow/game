@@ -552,7 +552,7 @@ public class LevelHandler {
 
 
     public boolean isFinished() {
-        if (level.getChances() == 0 && level.getBarriers().isEmpty())   {
+        if (level.getChances() == 0 || level.getBarriers().isEmpty())   {
             LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
             return true;
         }
