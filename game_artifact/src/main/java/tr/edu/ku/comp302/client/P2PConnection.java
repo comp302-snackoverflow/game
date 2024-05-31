@@ -35,6 +35,9 @@ public class P2PConnection {
     }
 
     public void startServer() throws IOException {
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            close();
+        }
         serverSocket = new ServerSocket(PORT);
         socket = serverSocket.accept();
         socket.setKeepAlive(true);
@@ -43,6 +46,9 @@ public class P2PConnection {
     }
 
     public void connectToPeer() throws IOException {
+        if (socket != null) {
+            close();
+        }
         socket = new Socket(peerAddress, peerPort);
         socket.setKeepAlive(true);
     }
@@ -104,6 +110,7 @@ public class P2PConnection {
             }
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
+                socket.close();
             }
         } catch (IOException e) {
             logger.error("An error occurred while closing the connection", e);
