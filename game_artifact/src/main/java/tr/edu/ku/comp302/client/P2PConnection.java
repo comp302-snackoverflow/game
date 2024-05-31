@@ -42,19 +42,6 @@ public class P2PConnection {
         socket = serverSocket.accept();
         socket.setKeepAlive(true);
         logger.info("Connection accepted from {}", socket.getRemoteSocketAddress());
-        startCommunication();
-    }
-
-    public void connectToPeer() throws IOException {
-        startCommunication();
-    }
-
-    private void startCommunication() throws IOException {
-        if (serverSocket == null) {
-            socket = new Socket(peerAddress, peerPort);
-        } else {
-            socket = serverSocket.accept();
-        }
         executorService = Executors.newScheduledThreadPool(2);
 
         executorService.scheduleWithFixedDelay(() -> {
@@ -62,7 +49,7 @@ public class P2PConnection {
                 String message;
                 while ((message = messageQueue.poll()) != null) {
                     out.println(message);
-                    logger.info("Sent message: " + message);
+                    logger.info("Sent message: {}", message);
                 }
             } catch (IOException e) {
                 logger.error("An error occurred while sending a message to the peer", e);
@@ -73,7 +60,7 @@ public class P2PConnection {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                 String message;
                 while ((message = in.readLine()) != null) {
-                    logger.info("Received message: " + message);
+                    logger.info("Received message: {}", message);
                     receivedMessages.add(message);
                 }
             } catch (IOException e) {
@@ -81,6 +68,43 @@ public class P2PConnection {
                 close();
             }
         }, 0, 500, TimeUnit.MILLISECONDS);
+    }
+
+    public void connectToPeer() throws IOException {
+        executorService = Executors.newScheduledThreadPool(2);
+
+        executorService.scheduleWithFixedDelay(() -> {
+            try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+                String message;
+                while ((message = messageQueue.poll()) != null) {
+                    out.println(message);
+                    logger.info("Sent message: {}", message);
+                }
+            } catch (IOException e) {
+                logger.error("An error occurred while sending a message to the peer", e);
+                close();
+            }
+        }, 0, 500, TimeUnit.MILLISECONDS);
+        executorService.scheduleWithFixedDelay(() -> {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                String message;
+                while ((message = in.readLine()) != null) {
+                    logger.info("Received message: {}", message);
+                    receivedMessages.add(message);
+                }
+            } catch (IOException e) {
+                logger.error("An error occurred while receiving a message from the peer", e);
+                close();
+            }
+        }, 0, 500, TimeUnit.MILLISECONDS);    }
+
+    private void startCommunication() throws IOException {
+        if (serverSocket == null) {
+            socket = new Socket(peerAddress, peerPort);
+        } else {
+            socket = serverSocket.accept();
+        }
+
     }
 
     public void send(String msg) {

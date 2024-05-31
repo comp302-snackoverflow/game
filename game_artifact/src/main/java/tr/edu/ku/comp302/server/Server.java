@@ -11,7 +11,6 @@ public class Server {
     private static final Map<String, PlayerInfo> gameSessions = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
-
         try (ServerSocket serverSocket = new ServerSocket(PORT)){
             while (true) {
                 Socket socket = serverSocket.accept();
