@@ -119,8 +119,8 @@ public class FireBall extends Entity {
     }
 
     public void stopFireball() {
+        this.dx = 0;
         this.dy = 0;
-        speed = Math.hypot(dx, dy);
     }
 
     public void increaseSpeed(double updateVal) {
