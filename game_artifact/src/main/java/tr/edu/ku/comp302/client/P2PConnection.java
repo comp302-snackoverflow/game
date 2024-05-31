@@ -64,7 +64,15 @@ public class P2PConnection {
         if (socket == null) {
             throw new IllegalStateException("Connection is not established");
         } else if (socket.isClosed()) {
-            reconnect();
+            try {
+                if (peerAddress != null && peerPort != 0) {
+                    connectToPeer();
+                } else {
+                    startServer();
+                }
+            } catch (IOException e) {
+                logger.error(e);
+            }
         }
 
         try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
