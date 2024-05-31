@@ -19,7 +19,7 @@ public class GameOverPanel extends JPanel {
         this.score = score;
         this.setPreferredSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()));
         if (isWon) {
-            backgroundImage = new ImageIcon(getClass().getResource("/assets/light.png")).getImage();
+            backgroundImage = new ImageIcon(getClass().getResource("/assets/light_sat.png")).getImage();
         } else {
             backgroundImage = new ImageIcon(getClass().getResource("/assets/dark.png")).getImage();
             iconImage = new ImageIcon(getClass().getResource("/assets/ymir.png")).getImage();
