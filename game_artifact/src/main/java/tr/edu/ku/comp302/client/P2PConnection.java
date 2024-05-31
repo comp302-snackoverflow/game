@@ -23,6 +23,10 @@ public class P2PConnection {
     private Socket socket;
     private static final int PORT = 3132;
     private static final int HEARTBEAT_INTERVAL = 3; // seconds
+    private Thread senderThread;
+    private Thread receiverThread;
+    private ConcurrentLinkedQueue<String> messageQueue = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<String> receivedMessages = new ConcurrentLinkedQueue<>();
 
     public P2PConnection(String peerAddress, int peerPort) {
         this.peerAddress = peerAddress;
@@ -38,53 +42,53 @@ public class P2PConnection {
         serverSocket = new ServerSocket(PORT);
         socket = serverSocket.accept();
         socket.setKeepAlive(true);
+
     }
 
     public void connectToPeer() throws IOException {
-        if (socket != null) {
-            close();
-        }
         socket = new Socket(peerAddress, peerPort);
         socket.setKeepAlive(true);
-    }
-
-    public void close() {
-        try {
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
+        senderThread = new Thread(() -> {
+            try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+                while (true) {
+                    if (!messageQueue.isEmpty()) {
+                        String message = messageQueue.poll();
+                        out.println(message);
+                    }
+                    Thread.sleep(500);
+                }
+            } catch (IOException e) {
+                logger.error("An error occurred while sending a message to the peer", e);
+            } catch (InterruptedException e) {
+                this.senderThread.interrupt();
             }
-            if (serverSocket != null && !serverSocket.isClosed()) {
-                serverSocket.close();
-                socket.close();
+        });
+
+        receiverThread = new Thread(() -> {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                while (true) {
+                    String message = in.readLine();
+                    if (message != null) {
+                        receivedMessages.add(message);
+                    }
+                    Thread.sleep(500);
+                }
+            } catch (IOException e) {
+                logger.error("An error occurred while receiving a message from the peer", e);
+            } catch (InterruptedException e) {
+                this.receiverThread.interrupt();
             }
-        } catch (IOException e) {
-            logger.error("An error occurred while closing the connection", e);
-        }
+        });
+
+        senderThread.start();
+        receiverThread.start();
     }
 
-    public void sendMessage(String message) throws IOException {
-        if (serverSocket != null) {
-            socket = serverSocket.accept();
-        } else {
-            connectToPeer();
-        }
-
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        out.println(message);
+    public void send() {
+        messageQueue.add("Hello World!");
     }
 
-    public String receiveMessage() throws IOException {
-        if (serverSocket != null) {
-            socket = serverSocket.accept();
-        } else {
-            connectToPeer();
-        }
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        return in.readLine();
-    }
-
-    public PlayerInfo getPeer() {
-        return new PlayerInfo(peerAddress, peerPort);
+    public String receive() {
+        return receivedMessages.poll();
     }
 }
