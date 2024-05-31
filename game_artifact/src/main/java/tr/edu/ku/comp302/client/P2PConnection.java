@@ -40,24 +40,11 @@ public class P2PConnection {
         socket.setKeepAlive(true);
 //        this.peerAddress = socket.getInetAddress().getHostAddress();
 //        this.peerPort = socket.getPort();
-        startHeartbeat();
     }
 
     public void connectToPeer() throws IOException {
         socket = new Socket(peerAddress, peerPort);
         socket.setKeepAlive(true);
-        startHeartbeat();
-    }
-
-    private void startHeartbeat() {
-        scheduler.scheduleAtFixedRate(() -> {
-            try {
-                send("heartbeat");
-            } catch (Exception e) {
-                logger.error("Heartbeat failed, attempting to reconnect...", e);
-                reconnect();
-            }
-        }, 0, HEARTBEAT_INTERVAL, TimeUnit.SECONDS);
     }
 
     private void reconnect() {
@@ -74,8 +61,10 @@ public class P2PConnection {
     }
 
     public void send(String message) {
-        if (socket == null || socket.isClosed()) {
-            throw new RuntimeException("Connection is not established");
+        if (socket == null) {
+            throw new IllegalStateException("Connection is not established");
+        } else if (socket.isClosed()) {
+            reconnect();
         }
 
         try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
@@ -86,10 +75,11 @@ public class P2PConnection {
     }
 
     public String receive() {
-        if (socket == null || socket.isClosed()) {
-            throw new RuntimeException("Connection is not established");
+        if (socket == null) {
+            throw new IllegalStateException("Connection is not established");
+        } else if (socket.isClosed()) {
+            reconnect();
         }
-
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             return in.readLine();
