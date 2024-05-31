@@ -70,8 +70,8 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener {
         switch (currentGameState){
             case PLAYING -> state = new PlayingState(this);
             case PAUSE -> state = new PauseSPState(this);
-            case MP_PAUSE -> state = new PlayingMPState(this);
-            case MP_PLAYING -> state = new PauseMPState(this);
+            case MP_PAUSE -> state = new PauseMPState(this);
+            case MP_PLAYING -> state = new PlayingMPState(this);
             default -> state = null;
         }
     }
