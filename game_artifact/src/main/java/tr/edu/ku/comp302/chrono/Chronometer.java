@@ -16,10 +16,10 @@ public class Chronometer {
     }
 
     public void addPauseTime(long pauseDuration) {
-        if (arrowKeyPressTimes[0] != 0){
+        if (arrowKeyPressTimes[0] != 0) {
             arrowKeyPressTimes[0] += pauseDuration;
         }
-        if (arrowKeyPressTimes[1] != 0){
+        if (arrowKeyPressTimes[1] != 0) {
             arrowKeyPressTimes[1] += pauseDuration;
         }
         previousTime += pauseDuration;
@@ -27,21 +27,19 @@ public class Chronometer {
         pauseStartTime = null;
     }
 
-
-    public long getCurrentTime(){
+    public long getCurrentTime() {
         return System.nanoTime();
     }
 
-    public void resetArrowKeyPressTimes(){
+    public void resetArrowKeyPressTimes() {
         arrowKeyPressTimes[0] = 0L;
         arrowKeyPressTimes[1] = 0L;
     }
 
-    public void resetLanceMovementRemainders(){
+    public void resetLanceMovementRemainders() {
         lanceMovementRemainder[0] = 0L;
         lanceMovementRemainder[1] = 0L;
     }
-
 
     public long[] getArrowKeyPressTimes() {
         return arrowKeyPressTimes;
@@ -63,25 +61,12 @@ public class Chronometer {
         lanceMovementRemainder[index] = remaining;
     }
 
-
-    public double[] getLanceMovementRemainder() {
-        return lanceMovementRemainder;
-    }
-
     public long getLastMovingTime() {
         return lastMovingTime;
     }
 
     public void setLastMovingTime(long lastMovingTime) {
         this.lastMovingTime = lastMovingTime;
-    }
-
-    public boolean isTapMoving() {
-        return tapMoving;
-    }
-
-    public void setTapMoving(boolean tapMoving) {
-        this.tapMoving = tapMoving;
     }
 
     public Long getPauseStartTime() {
@@ -98,14 +83,6 @@ public class Chronometer {
 
     public void setPreviousTime(long previousTime) {
         this.previousTime = previousTime;
-    }
-
-    public static double nsToMs(long timeWithNs) {
-        return timeWithNs / 1_000_000.0;
-    }
-
-    public static double nsToSeconds(long timeWithNs) {
-        return timeWithNs / 1_000_000_000.0;
     }
 
 }
