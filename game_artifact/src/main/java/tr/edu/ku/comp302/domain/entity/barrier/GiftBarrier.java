@@ -13,8 +13,6 @@ public class GiftBarrier extends Barrier {
         spellBox = new SpellBox(0, 0);
     }
 
-    ;
-
     public void dropSpellBox() {
         spellBox.setXPosition(getXPosition() + getLength() / 2);
         spellBox.setYPosition(getYPosition() + getThickness() / 2);
