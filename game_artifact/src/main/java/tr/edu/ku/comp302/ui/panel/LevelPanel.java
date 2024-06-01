@@ -149,6 +149,7 @@ public class LevelPanel extends JPanel implements Pausable {
             updateSpellCounts();
             requestFocus();
             repaint();
+            System.out.println("I am pressed");
         });
 
         hexSpellLabel = addCircularButtonWithLabel("/assets/hex.png", LanceOfDestiny.getScreenWidth() - 100, 500 + 50, e -> {
@@ -156,6 +157,7 @@ public class LevelPanel extends JPanel implements Pausable {
             updateSpellCounts();
             requestFocus();
             repaint();
+            
         });
 
         revalidate();

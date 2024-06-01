@@ -75,6 +75,19 @@ public class SaveService {
         double x = barrier.getXPosition();
         double y = barrier.getYPosition();
         int health = barrier.getHealth();
+
+        int encodedCounts = 0;
+        for (int i = 0; i < 4; i++) {
+            int curr_count = SpellBox.getSpellCounts()[i];
+            if (curr_count > 15) {
+                curr_count = 15;
+            }
+            encodedCounts |= (curr_count & 0xF) << (i * 4);
+        }
+
+        // Clear the first 4 hex digits and set the new encoded spell counts
+        health =  ( (health << 16) ) | (encodedCounts & 0x0000FFFF);
+
         String type = barrier.getClass().getSimpleName();
         int barrierID = dbHandler.getBarrierIdFromType(type);
         barrier.adjustPositionAndSize(1, 1, width, height);

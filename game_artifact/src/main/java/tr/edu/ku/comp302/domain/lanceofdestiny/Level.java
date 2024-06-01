@@ -57,7 +57,7 @@ public class Level implements SaveListener {
             System.out.println("Added new spell box: " + spellBox.getXPosition() + ", " + spellBox.getYPosition());
         }
 
-        SpellBox.resetSpellCounts();
+        
 
         this.spellInventory = spellInventory;
         this.nextTimeMs = nextTimeMs;
@@ -81,7 +81,7 @@ public class Level implements SaveListener {
             }
         }
 
-        SpellBox.resetSpellCounts();
+        
 
         levels.add(this);
     }

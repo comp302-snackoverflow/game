@@ -81,6 +81,7 @@ public class SelectLevelPanel extends JPanel {
             return;
         }
         Consumer<Integer> onClick = multiplayer ? (levelId) -> {
+            SpellBox.resetSpellCounts();
             mainFrame.setMultiplayerLevel(levelId);
             mainFrame.showCreateGamePanel();
             SpellBox.resetSpellCounts();

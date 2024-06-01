@@ -70,6 +70,17 @@ public class LoadService {
         double xPos = bd.x();
         double yPos = bd.y();
         int health = bd.health();
+
+        
+        for (int i = 0; i < 4; i++) {
+            SpellBox.getSpellCounts()[i] = (health >> (i * 4)) & 0xF;
+        }
+        
+
+        health = (health >> 16) & 0xFFFF;
+        
+
+
         String type = dbHandler.getBarrierTypeFromId(bd.type());
         Barrier barrier;
         if (type.equals(SimpleBarrier.class.getSimpleName())) {
