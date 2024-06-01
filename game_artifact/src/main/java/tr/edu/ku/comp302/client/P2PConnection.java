@@ -94,7 +94,7 @@ public class P2PConnection {
             }
         });
 
-        senderThread = new Thread(() -> {
+        receiverThread = new Thread(() -> {
             while (true) {
                 try {
                     Thread.sleep(100);
