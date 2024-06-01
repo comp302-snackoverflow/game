@@ -83,10 +83,6 @@ public class Lance extends Entity {
         return thickness;
     }
 
-    public void setThickness(double thickness) {
-        this.thickness = thickness;
-    }
-
     public double getSpeedWithHold() {
         return LanceOfDestiny.getScreenWidth() * 0.2; // = 2L
     }
@@ -114,7 +110,6 @@ public class Lance extends Entity {
         this.direction = (short) direction;
     }
 
-    // TODO: FINISH THIS METHOD
     public Polygon getActualHitbox() {
         double B = Math.toRadians(rotationAngle);
         double x = getXPosition();
@@ -174,7 +169,4 @@ public class Lance extends Entity {
         lastCollisionTimeInMillis = timeInMillis;
     }
 
-    public Double getLastCollisionTimeInMillis() {
-        return lastCollisionTimeInMillis;
-    }
 }

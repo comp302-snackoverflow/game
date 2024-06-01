@@ -1,9 +1,8 @@
 package tr.edu.ku.comp302.domain.entity;
 
-import java.awt.geom.Rectangle2D;
-
-import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+
+import java.awt.geom.Rectangle2D;
 
 public class Hex extends Entity {
     private int size = 16;
@@ -23,8 +22,8 @@ public class Hex extends Entity {
      */
     public void move(double speed) {
         // calculate the changes in x and y based on the rotation angle
-        double yChange = speed * Math.cos(Math.toRadians(rotationAngle)) ;
-        double xChange = speed * Math.sin(Math.toRadians(rotationAngle)) ;
+        double yChange = speed * Math.cos(Math.toRadians(rotationAngle));
+        double xChange = speed * Math.sin(Math.toRadians(rotationAngle));
 
         // update the hex's position
         setYPosition(yPosition - yChange);

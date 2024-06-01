@@ -1,16 +1,15 @@
 package tr.edu.ku.comp302.domain.entity;
+
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class SpellBox extends Entity {
-    private double speed = 1.5;     // TODO: Change speed
+    private double speed = 1.5;
     private int size = 50;
     private boolean isDropped = false;
-    //TODO Add spell attribute 
     private char spell = 0;
-
     private static int[] spellCounts = new int[4];
 
     // List to track assigned spells
@@ -73,12 +72,6 @@ public class SpellBox extends Entity {
 
     public static int[] getSpellCounts() {
         return spellCounts;
-    }
-
-    public static void resetSpellCounts() {
-        for (int i = 0; i < spellCounts.length; i++) {
-            spellCounts[i] = 0;
-        }
     }
 
     public static void incrementSpellCount(char spell) {

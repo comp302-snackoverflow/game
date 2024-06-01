@@ -55,8 +55,7 @@ public class FireBall extends Entity {
                 double dir = Math.signum(surfaceXSpeed);
                 dx = dir * dy / Math.sqrt(2);
                 dy = -dy / Math.sqrt(2);
-            }
-            else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
+            } else if (Math.signum(surfaceXSpeed) == Math.signum(dx)) { // in the same direction
                 //double newSpeed = totalSpeed + 5; // increase total speed by 5
                 double newSpeed = totalSpeed; // because permanent +5 speed boost looks bad
                 dx = newSpeed * Math.cos(newAngle);
@@ -123,10 +122,6 @@ public class FireBall extends Entity {
         this.dy = 0;
     }
 
-    public void increaseSpeed(double updateVal) {
-        this.speed += updateVal;
-    }
-
     public void bounceOffVerticalSurface() {
         this.dx = -this.dx;
     }
@@ -134,8 +129,6 @@ public class FireBall extends Entity {
     public void bounceOffHorizontalSurface() {
         this.dy = -this.dy;
     }
-
-    //TODO: These are the tentative bouncing mechanisms, and they DO NOT WORK! do not trust these methods.
 
     public int getSize() {
         return size;
@@ -161,8 +154,6 @@ public class FireBall extends Entity {
         this.dy = dy;
     }
 
-    //TODO: Make a hitbarrier method !
-
     public double getSpeed() {
         return speed;
     }
@@ -182,7 +173,6 @@ public class FireBall extends Entity {
     public void setOverwhelming(boolean isOverwhelming) {
         this.isOverwhelming = isOverwhelming;
     }
-
 
     public void applyDoubleAccel() {
         this.speed /= 2;
