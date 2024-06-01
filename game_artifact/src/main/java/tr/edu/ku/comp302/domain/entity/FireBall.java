@@ -6,14 +6,15 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import java.awt.geom.Rectangle2D;
 
 public class FireBall extends Entity {
-    private boolean isOverwhelmed = false;
     private int size = 16;
     private double dx = 0;
     private double dy = 0;
-    private double speed = 0.2 * LanceOfDestiny.getScreenWidth(); // in px/s
+    private double speed; // in px/s
+    private boolean isOverwhelming = false;
 
     public FireBall(double xPosition, double yPosition) {
         super(xPosition, yPosition);
+        speed = 0.2 * LanceOfDestiny.getScreenWidth();
         boundingBox = new Rectangle2D.Double(xPosition, yPosition, size, size);
     }
 
@@ -117,6 +118,11 @@ public class FireBall extends Entity {
         this.dy = speed;
     }
 
+    public void stopFireball() {
+        this.dx = 0;
+        this.dy = 0;
+    }
+
     public void increaseSpeed(double updateVal) {
         this.speed += updateVal;
     }
@@ -137,14 +143,6 @@ public class FireBall extends Entity {
 
     public void setSize(int size) {
         this.size = size;
-    }
-
-    public boolean getOverwhelmed() {
-        return isOverwhelmed;
-    }
-
-    public void setOverwhelmed(boolean isOverwhelmed) {
-        this.isOverwhelmed = isOverwhelmed;
     }
 
     public double getDx() {
@@ -175,5 +173,26 @@ public class FireBall extends Entity {
 
     public boolean isMoving() {
         return dx != 0 || dy != 0;
+    }
+
+    public boolean isOverwhelming() {
+        return isOverwhelming;
+    }
+
+    public void setOverwhelming(boolean isOverwhelming) {
+        this.isOverwhelming = isOverwhelming;
+    }
+
+
+    public void applyDoubleAccel() {
+        this.speed /= 2;
+        dx /= 2;
+        dy /= 2;
+    }
+
+    public void revertDoubleAccel() {
+        this.speed *= 2;
+        dx *= 2;
+        dy *= 2;
     }
 }

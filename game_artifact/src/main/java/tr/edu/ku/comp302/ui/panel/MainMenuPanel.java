@@ -2,17 +2,22 @@ package tr.edu.ku.comp302.ui.panel;
 
 import tr.edu.ku.comp302.domain.services.SessionManager;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
 public class MainMenuPanel extends JPanel {
-    protected JButton newGameButton;
-    protected JButton loadGameButton;
-    protected JButton createCustomMapButton;
-    protected JButton helpButton;
-    protected JButton optionsButton;
-    protected JButton logOutButton;
+    private final JButton newGameButton;
+    private final JButton multiplayerButton;
+    private final JButton loadGameButton;
+    private final JButton createCustomMapButton;
+    private final JButton helpButton;
+    private final JButton optionsButton;
+    private final JButton logOutButton;
+    private BufferedImage backgroundImage;
 
     public MainMenuPanel(MainFrame mainFrame) {
         GridBagLayout gridBagLayout = new GridBagLayout();
@@ -20,6 +25,7 @@ public class MainMenuPanel extends JPanel {
         setLayout(gridBagLayout);
 
         newGameButton = new JButton("New Game");
+        multiplayerButton = new JButton("Multiplayer");
         loadGameButton = new JButton("Load Game");
         createCustomMapButton = new JButton("Create Custom Map");
         helpButton = new JButton("Help");
@@ -29,20 +35,33 @@ public class MainMenuPanel extends JPanel {
         newGameButton.addActionListener(e -> {
             mainFrame.showSelectLevelPanel();
         });
+
+        multiplayerButton.addActionListener(e -> {
+            mainFrame.showMultiplayerPanel();
+        });
+
         loadGameButton.addActionListener(e -> {
             mainFrame.showSelectSavedGamePanel();
 
         });
+
         createCustomMapButton.addActionListener(e -> {
             mainFrame.showBuildPanel();
         });
+
         helpButton.addActionListener(e -> {
-//            mainFrame.showHelpPanel();
+            JDialog helpDialog = new JDialog(mainFrame, "Help", true);
+            helpDialog.getContentPane().add(new HelpPanel());
+
+            helpDialog.pack();
+            helpDialog.setLocationRelativeTo(mainFrame);
+            helpDialog.setVisible(true);
         });
+
         optionsButton.addActionListener(e -> {
-            System.out.println("Options");
 //            mainFrame.showOptionsPanel();
         });
+
         logOutButton.addActionListener(e -> {
             SessionManager.getSession().clear();
             mainFrame.showLoginPanel();
@@ -65,19 +84,36 @@ public class MainMenuPanel extends JPanel {
         gbc.gridwidth = 1;
         this.add(newGameButton, gbc);
 
-        gbc.gridy = 1;
+        gbc.gridy++;
+        this.add(multiplayerButton, gbc);
+
+        gbc.gridy++;
         this.add(loadGameButton, gbc);
 
-        gbc.gridy = 2;
+        gbc.gridy++;
         this.add(createCustomMapButton, gbc);
 
-        gbc.gridy = 3;
+        gbc.gridy++;
         this.add(helpButton, gbc);
 
-        gbc.gridy = 4;
+        gbc.gridy++;
         this.add(optionsButton, gbc);
 
-        gbc.gridy = 5;
+        gbc.gridy++;
         this.add(logOutButton, gbc);
+
+        try {
+            backgroundImage = ImageIO.read(getClass().getResource("/assets/light_sat.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 }

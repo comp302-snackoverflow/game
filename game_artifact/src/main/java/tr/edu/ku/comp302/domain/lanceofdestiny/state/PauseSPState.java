@@ -1,17 +1,17 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny.state;
 import tr.edu.ku.comp302.chrono.Chronometer;
+import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
-public class PauseSPState implements State{
-
-    private LanceOfDestiny lanceOfDestiny;
+public class PauseSPState implements State {
+    protected LanceOfDestiny lanceOfDestiny;
 
     public PauseSPState(LanceOfDestiny lanceOfDestiny) {
         this.lanceOfDestiny = lanceOfDestiny;
     }
 
     @Override
-    public void update() {
+    public void update(P2PConnection ignored) {
         Chronometer chronometer = lanceOfDestiny.getChronometer();
         if (chronometer.getPauseStartTime() == null) {
             chronometer.setPauseStartTime(chronometer.getCurrentTime());
@@ -23,4 +23,7 @@ public class PauseSPState implements State{
         }
     }
 
+    public boolean isMultiplayer() {
+        return false;
+    }
 }

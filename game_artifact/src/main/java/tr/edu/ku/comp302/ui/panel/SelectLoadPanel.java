@@ -4,15 +4,20 @@ import tr.edu.ku.comp302.domain.handler.SelectLoadHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.SessionManager;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
+import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 public class SelectLoadPanel extends JPanel {
     private final MainFrame mainFrame;
     private final JPanel levelsPanel;
     private final SelectLoadHandler selectLoadHandler;
+    private BufferedImage backgroundImage;
+
 
     public SelectLoadPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -42,6 +47,11 @@ public class SelectLoadPanel extends JPanel {
 
         add(headerPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
+                try {
+        backgroundImage = ImageIO.read(getClass().getResource("/assets/light_sat.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateLevels() {
@@ -79,5 +89,13 @@ public class SelectLoadPanel extends JPanel {
     private void showLevel(Level level) {
         mainFrame.setCurrentLevel(level);
         mainFrame.showLevelPanel();
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 }

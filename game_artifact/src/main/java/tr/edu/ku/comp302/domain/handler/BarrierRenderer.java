@@ -5,16 +5,25 @@ import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
 import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
 import tr.edu.ku.comp302.ui.view.View;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+
 public class BarrierRenderer {
-    protected static final View simpleBarrierView = View.of(View.SIMPLE_BARRIER);
-    protected static final View firmBarrierView = View.of(View.FIRM_BARRIER);
-    protected static final View explosiveBarrierView = View.of(View.EXPLOSIVE_BARRIER);
+    private static final View simpleBarrierView = View.of(View.SIMPLE_BARRIER);
+    private static final View firmBarrierView = View.of(View.FIRM_BARRIER);
+    private static final View explosiveBarrierView = View.of(View.EXPLOSIVE_BARRIER);
+    private static final View giftBarrierView = View.of(View.GIFT_BARRIER);
+    private static final View frozenBarrierView = View.of(View.FROZEN_BARRIER);
+    private static final View hollowBarrierView = View.of(View.HOLLOW_BARRIER);
+
     private static final Logger logger = LogManager.getLogger(BarrierRenderer.class);
 
     public void resizeBarrierImages(List<Barrier> barriers) {
@@ -25,23 +34,41 @@ public class BarrierRenderer {
             simpleBarrierView.resizeImage(length, thickness);
             firmBarrierView.resizeImage(length, thickness);
             explosiveBarrierView.resizeImage(length, thickness);
+            giftBarrierView.resizeImage(length, thickness);
+            frozenBarrierView.resizeImage(length, thickness);
+            hollowBarrierView.resizeImage(length, thickness);
         }
     }
 
     public void renderBarriers(Graphics g, List<Barrier> barriers) {
+        if (barriers == null) {
+            logger.warn("Barriers list is null");
+            return;
+        }
+
+        List<Barrier> toRemove = new ArrayList<>();
         for (Barrier barrier : barriers) {
+            if (barrier == null) {
+                logger.warn("Barrier is null");
+                toRemove.add(barrier);
+                continue;
+            }
             renderBarrier(g, barrier);
         }
+
+        barriers.removeAll(toRemove);
     }
 
     private void renderBarrier(Graphics g, Barrier barrier) {
-        var image = switch (barrier) {
+        var image = barrier.isFrozen() ? frozenBarrierView.getImage() : switch (barrier) {
             case SimpleBarrier ignored -> simpleBarrierView.getImage();
             case FirmBarrier ignored -> {
                 renderFirmBarrier(g, barrier);
                 yield null;
             }
+            case HollowBarrier ignored -> hollowBarrierView.getImage();
             case ExplosiveBarrier ignored -> explosiveBarrierView.getImage();
+            case GiftBarrier ignored -> giftBarrierView.getImage();
             case Barrier ignored -> {
                 logger.warn("renderBarrier: Unknown barrier type");
                 yield View.of(View.MISSING_TEXTURE) // I hope this works

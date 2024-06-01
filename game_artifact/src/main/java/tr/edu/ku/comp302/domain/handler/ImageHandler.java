@@ -33,12 +33,16 @@ public class ImageHandler {
     }
 
     public static BufferedImage getImageFromPath(String pathStr) {
+        logger.debug("Attempting to load image from path: " + pathStr);
         InputStream is = ImageHandler.class.getResourceAsStream(pathStr);
+        if (is == null) {
+            logger.error("Image not found at path: " + pathStr);
+            return null;
+        }
         try {
-            assert is != null;
             return ImageIO.read(is);
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("Error reading image at path: " + pathStr, e);
             return null;
         }
     }

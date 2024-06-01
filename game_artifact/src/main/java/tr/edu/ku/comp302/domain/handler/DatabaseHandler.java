@@ -263,14 +263,27 @@ public class DatabaseHandler {
         return barriers;
     }
 
+    /**
+     * Saves the game data to the database.
+     *
+     * @param data The game data to be saved.
+     * @return true if the save is successful, false otherwise.
+     */
     public boolean saveGame(GameData data) {
+        // Extract data from the GameData
         FireballData fireball = data.fireballData();
         LanceData lance = data.lanceData();
         List<BarrierData> barriers = data.barrierData();
         List<RemainData> remains = data.remainData();
         double score = data.score();
+        List<HexData> hexes = data.hexData();
+        List<SpellBoxData> spellBoxes = data.spellBoxData();
 
-        final String saveGame = "INSERT INTO Save " + "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " + "lance_x, lance_y, lance_angle, score) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // SQL query to insert the game data into the Save table
+        final String saveGame = "INSERT INTO Save " +
+                "(player_ref, fireball_x, fireball_y, fireball_dx, fireball_dy, " +
+                "lance_x, lance_y, lance_angle, score) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Integer uid = (Integer) SessionManager.getSession().getSessionData("userID");
         if (uid == null) {
@@ -290,12 +303,14 @@ public class DatabaseHandler {
                 ps.setDouble(9, score);
                 ps.executeUpdate();
             }
+            // Get the ID of the newly inserted save
             try (PreparedStatement ps = connection.prepareStatement("SELECT LAST_INSERT_ID()")) {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         int saveId = rs.getInt(1);
+                        // Save barriers and remains with the save ID
                         return saveBarriers(barriers, saveId, "save")
-                                && saveRemains(remains, saveId);
+                                && saveRemains(remains, saveId) && saveHexes(hexes, saveId) && saveSpellBoxes(spellBoxes, saveId);
                     }
                 }
             }
@@ -326,6 +341,47 @@ public class DatabaseHandler {
         }
     }
 
+    private boolean saveSpellBoxes(List<SpellBoxData> spellBoxes, int saveId) {
+        final String saveRemain = "INSERT INTO SpellBox (x, y, is_dropped, save_ref) VALUES (?, ?, ?, ?)";
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(saveRemain)) {
+                for (SpellBoxData spellBox : spellBoxes) {
+                    ps.setDouble(1, spellBox.x());
+                    ps.setDouble(2, spellBox.y());
+                    ps.setBoolean(3, spellBox.isDropped());
+                    ps.setInt(4, saveId);
+                    ps.addBatch();
+                }
+                return executeBatch(ps);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return false;
+        }
+    }
+
+
+    private boolean saveHexes(List<HexData> hexes, int saveId) {
+        final String saveHex = "INSERT INTO Hex (x, y, rotation, save_ref) VALUES (?, ?, ?, ?)";
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement(saveHex)) {
+                for (HexData hex : hexes) {
+                    ps.setDouble(1, hex.x());
+                    ps.setDouble(2, hex.y());
+                    ps.setDouble(3, hex.rotationAngle());
+                    ps.setInt(4, saveId);
+                    ps.addBatch();
+                }
+                return executeBatch(ps);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return false;
+        }
+    }
+
     private boolean executeBatch(PreparedStatement ps) throws SQLException {
         int[] numUpdates = ps.executeBatch();
         for (int i = 0; i < numUpdates.length; i++) {
@@ -343,7 +399,7 @@ public class DatabaseHandler {
         String query = "SELECT * FROM Save WHERE id = ?";
         FireballData fireball = null;
         LanceData lance = null;
-        double score = 0.0;
+        int score = 0;
         try (Connection connection = getConnection()) {
             assert connection != null;
             try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -352,7 +408,7 @@ public class DatabaseHandler {
                     if (rs.next()) {
                         fireball = new FireballData(rs.getDouble("fireball_x"), rs.getDouble("fireball_y"), rs.getDouble("fireball_dx"), rs.getDouble("fireball_dy"));
                         lance = new LanceData(rs.getDouble("lance_x"), rs.getDouble("lance_y"), rs.getDouble("lance_angle"));
-                        score = rs.getDouble("score");
+                        score = rs.getInt("score");
                     }
                 }
             }
@@ -363,8 +419,33 @@ public class DatabaseHandler {
 
         List<BarrierData> barriers = loadBarriers(saveId, "save");
         List<RemainData> remains = loadRemains(saveId);
+        List<HexData> hexes = loadHexes(saveId);
+        List<SpellBoxData> spellBoxes = loadSpellBoxes(saveId);
 
-        return new GameData(fireball, lance, barriers, remains, score);
+        return new GameData(fireball, lance, barriers, remains, hexes,spellBoxes, score);
+    }
+
+    private List<HexData> loadHexes(int saveId) {
+        List<HexData> hexes = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Hex WHERE save_ref = ?")) {
+                ps.setInt(1, saveId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        hexes.add(new HexData(
+                                rs.getDouble("x"),
+                                rs.getDouble("y"),
+                                rs.getDouble("rotation")));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+
+        return hexes;
     }
 
     private List<RemainData> loadRemains(int saveId) {
@@ -388,6 +469,29 @@ public class DatabaseHandler {
         }
 
         return remains;
+    }
+
+    private List<SpellBoxData> loadSpellBoxes(int saveId) {
+        List<SpellBoxData> spellBoxes = new ArrayList<>();
+        try (Connection connection = getConnection()) {
+            assert connection != null;
+            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM SpellBox WHERE save_ref = ?")) {
+                ps.setInt(1, saveId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        spellBoxes.add(new SpellBoxData(
+                                rs.getDouble("x"),
+                                rs.getDouble("y"),
+                                rs.getBoolean("is_dropped")));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            return null;
+        }
+
+        return spellBoxes;
     }
 
     private boolean saveBarriers(List<BarrierData> barriers, int id, String to) {

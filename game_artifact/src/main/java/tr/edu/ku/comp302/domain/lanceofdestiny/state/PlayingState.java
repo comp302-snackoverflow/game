@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny.state;
 import tr.edu.ku.comp302.chrono.Chronometer;
+import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
@@ -7,15 +8,13 @@ import tr.edu.ku.comp302.ui.panel.LevelPanel;
 import java.awt.*;
 
 public class PlayingState implements State{
-
-    private LanceOfDestiny lanceOfDestiny;
-
+    protected LanceOfDestiny lanceOfDestiny;
 
     public PlayingState(LanceOfDestiny lanceOfDestiny){
         this.lanceOfDestiny = lanceOfDestiny;
     }
     @Override
-    public void update() {
+    public void update(P2PConnection ignored) {
         LevelHandler levelHandler = lanceOfDestiny.getLevelHandler();
         if (levelHandler.getLevel() != null){
             int upsSet = lanceOfDestiny.getUPS_SET();
@@ -58,5 +57,9 @@ public class PlayingState implements State{
             LanceOfDestiny.setScreenHeight(height);
         }
         levelPanel.repaint();
+    }
+
+    public boolean isMultiplayer() {
+        return false;
     }
 }
