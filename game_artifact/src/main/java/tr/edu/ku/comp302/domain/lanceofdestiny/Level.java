@@ -37,23 +37,35 @@ public class Level implements SaveListener {
         this.remains = remains;
         this.hexes = hexes;
         
+        System.out.println("I am called once");
 
         for (Barrier barrier : barriers.stream().filter(b -> b instanceof GiftBarrier).collect(Collectors.toList())) {
-            SpellBox newSpellBox = new SpellBox(barrier.getXPosition(), barrier.getYPosition());
-            this.spellBoxes.add(newSpellBox);
-            barrier.setSpellBox(newSpellBox);
+
+            if (barrier instanceof GiftBarrier b) {
+                if (b.getSpellBox() != null){
+                    SpellBox newSpellBox = new SpellBox(b.getXPosition(), b.getYPosition());
+                    this.spellBoxes.add(newSpellBox);
+                    b.setSpellBox(newSpellBox);
+                    System.out.println("Added new spell box: " + newSpellBox.getXPosition() + ", " + newSpellBox.getYPosition());
+                }
+            }
+            
         };
 
         for (SpellBox spellBox: spellBoxes.stream().filter(b -> b.isDropped() ).collect(Collectors.toList())) {
             this.spellBoxes.add(spellBox);
+            System.out.println("Added new spell box: " + spellBox.getXPosition() + ", " + spellBox.getYPosition());
         }
 
+        SpellBox.resetSpellCounts();
 
         this.spellInventory = spellInventory;
         this.nextTimeMs = nextTimeMs;
         this.secondsPassed = secondsPassed;
         this.score = score;
         this.chances = chances;
+
+        
 
         levels.add(this);
     }
@@ -68,6 +80,8 @@ public class Level implements SaveListener {
                 spellBoxes.add(b.getSpellBox());
             }
         }
+
+        SpellBox.resetSpellCounts();
 
         levels.add(this);
     }

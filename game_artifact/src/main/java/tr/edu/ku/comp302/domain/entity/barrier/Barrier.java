@@ -157,6 +157,6 @@ public abstract class Barrier extends Entity {
         return lastCollisionTimeInMillis;
     }
 
-    public  void setSpellBox(SpellBox spellBox){}
+
 
 }

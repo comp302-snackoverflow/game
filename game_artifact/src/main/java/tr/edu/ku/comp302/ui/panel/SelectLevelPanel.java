@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.handler.SelectLevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.SessionManager;
@@ -82,10 +83,11 @@ public class SelectLevelPanel extends JPanel {
         Consumer<Integer> onClick = multiplayer ? (levelId) -> {
             mainFrame.setMultiplayerLevel(levelId);
             mainFrame.showCreateGamePanel();
+            SpellBox.resetSpellCounts();
         } : (levelId) -> {
             Level level = selectLevelHandler.getLevel(levelId);
             if (level != null) {
-                mainFrame.setCurrentLevel(selectLevelHandler.getLevel(levelId));
+                mainFrame.setCurrentLevel(level);
                 mainFrame.showLevelPanel();
             } else {
                 JOptionPane.showMessageDialog(this, "Level could not be loaded", "Error", JOptionPane.ERROR_MESSAGE);
