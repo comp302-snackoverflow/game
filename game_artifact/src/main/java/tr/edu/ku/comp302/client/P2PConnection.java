@@ -30,7 +30,6 @@ public class P2PConnection {
     private Thread senderThread;
     private Thread receiverThread;
 
-
     public P2PConnection(String peerAddress, int peerPort) {
         this.peerAddress = peerAddress;
         this.peerPort = peerPort;
@@ -137,9 +136,5 @@ public class P2PConnection {
         } catch (IOException e) {
             logger.error("An error occurred while closing the connection", e);
         }
-    }
-
-    public PlayerInfo getPeer() {
-        return new PlayerInfo(peerAddress, peerPort);
     }
 }

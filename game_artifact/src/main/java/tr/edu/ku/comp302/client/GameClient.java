@@ -56,15 +56,15 @@ public class GameClient {
 
     public static Thread listenForPeer(PeerJoinListener listener) {
         Thread thread = new Thread(
-            () -> {
-                P2PConnection conn = new P2PConnection();
-                conn.setPeerJoinListener(listener);
-                try {
-                    conn.startServer();
-                } catch (IOException e) {
-                    logger.error("An error occurred while listening for peer", e);
+                () -> {
+                    P2PConnection conn = new P2PConnection();
+                    conn.setPeerJoinListener(listener);
+                    try {
+                        conn.startServer();
+                    } catch (IOException e) {
+                        logger.error("An error occurred while listening for peer", e);
+                    }
                 }
-            }
         );
         thread.start();
         return thread;
