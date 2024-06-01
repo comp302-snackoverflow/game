@@ -9,12 +9,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class GameClient {
     private static final Logger logger = LogManager.getLogger(GameClient.class);
-    private static final String SERVER_ADDRESS = "172.20.148.238";
+    private static final String SERVER_ADDRESS = "172.21.229.209";
     private static final int SERVER_PORT = 3131;
     private static final int PORT = 3132;
 
@@ -59,10 +58,9 @@ public class GameClient {
         Thread thread = new Thread(
             () -> {
                 P2PConnection conn = new P2PConnection();
+                conn.setPeerJoinListener(listener);
                 try {
                     conn.startServer();
-                    conn.send("Hello World!");
-                    listener.onJoin(conn);
                 } catch (IOException e) {
                     logger.error("An error occurred while listening for peer", e);
                 }

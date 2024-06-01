@@ -6,7 +6,6 @@ import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.CreateGameHandler;
 import tr.edu.ku.comp302.domain.listeners.PeerJoinListener;
 import tr.edu.ku.comp302.domain.services.save.LoadService;
-import tr.edu.ku.comp302.server.PlayerInfo;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;

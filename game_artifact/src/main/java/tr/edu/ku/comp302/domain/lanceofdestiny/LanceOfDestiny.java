@@ -7,13 +7,13 @@ import tr.edu.ku.comp302.client.GameInfo;
 import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.state.*;
-import tr.edu.ku.comp302.domain.listeners.Pausable;
-import tr.edu.ku.comp302.domain.listeners.PauseListener;
-import tr.edu.ku.comp302.domain.listeners.Resumable;
-import tr.edu.ku.comp302.domain.listeners.ResumeListener;
+import tr.edu.ku.comp302.domain.listeners.*;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
-public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener {
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, MessageListener, MessageSender {
     private static int screenWidth = 1280;
     private static int screenHeight = 800;
     private static GameState currentGameState;
@@ -29,6 +29,10 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener {
     private long frames = 0L;
     private Chronometer chronometer;
     private P2PConnection p2pConnection;
+    private Queue<String> messageQueue;
+    private int lastScore = -1;
+    private int lastChances = -1;
+    private int lastBarrierCount = -1;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
@@ -37,6 +41,7 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener {
         currentGameState = GameState.MENU;
         chronometer = new Chronometer();
         startGameLoop();
+        messageQueue = new ConcurrentLinkedQueue<>();
     }
     public static int getScreenWidth() {
         return screenWidth;
@@ -169,6 +174,29 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener {
 
     public void setConnection(P2PConnection conn) {
         this.p2pConnection = conn;
+        conn.setMessageListener(this);
+    }
+
+    @Override
+    public void onMessageReceived(String message) {
+        if (message == null) {
+            return;
+        }
+        System.out.println("LOD: Message received: " + message);
+    }
+
+    @Override
+    public String next() {
+        return messageQueue.poll();
+    }
+
+    public void tryAddMessage(int score, int chances, int barrierCount) {
+        if (score != lastScore || chances != lastChances || barrierCount != lastBarrierCount) {
+            messageQueue.add(score + " " + chances + " " + barrierCount);
+            lastScore = score;
+            lastChances = chances;
+            lastBarrierCount = barrierCount;
+        }
     }
 
     public GameInfo getGameInfo() {
