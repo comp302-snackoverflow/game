@@ -11,6 +11,7 @@ import tr.edu.ku.comp302.domain.listeners.*;
 import tr.edu.ku.comp302.domain.services.save.GameData;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -45,6 +46,7 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
         chronometer = new Chronometer();
         startGameLoop();
         messageQueue = new ConcurrentLinkedQueue<>();
+        listeners = new ArrayList<>();
     }
     public static int getScreenWidth() {
         return screenWidth;
