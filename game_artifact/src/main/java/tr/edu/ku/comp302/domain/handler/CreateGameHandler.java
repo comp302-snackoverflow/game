@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.domain.handler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.client.GameClient;
+import tr.edu.ku.comp302.domain.listeners.MessageListener;
 import tr.edu.ku.comp302.domain.listeners.PeerJoinListener;
 
 import java.io.IOException;
@@ -28,7 +29,6 @@ public class CreateGameHandler {
             logger.error("An error occurred while creating the game. Level ID: " + levelId, e);
             return null;
         }
-
     }
 
     public boolean removeGame(String gameCode) {
@@ -42,7 +42,7 @@ public class CreateGameHandler {
             }
             return false;
         } catch (IOException e) {
-            logger.error("An error occurred while removing the game. Game code: " + gameCode, e);
+            logger.error("An error occurred while removing the game. Game code: {}", gameCode, e);
             return false;
         }
     }

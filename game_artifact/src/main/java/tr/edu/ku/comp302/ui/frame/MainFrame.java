@@ -214,6 +214,8 @@ public class MainFrame extends JFrame {
         levelPanel.setPanelSize(new Dimension(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight()));
         lod.setConnection(conn);
         if (conn != null) {
+            conn.setMessageListener(lod);
+            conn.setMessageSender(lod);
             LanceOfDestiny.setCurrentGameState(GameState.MP_PLAYING);
         } else {
             LanceOfDestiny.setCurrentGameState(GameState.PLAYING);

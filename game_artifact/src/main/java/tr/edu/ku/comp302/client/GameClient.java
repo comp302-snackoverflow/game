@@ -2,14 +2,13 @@ package tr.edu.ku.comp302.client;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tr.edu.ku.comp302.server.PlayerInfo;
 import tr.edu.ku.comp302.domain.listeners.PeerJoinListener;
+import tr.edu.ku.comp302.server.PlayerInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class GameClient {
@@ -57,19 +56,21 @@ public class GameClient {
 
     public static Thread listenForPeer(PeerJoinListener listener) {
         Thread thread = new Thread(
-            () -> {
-                P2PConnection conn = new P2PConnection();
-                try {
-                    conn.startServer();
-                    conn.send("Hello World!");
-                    listener.onJoin(conn);
-                } catch (IOException e) {
-                    logger.error("An error occurred while listening for peer", e);
+                () -> {
+                    P2PConnection conn = new P2PConnection();
+                    conn.setPeerJoinListener(listener);
+                    try {
+                        conn.startServer();
+
+                    } catch (IOException e) {
+                        logger.error("An error occurred while listening for peer", e);
+                    }
                 }
-            }
         );
         thread.start();
         return thread;
 
     }
 }
+
+

@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.client.GameClient;
 import tr.edu.ku.comp302.client.JoinInfo;
 import tr.edu.ku.comp302.client.P2PConnection;
+import tr.edu.ku.comp302.domain.listeners.MessageListener;
+import tr.edu.ku.comp302.domain.listeners.MessageSender;
 import tr.edu.ku.comp302.server.PlayerInfo;
 
 import java.awt.*;
@@ -47,7 +49,6 @@ public class JoinGameHandler {
             while (true) {
                 try {
                     connection.connectToPeer();
-                    System.out.println(connection.receive());
                     break;
                 } catch (IOException e) {
                     logger.warn("Failed to connect to peer. Retrying in 5 seconds...");

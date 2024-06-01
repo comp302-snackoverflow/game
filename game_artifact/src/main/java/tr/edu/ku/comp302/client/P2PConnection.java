@@ -2,6 +2,9 @@ package tr.edu.ku.comp302.client;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tr.edu.ku.comp302.domain.listeners.MessageListener;
+import tr.edu.ku.comp302.domain.listeners.MessageSender;
+import tr.edu.ku.comp302.domain.listeners.PeerJoinListener;
 import tr.edu.ku.comp302.server.PlayerInfo;
 
 import java.io.BufferedReader;
@@ -10,14 +13,20 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 public class P2PConnection {
     private static final Logger logger = LogManager.getLogger(P2PConnection.class);
+    private static final int PORT = 3132;
     private String peerAddress;
     private int peerPort;
     private ServerSocket serverSocket;
     private Socket socket;
-    private static final int PORT = 3132;
+    private PrintWriter out;
+    private BufferedReader in;
+    private MessageListener messageListener;
+    private MessageSender messageSender;
+    private PeerJoinListener peerJoinListener;
 
     public P2PConnection(String peerAddress, int peerPort) {
         this.peerAddress = peerAddress;
@@ -29,50 +38,119 @@ public class P2PConnection {
         this.peerPort = 0;
     }
 
+    public void setMessageListener(MessageListener listener) {
+        this.messageListener = listener;
+    }
+
+    public void setMessageSender(MessageSender sender) {
+        this.messageSender = sender;
+    }
+
+    public void setPeerJoinListener(PeerJoinListener listener) {
+        this.peerJoinListener = listener;
+    }
+
     public void startServer() throws IOException {
         serverSocket = new ServerSocket(PORT);
-
         socket = serverSocket.accept();
+        peerJoinListener.onJoin(this);
+        out = new PrintWriter(socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        this.peerAddress = socket.getInetAddress().getHostAddress();
-        this.peerPort = socket.getPort();
+        new Thread(() -> {
+            try {
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ignored) {
+                        break;
+                    }
+                    String message = in.readLine();
+                    if (message == null) {
+                        continue;
+                    }
+                    if (messageListener != null) {
+                        messageListener.onMessageReceived(message);
+                    }
+                }
+            } catch (SocketTimeoutException ignored) {
+                System.out.println("Connection timed out");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {
+                    break;
+                }
+                if (messageSender != null) {
+                    String msg = messageSender.next();
+                    if (msg != null) {
+                        out.println(msg);
+                    }
+                }
+            }
+        }).start();
     }
 
     public void connectToPeer() throws IOException {
-
         socket = new Socket(peerAddress, peerPort);
-        System.out.println(socket);
+        socket.setKeepAlive(true);
+        out = new PrintWriter(socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        new Thread(() -> {
+            try {
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ignored) {
+                        break;
+                    }
+                    String message = in.readLine();
+                    if (message == null) {
+                        continue;
+                    }
+                    if (messageListener != null) {
+                        messageListener.onMessageReceived(message);
+                    }
+                }
+            } catch (SocketTimeoutException ignored) {
+                System.out.println("Connection timed out");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {
+                    break;
+                }
+                if (messageSender != null) {
+                    String msg = messageSender.next();
+                    if (msg != null) {
+                        out.println(msg);
+                    }
+                }
+            }
+        }).start();
     }
 
-    public void send(String message) {
-        if (socket == null) {
-            throw new RuntimeException("Connection is not established");
-        }
-
-        try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-            out.println(message);
-        } catch (IOException e) {
-            logger.error("An error occurred while sending the message", e);
-        }
-    }
-
-    public String receive() {
-        if (socket == null) {
-            throw new RuntimeException("Connection is not established");
-        }
-
+    public synchronized void close() {
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            return in.readLine();
-        } catch (IOException e) {
-            logger.error("An error occurred while receiving the message", e);
-            return null;
-        }
-    }
-
-
-    public void close() {
-        try {
+            if (in != null) {
+                in.close();
+            }
+            if (out != null) {
+                out.close();
+            }
             if (socket != null) {
                 socket.close();
             }
