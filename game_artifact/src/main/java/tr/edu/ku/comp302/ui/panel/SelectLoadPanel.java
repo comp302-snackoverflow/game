@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.ui.panel;
 
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.handler.SelectLoadHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.SessionManager;
@@ -87,6 +88,7 @@ public class SelectLoadPanel extends JPanel {
     }
 
     private void showLevel(Level level) {
+        SpellBox.resetSpellCounts();
         mainFrame.setCurrentLevel(level);
         mainFrame.showLevelPanel();
     }

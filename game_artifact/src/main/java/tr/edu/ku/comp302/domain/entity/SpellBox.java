@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 public class SpellBox extends Entity {
-    private double speed = 1.5;     // TODO: Change speed
+    private double speed = 1;     // TODO: Change speed
     private int size = 50;
     private boolean isDropped = false;
     //TODO Add spell attribute 

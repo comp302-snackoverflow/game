@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.domain.entity.barrier;
 
 import tr.edu.ku.comp302.domain.entity.Entity;
+import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.IMovementStrategy;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
@@ -155,5 +156,7 @@ public abstract class Barrier extends Entity {
     public Double getLastCollisionTimeInMillis() {
         return lastCollisionTimeInMillis;
     }
+
+
 
 }

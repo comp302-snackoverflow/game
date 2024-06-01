@@ -39,10 +39,8 @@ public class LoadService {
         Lance lance = loadLance(data.lanceData());
         List<Barrier> barriers = loadBarriers(data.barrierData());
         List<Remain> remains = loadRemains(data.remainData());
-        List<Hex> hexes = loadHexes(data.hexData());
-        List<SpellBox> spellBoxes = loadSpellBoxes(data.spellBoxData());
         // FIXME load hexes, spell boxes and chances
-        return new Level(lance, fb, barriers, remains, spellBoxes, hexes, new ArrayList<>(), data.score(), 0, 0, 3);
+        return new Level(lance, fb, barriers, remains, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), data.score(), 0, 0, 3);
     }
 
     public Level loadMap(int mapId) {
@@ -70,6 +68,17 @@ public class LoadService {
         double xPos = bd.x();
         double yPos = bd.y();
         int health = bd.health();
+
+        
+        for (int i = 0; i < 4; i++) {
+            SpellBox.getSpellCounts()[i] = (health >> (i * 4)) & 0xF;
+        }
+        
+
+        health = (health >> 16) & 0xFFFF;
+        
+
+
         String type = dbHandler.getBarrierTypeFromId(bd.type());
         Barrier barrier;
         if (type.equals(SimpleBarrier.class.getSimpleName())) {
@@ -98,30 +107,8 @@ public class LoadService {
         if (rd.isDropped()) {
             remain.drop();
         }
+
         return remain;
-    }
-
-
-
-    private SpellBox createSpellBox(SpellBoxData sbd) {
-        double xPos = sbd.x();
-        double yPos = sbd.y();
-        SpellBox spellBox = new SpellBox(xPos, yPos);
-        spellBox.updatePositionRelativeToScreen(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
-        if (sbd.isDropped()) {
-            spellBox.drop();
-        }
-        return spellBox;
-    }
-
-    private Hex createHex(HexData hd) {
-        double xPos = hd.x();
-        double yPos = hd.y();
-        double rotationAngle = hd.rotationAngle();
-        Hex hex = new Hex(xPos, yPos, rotationAngle);
-        hex.updatePositionRelativeToScreen(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
-       
-        return hex;
     }
 
 
@@ -156,13 +143,4 @@ public class LoadService {
     private List<Remain> loadRemains(List<RemainData> remainData) {
         return remainData.stream().map(this::createRemain).collect(Collectors.toCollection(ArrayList::new));
     }
-
-    private List<Hex> loadHexes(List<HexData> hexData) {
-        return hexData.stream().map(this::createHex).collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private List<SpellBox> loadSpellBoxes(List<SpellBoxData> spellBoxData) {
-        return spellBoxData.stream().map(this::createSpellBox).collect(Collectors.toCollection(ArrayList::new));
-    }
-    
 }

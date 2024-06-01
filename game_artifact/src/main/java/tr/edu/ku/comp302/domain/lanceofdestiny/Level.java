@@ -13,7 +13,6 @@ import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Level implements SaveListener {
     private static List<Level> levels = new ArrayList<>();
@@ -23,7 +22,7 @@ public class Level implements SaveListener {
     private List<Barrier> barriers;
     private List<Remain> remains;
     private List<Hex> hexes;
-    private List<SpellBox> spellBoxes = new ArrayList<>();
+    private List<SpellBox> spellBoxes;
     private List<Character> spellInventory;
     private int chances;
     private int score;
@@ -36,21 +35,14 @@ public class Level implements SaveListener {
         this.barriers = barriers;
         this.remains = remains;
         this.hexes = hexes;
-        
-
-        for (Barrier barrier : barriers.stream().filter(b -> b instanceof GiftBarrier).collect(Collectors.toList())) {
-            this.spellBoxes.add(new SpellBox(barrier.getXPosition(), barrier.getYPosition()));
-        };
-
-        for (SpellBox spellBox: spellBoxes.stream().filter(b -> b.isDropped() ).collect(Collectors.toList())) {
-            this.spellBoxes.add(spellBox);
-        }
-
+        this.spellBoxes = spellBoxes;
         this.spellInventory = spellInventory;
         this.nextTimeMs = nextTimeMs;
         this.secondsPassed = secondsPassed;
         this.score = score;
         this.chances = chances;
+
+        
 
         levels.add(this);
     }
@@ -65,6 +57,8 @@ public class Level implements SaveListener {
                 spellBoxes.add(b.getSpellBox());
             }
         }
+
+        
 
         levels.add(this);
     }
@@ -134,7 +128,7 @@ public class Level implements SaveListener {
 
     @Override
     public boolean save() {
-        return saveService.saveGame(fireBall, lance, barriers, remains, score, hexes, spellBoxes);
+        return saveService.saveGame(fireBall, lance, barriers, remains, score);
     }
 
     public List<Hex> getHexes() {

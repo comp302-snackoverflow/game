@@ -368,7 +368,6 @@ public class LevelHandler {
                 spellBoxes.remove(spellBox);
             }
         }
-
     }
 
 
