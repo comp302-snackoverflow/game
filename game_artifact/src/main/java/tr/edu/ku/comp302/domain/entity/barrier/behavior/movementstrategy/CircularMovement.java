@@ -46,10 +46,10 @@ public class CircularMovement implements IMovementStrategy {
     @Override
     public RectangularShape getExtendedHitbox(Barrier barrier) {
         return new Ellipse2D.Double(
-            barrier.getXPosition() - getXPadding(),
-            barrier.getYPosition() - getYPadding(),
-            barrier.getLength() + 2 * getXPadding(),
-            barrier.getThickness() + 2 * getYPadding()
+                barrier.getXPosition() - getXPadding(),
+                barrier.getYPosition() - getYPadding(),
+                barrier.getLength() + 2 * getXPadding(),
+                barrier.getThickness() + 2 * getYPadding()
         );
     }
 

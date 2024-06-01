@@ -31,12 +31,13 @@ public class HorizontalMovement implements IMovementStrategy {
     @Override
     public RectangularShape getExtendedHitbox(Barrier barrier) {
         return new Rectangle2D.Double(
-            barrier.getXPosition() - getXPadding(),
-            barrier.getYPosition() - getYPadding(),
-            barrier.getLength() + 2 * getXPadding(),
-            barrier.getThickness() + 2 * getYPadding()
+                barrier.getXPosition() - getXPadding(),
+                barrier.getYPosition() - getYPadding(),
+                barrier.getLength() + 2 * getXPadding(),
+                barrier.getThickness() + 2 * getYPadding()
         );
     }
+
     /**
      * If the barrier is not stiff and the determined direction for movement is left,
      * moves with a speed of L/4 to the left, otherwise, the same logic applies to the right.

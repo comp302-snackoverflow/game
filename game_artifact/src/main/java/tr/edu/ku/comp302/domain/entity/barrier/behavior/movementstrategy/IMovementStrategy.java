@@ -25,6 +25,7 @@ public interface IMovementStrategy {
     /**
      * Returns a RectangularShape that contains the barrier, extended by the paddings.
      * This is used in barrier-barrier collision detection.
+     *
      * @return the extended hitbox
      */
     RectangularShape getExtendedHitbox(Barrier barrier);
