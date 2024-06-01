@@ -190,6 +190,9 @@ public class BuildHandler {
     }
 
     public void saveMap(double width, double height) {
+        if (!countsSatisfied()) {
+            return;
+        }
         if (SaveService.getInstance().saveMap(barriersOnMap, width, height)) {
             logger.info("Saved map successfully.");
             buildPanel.alertSaveSuccess();
