@@ -11,6 +11,5 @@ public class BuildModeTestApp {
         while (true) {
             frame.getBuildPanel().repaint();
         }
-        //TODO: find a way to repaint the build panel somehow...
     }
 }

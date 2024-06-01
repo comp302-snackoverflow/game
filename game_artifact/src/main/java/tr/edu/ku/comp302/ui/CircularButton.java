@@ -34,7 +34,7 @@ public class CircularButton extends JButton {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(40, 40); 
+        return new Dimension(40, 40);
     }
 
     @Override
