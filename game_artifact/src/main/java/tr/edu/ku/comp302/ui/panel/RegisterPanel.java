@@ -3,9 +3,6 @@ package tr.edu.ku.comp302.ui.panel;
 import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.RegisterHandler;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +12,6 @@ public class RegisterPanel extends JPanel {
     private final JPasswordField pwdField;
     private final JPasswordField confirmPwdField;
     private final JTextArea errorTextArea;
-    private BufferedImage backgroundImage;
 
     public RegisterPanel(MainFrame mainFrame) {
         Font font = new Font("Segoe UI Semibold", Font.PLAIN, 22);
@@ -28,8 +24,6 @@ public class RegisterPanel extends JPanel {
         usernameTextField = new JTextField();
         usernameTextField.setFont(font);
         usernameTextField.setColumns(10);
-        usernameTextField.setOpaque(true);
-        usernameTextField.setBorder(null);
 
         JLabel pwdLabel = new JLabel("Password:");
         pwdLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -37,8 +31,6 @@ public class RegisterPanel extends JPanel {
 
         pwdField = new JPasswordField();
         pwdField.setFont(font);
-        pwdField.setOpaque(true);
-        pwdField.setBorder(null);
 
         JLabel confirmPwdLabel = new JLabel("Confirm Password:");
         confirmPwdLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -46,8 +38,6 @@ public class RegisterPanel extends JPanel {
 
         confirmPwdField = new JPasswordField();
         confirmPwdField.setFont(font);
-        confirmPwdField.setOpaque(true);
-        confirmPwdField.setBorder(null);
 
         errorTextArea = new JTextArea();
         errorTextArea.setWrapStyleWord(true);
@@ -55,10 +45,10 @@ public class RegisterPanel extends JPanel {
         errorTextArea.setForeground(Color.RED);
         errorTextArea.setFont(new Font("Segoe UI", Font.BOLD, 16));
         errorTextArea.setEditable(false);
-        errorTextArea.setOpaque(false);
-        errorTextArea.setBackground(new Color(0, 0, 0, 0));
+        errorTextArea.setBackground(UIManager.getColor("Button.background"));
 
         JButton registerButton = new JButton("Register");
+
         registerButton.addActionListener(e -> {
             String username = usernameTextField.getText();
             String password = new String(pwdField.getPassword());
@@ -94,17 +84,14 @@ public class RegisterPanel extends JPanel {
         KeyPressHandler.bindKeyPressAction(this, "ENTER", e -> registerButton.doClick());
 
         registerButton.setFont(font);
-        registerButton.setOpaque(false);
-        registerButton.setContentAreaFilled(true);
 
         JLabel hasAccountLabel = new JLabel("Already have an account?");
         hasAccountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         hasAccountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
         JButton loginButton = new JButton("Login");
+
         loginButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 16));
-        loginButton.setOpaque(false);
-        loginButton.setContentAreaFilled(true);
 
         loginButton.addActionListener(e -> {
             clearInputs();
@@ -168,18 +155,11 @@ public class RegisterPanel extends JPanel {
 
         JPanel registrationSection = new JPanel();
         registrationSection.setLayout(new BoxLayout(registrationSection, BoxLayout.X_AXIS));
-        registrationSection.setOpaque(false); // Make the panel transparent
         registrationSection.add(hasAccountLabel);
         registrationSection.add(Box.createHorizontalStrut(10));
         registrationSection.add(loginButton);
 
         add(registrationSection, gbc);
-
-        try {
-            backgroundImage = ImageIO.read(getClass().getResource("/assets/light_sat.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void clearInputs() {
@@ -188,12 +168,5 @@ public class RegisterPanel extends JPanel {
         confirmPwdField.setText("");
         errorTextArea.setText("");
     }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-        }
-    }
 }
+
