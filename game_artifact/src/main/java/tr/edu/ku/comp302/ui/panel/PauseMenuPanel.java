@@ -41,9 +41,7 @@ public class PauseMenuPanel extends JPanel implements Resumable {
         optionsButton.addActionListener(e -> {
             // mainFrame.showOptionsPanel();
         });
-        optionsButton.addActionListener(e -> {
-            // FIXME: @ayazici21
-        });
+
         saveButton.addActionListener(e -> this.handleSave());
 
         mainMenuButton.addActionListener(e -> {

@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
     private static final String LOGIN = "login";
-    private static final String GAMEOVER = "login";
+    private static final String GAMEOVER = "gameover";
     private static final String REGISTER = "register";
     private static final String MAINMENU = "mainmenu";
     private static final String LEVEL = "level";

@@ -178,8 +178,14 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
     }
 
     public void setConnection(P2PConnection conn) {
+        if (p2pConnection != null) {
+            p2pConnection.close();
+        }
+
         this.p2pConnection = conn;
-        conn.setMessageListener(this);
+        if (conn != null) {
+            conn.setMessageListener(this);
+        }
     }
 
     @Override

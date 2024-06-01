@@ -65,7 +65,7 @@ public class LevelPanel extends JPanel implements Pausable, MPDataListener {
         addButtons();
 
         this.add(pauseButton);
-                try {
+        try {
             backgroundImage = ImageIO.read(getClass().getResource("/assets/light.png"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,12 +96,8 @@ public class LevelPanel extends JPanel implements Pausable, MPDataListener {
         g.drawString("x" + levelHandler.getLevel().getChances(), x + heartWidth + 30, getHeight() - 14);
     }
 
-
-
-
     private void finishGame() {
         if (levelHandler.isFinished()) {
-            
             mainFrame.showGameOverPanel(levelHandler.isWon(), levelHandler.getScore());
         }
     }
