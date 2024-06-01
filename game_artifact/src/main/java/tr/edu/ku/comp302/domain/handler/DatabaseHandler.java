@@ -523,25 +523,6 @@ public class DatabaseHandler {
         }
     }
 
-    public int getUidFromUsername(String username) {
-        final String query = "SELECT uid FROM Player WHERE username = ?";
-        try (Connection connection = getConnection()) {
-            assert connection != null;
-            try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(1, username);
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getInt("uid");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            logger.error(e);
-        }
-        return -1;
-    }
-
     private int getBarrierFromType(String type) {
         final String query = "SELECT id FROM BarrierType WHERE name = ?";
         try (Connection connection = getConnection()) {

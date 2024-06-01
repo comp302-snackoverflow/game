@@ -12,17 +12,11 @@ import java.io.InputStream;
 public class ImageHandler {
     private static final Logger logger = LogManager.getLogger(ImageHandler.class);
 
-    public static BufferedImage createCustomImage(String pathStr, int widthNew, int heightNew) {
-        BufferedImage image = getImageFromPath(pathStr);
-        assert image != null;
-        return resizeImage(image, widthNew, heightNew);
-    }
-
     public static BufferedImage resizeImage(BufferedImage image, int widthNew, int heightNew) {
-        if (widthNew == 0){
+        if (widthNew == 0) {
             resizeImage(image, 1, heightNew);
         }
-        if (heightNew == 0){
+        if (heightNew == 0) {
             resizeImage(image, widthNew, 1);
         }
         BufferedImage resizedImage = new BufferedImage(widthNew, heightNew, image.getType());
