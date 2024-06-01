@@ -279,14 +279,12 @@ public class CollisionHandler {
     }
 
     private static void resolveCollision(FireBall fireBall, Barrier barrier, Collision side) {
-        // FIXME surface speed should be barrier.getYDirection when collision side is left or right
-        //  think about the corner collision cases. @Omer-Burak-Duran
-            switch (side) {
-                case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(0, barrier.getXDirection());
-                case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
-                        fireBall.handleCornerReflection(0, barrier.getXDirection(), side);
-            }
-        if(fireBall.isOverwhelming() || !barrier.isFrozen()) {
+        switch (side) {
+            case TOP, BOTTOM, LEFT, RIGHT -> fireBall.handleReflection(0, barrier.getXDirection());
+            case TOP_LEFT, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT ->
+                    fireBall.handleCornerReflection(0, barrier.getXDirection(), side);
+        }
+        if (fireBall.isOverwhelming() || !barrier.isFrozen()) {
             barrier.decreaseHealth();
         }
     }
@@ -319,7 +317,8 @@ public class CollisionHandler {
     /**
      * Acts similar to Rectangle2D.outcode method. However, unlike it, this method
      * calculates outcode based on the center of the rectangle.
-     * @param rect the rectangle to calculate outcode for
+     *
+     * @param rect    the rectangle to calculate outcode for
      * @param centerX the x coordinate of the point to calculate outcode for
      * @param centerY the y coordinate of the point to calculate outcode for
      * @return a 4-bit integer, where bits from least to most significant bit represent top, right, bottom, and left sides.
@@ -347,7 +346,7 @@ public class CollisionHandler {
 
 
     public static void handleHexCollision(List<Hex> hexes, List<Barrier> barriers) {
-        if(hexes == null || barriers == null) {
+        if (hexes == null || barriers == null) {
             throw new NullPointerException();
 
         }
@@ -371,7 +370,7 @@ public class CollisionHandler {
         return entity1.getBoundingBox().intersects(entity2.getBoundingBox());
     }
 
-    public static boolean checkBarrierCollisionWithBarriers(Barrier barrier, List<Barrier> barriersOnMap){
+    public static boolean checkBarrierCollisionWithBarriers(Barrier barrier, List<Barrier> barriersOnMap) {
         for (Barrier b : barriersOnMap) {
             if (b != barrier && checkBarrierCollision(b, barrier)) {
                 return true;
@@ -379,7 +378,8 @@ public class CollisionHandler {
         }
         return false;
     }
-    private static boolean checkBarrierCollision(Barrier b1, Barrier b2){
+
+    private static boolean checkBarrierCollision(Barrier b1, Barrier b2) {
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
     }
 }
