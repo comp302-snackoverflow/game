@@ -3,10 +3,8 @@ package tr.edu.ku.comp302.domain.services.save;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.entity.FireBall;
-import tr.edu.ku.comp302.domain.entity.Hex;
 import tr.edu.ku.comp302.domain.entity.Lance;
 import tr.edu.ku.comp302.domain.entity.Remain;
-import tr.edu.ku.comp302.domain.entity.SpellBox;
 import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
 import tr.edu.ku.comp302.domain.handler.DatabaseHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
@@ -29,14 +27,12 @@ public class SaveService {
         return instance;
     }
 
-    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers, List<Remain> remains, int score, List<Hex> hexes, List<SpellBox> spellBoxes) {
+    public boolean saveGame(FireBall fireball, Lance lance, List<Barrier> barriers, List<Remain> remains, int score) {
         FireballData fireballData = getFireballData(fireball, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         LanceData lanceData = getLanceData(lance, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
         List<BarrierData> barrierData = barriers.stream().map(barrier -> getBarrierData(barrier, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
         List<RemainData> remainData = remains.stream().map(remain -> getRemainData(remain, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
-        List<HexData> hexData = hexes.stream().map(hex -> getHexData(hex, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
-        List<SpellBoxData> spellBoxData = spellBoxes.stream().map(spellBox -> getSpellBoxData(spellBox, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight())).toList();
-        GameData data = new GameData(fireballData, lanceData, barrierData, remainData, hexData, spellBoxData, score);
+        GameData data = new GameData(fireballData, lanceData, barrierData, remainData, score);
 
         return dbHandler.saveGame(data);
     }
@@ -75,6 +71,19 @@ public class SaveService {
         double x = barrier.getXPosition();
         double y = barrier.getYPosition();
         int health = barrier.getHealth();
+
+        int encodedCounts = 0;
+        for (int i = 0; i < 4; i++) {
+            int curr_count = SpellBox.getSpellCounts()[i];
+            if (curr_count > 15) {
+                curr_count = 15;
+            }
+            encodedCounts |= (curr_count & 0xF) << (i * 4);
+        }
+
+        // Clear the first 4 hex digits and set the new encoded spell counts
+        health =  ( (health << 16) ) | (encodedCounts & 0x0000FFFF);
+
         String type = barrier.getClass().getSimpleName();
         int barrierID = dbHandler.getBarrierIdFromType(type);
         barrier.adjustPositionAndSize(1, 1, width, height);
@@ -88,24 +97,5 @@ public class SaveService {
         boolean isDropped = remain.isDropped();
         remain.updatePositionRelativeToScreen(1, 1, width, height);
         return new RemainData(x, y, isDropped);
-    }
-
-    private HexData getHexData(Hex hex, double width, double height) {
-        hex.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
-        double x = hex.getXPosition();
-        double y = hex.getYPosition();
-        double rotationAngle = hex.getRotationAngle();
-        hex.updatePositionRelativeToScreen(1, 1, width, height);
-        return new HexData(x, y, rotationAngle);
-    }
-
-
-    private SpellBoxData getSpellBoxData(SpellBox spellBox, double width, double height) {
-        spellBox.updatePositionRelativeToScreen(LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight(), 1, 1);
-        double x = spellBox.getXPosition();
-        double y = spellBox.getYPosition();
-        boolean isDropped = spellBox.isDropped();
-        spellBox.updatePositionRelativeToScreen(1, 1, width, height);
-        return new SpellBoxData(x, y, isDropped);
     }
 }
