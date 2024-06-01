@@ -8,6 +8,7 @@ public class PlayingMPState extends PlayingState implements MultiplayerState {
     public PlayingMPState(LanceOfDestiny lanceOfDestiny) {
         super(lanceOfDestiny);
     }
+
     @Override
     public void update(P2PConnection conn) {
         super.update(conn);

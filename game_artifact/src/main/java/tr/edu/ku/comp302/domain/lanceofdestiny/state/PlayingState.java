@@ -1,4 +1,5 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny.state;
+
 import tr.edu.ku.comp302.chrono.Chronometer;
 import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
@@ -7,16 +8,17 @@ import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 import java.awt.*;
 
-public class PlayingState implements State{
+public class PlayingState implements State {
     protected LanceOfDestiny lanceOfDestiny;
 
-    public PlayingState(LanceOfDestiny lanceOfDestiny){
+    public PlayingState(LanceOfDestiny lanceOfDestiny) {
         this.lanceOfDestiny = lanceOfDestiny;
     }
+
     @Override
     public void update(P2PConnection ignored) {
         LevelHandler levelHandler = lanceOfDestiny.getLevelHandler();
-        if (levelHandler.getLevel() != null){
+        if (levelHandler.getLevel() != null) {
             int upsSet = lanceOfDestiny.getUPS_SET();
             Chronometer chronometer = lanceOfDestiny.getChronometer();
             long currentTime = chronometer.getCurrentTime();
@@ -24,12 +26,12 @@ public class PlayingState implements State{
             if (chronometer.getPreviousTime() == 0) {
                 chronometer.setPreviousTime(currentTime);
             }
-            if (chronometer.getPauseStartTime() != null){
+            if (chronometer.getPauseStartTime() != null) {
                 chronometer.addPauseTime(chronometer.getCurrentTime() - chronometer.getPauseStartTime());
             }
             double incU = (currentTime - chronometer.getPreviousTime()) / lanceOfDestiny.getTimePerUpdate();
             double incF = (currentTime - chronometer.getPreviousTime()) / lanceOfDestiny.getTimePerFrame();
-            lanceOfDestiny.setDeltaUpdate(lanceOfDestiny.getDeltaUpdate() +  incU);
+            lanceOfDestiny.setDeltaUpdate(lanceOfDestiny.getDeltaUpdate() + incU);
             lanceOfDestiny.setDeltaFrame(lanceOfDestiny.getDeltaFrame() + incF);
 
             if (lanceOfDestiny.getDeltaUpdate() >= 1) {
@@ -37,7 +39,7 @@ public class PlayingState implements State{
                 lanceOfDestiny.setDeltaUpdate(lanceOfDestiny.getDeltaUpdate() - 1);
                 lanceOfDestiny.setUpdates(lanceOfDestiny.getUpdates() + 1);
             }
-            if (lanceOfDestiny.getDeltaFrame() >= 1){
+            if (lanceOfDestiny.getDeltaFrame() >= 1) {
                 render();
                 lanceOfDestiny.setDeltaFrame(lanceOfDestiny.getDeltaFrame() - 1);
                 lanceOfDestiny.setFrames(lanceOfDestiny.getFrames() + 1);

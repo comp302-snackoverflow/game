@@ -1,4 +1,5 @@
 package tr.edu.ku.comp302.domain.lanceofdestiny.state;
+
 import tr.edu.ku.comp302.chrono.Chronometer;
 import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
