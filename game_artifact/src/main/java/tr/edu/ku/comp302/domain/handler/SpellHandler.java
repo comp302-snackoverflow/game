@@ -22,8 +22,6 @@ public class SpellHandler implements MPDataListener {
     long previousTime;
     private char previous_spell_0 = '0';
     private char previous_spell_1 = '1';
-
-
     private final static char INFINITE_VOID = 'i';
     private final static char HOLLOW_BARRIER = 'h';
     private final static char DOUBLE_ACCEL = 'd';
@@ -32,17 +30,15 @@ public class SpellHandler implements MPDataListener {
     private long lanceExtensionEndTime = 0;
     private long hexEndTime = 0;
     private long overwhelmingEndTime = 0;
-
-    private Random random ;
+    private Random random;
     LevelHandler levelHandler;
 
     public SpellHandler(LevelHandler levelHandler) {
         this.levelHandler = levelHandler;
         random = new SecureRandom();
         random.setSeed(System.currentTimeMillis());
-        
-    }
 
+    }
 
     public void extendLance(Lance lance) {
         double newLength = lance.getLength() * 2;
@@ -52,24 +48,22 @@ public class SpellHandler implements MPDataListener {
         } else if (newXPosition + newLength > LanceOfDestiny.getScreenWidth()) {
             newXPosition = LanceOfDestiny.getScreenWidth() - newLength;
         }
-    
+
         lance.setLength(newLength);
         lance.setXPosition(newXPosition);
         levelHandler.resizeLanceImage();
         lanceExtensionEndTime = System.currentTimeMillis() + 30000;
     }
-    
 
     public void shrinkLance(Lance lance) {
-        lance.setXPosition(lance.getXPosition() + lance.getLength()/4);
-        lance.setLength(lance.getLength()/2);
+        lance.setXPosition(lance.getXPosition() + lance.getLength() / 4);
+        lance.setLength(lance.getLength() / 2);
         levelHandler.resizeLanceImage();
     }
 
     public void felixFelicis(Level level) {
         level.increaseChances();
     }
-
 
     public void doubleAccel(Level level) {
         FireBall fireball = level.getFireBall();
@@ -82,8 +76,6 @@ public class SpellHandler implements MPDataListener {
         fireball.revertDoubleAccel();
     }
 
-
-
     public void overwhelmingSpell(Level level) {
         FireBall fireBall = level.getFireBall();
         fireBall.setOverwhelming(true);
@@ -91,7 +83,7 @@ public class SpellHandler implements MPDataListener {
         overwhelmingEndTime = System.currentTimeMillis() + 30000;
     }
 
-    public void endOverwhelmingBall(Level level){
+    public void endOverwhelmingBall(Level level) {
 
         FireBall fireBall = level.getFireBall();
         fireBall.setOverwhelming(false);
@@ -106,7 +98,7 @@ public class SpellHandler implements MPDataListener {
                 ymirTime++;
             } else {
                 levelPanel.changeBackgroundToOrginal();
-                
+
                 if (random.nextInt(10) % 2 == 0) {
                     applyNewSpell(level);
                     SoundHandler.playLaughSound();
@@ -169,7 +161,7 @@ public class SpellHandler implements MPDataListener {
             default:
                 break;
         }
-        
+
     }
 
     public void generateHollowBarriers(List<Barrier> barriers) {
@@ -242,6 +234,7 @@ public class SpellHandler implements MPDataListener {
             overwhelmingEndTime = 0;
         }
     }
+
     public long getYmirTime() {
         return ymirTime;
     }

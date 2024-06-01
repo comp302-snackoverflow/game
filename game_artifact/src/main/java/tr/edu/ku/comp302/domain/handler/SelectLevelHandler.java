@@ -25,8 +25,6 @@ public class SelectLevelHandler {
         return instance;
     }
 
-    // FIXME: This is bad practice and passes a Level object to a UI object. Find out how to set the level here.
-    //  "WITHOUT SINGLETONS OR MODE STATIC VARIABLES"
     public Level getLevel(int levelId) {
         return LoadService.getInstance().loadMap(levelId);
     }
