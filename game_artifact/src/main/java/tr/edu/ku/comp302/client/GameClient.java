@@ -13,7 +13,7 @@ import java.net.Socket;
 
 public class GameClient {
     private static final Logger logger = LogManager.getLogger(GameClient.class);
-    private static final String SERVER_ADDRESS = "172.21.229.209";
+    private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 3131;
     private static final int PORT = 3132;
 
