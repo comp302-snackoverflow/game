@@ -12,8 +12,12 @@ public class PlayingMPState extends PlayingState implements MultiplayerState {
     public void update(P2PConnection conn) {
         super.update(conn);
         LevelHandler h = lanceOfDestiny.getLevelHandler();
-        lanceOfDestiny.tryAddMessage(h.getScore(), h.getLevel().getChances(), h.getBarriers().size());
-
+        lanceOfDestiny.tryAddMessage();
+        if (h.isWon()) {
+            lanceOfDestiny.addMessage("INFO:WIN");
+        } else if (h.isFinished()) {
+            lanceOfDestiny.addMessage("INFO:LOSE");
+        }
     }
 
     public boolean isMultiplayer() {

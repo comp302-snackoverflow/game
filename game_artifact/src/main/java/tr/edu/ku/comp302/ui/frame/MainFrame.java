@@ -71,7 +71,8 @@ public class MainFrame extends JFrame {
         self.prepareCreateGamePanel();
         self.prepareJoinGamePanel();
         self.prepareSelectSavedGamePanel();
-
+        self.lod.addListener(self.levelPanel);
+        self.lod.addListener(self.levelPanel.getLevelHandler().getSpellHandler());
         self.cards.add(self.loginPanel, LOGIN);
         self.cards.add(self.registerPanel, REGISTER);
         self.cards.add(self.mainMenuPanel, MAINMENU);
@@ -84,6 +85,7 @@ public class MainFrame extends JFrame {
         self.cards.add(self.createGamePanel, CREATE_GAME_PANEL);
         self.cards.add(self.joinGamePanel, JOIN_GAME_PANEL);
         self.cards.add(self.selectLoadPanel, SELECT_SAVE);
+
         self.setMinimumSize(new Dimension(frameWidth, frameHeight));
         JFrame.setDefaultLookAndFeelDecorated(true);
         return self;

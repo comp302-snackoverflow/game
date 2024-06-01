@@ -8,12 +8,14 @@ import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.state.*;
 import tr.edu.ku.comp302.domain.listeners.*;
+import tr.edu.ku.comp302.domain.services.save.GameData;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, MessageListener, MessageSender {
+public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, MessageListener, MessageSender, MPObserver {
     private static int screenWidth = 1280;
     private static int screenHeight = 800;
     private static GameState currentGameState;
@@ -33,6 +35,7 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
     private int lastScore = -1;
     private int lastChances = -1;
     private int lastBarrierCount = -1;
+    private List<MPDataListener> listeners;
 
     public LanceOfDestiny(LevelPanel levelPanel) {
         this.levelPanel = levelPanel;
@@ -182,7 +185,7 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
         if (message == null) {
             return;
         }
-        System.out.println("LOD: Message received: " + message);
+        notifyListeners(message);
     }
 
     @Override
@@ -190,13 +193,22 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
         return messageQueue.poll();
     }
 
-    public void tryAddMessage(int score, int chances, int barrierCount) {
+    public void tryAddMessage() {
+        GameInfo gameData = getGameInfo();
+        int score = gameData.score();
+        int chances = gameData.chances();
+        int barrierCount = gameData.barrierCount();
+
         if (score != lastScore || chances != lastChances || barrierCount != lastBarrierCount) {
-            messageQueue.add(score + " " + chances + " " + barrierCount);
+            messageQueue.add("DATA:" + score + ":" + chances + ":" + barrierCount);
             lastScore = score;
             lastChances = chances;
             lastBarrierCount = barrierCount;
         }
+    }
+
+    public void addMessage(String message) {
+        messageQueue.add(message);
     }
 
     public GameInfo getGameInfo() {
@@ -205,5 +217,25 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
         int chances = level.getChances();
         int barrierCount = level.getBarriers().size();
         return new GameInfo(score, chances, barrierCount);
+    }
+
+    @Override
+    public void notifyListeners(String message) {
+        listeners.forEach(listener -> listener.handleData(message));
+    }
+
+    @Override
+    public void addListener(MPDataListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(MPDataListener listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
+    public void resetListeners() {
+        listeners.clear();
     }
 }

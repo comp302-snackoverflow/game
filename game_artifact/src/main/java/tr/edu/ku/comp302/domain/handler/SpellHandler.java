@@ -13,9 +13,10 @@ import tr.edu.ku.comp302.domain.entity.barrier.*;
 import tr.edu.ku.comp302.domain.handler.collision.CollisionHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
+import tr.edu.ku.comp302.domain.listeners.MPDataListener;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
-public class SpellHandler {
+public class SpellHandler implements MPDataListener {
 
     long ymirTime = 0;
     long previousTime;
@@ -151,7 +152,6 @@ public class SpellHandler {
         return chosenSpell;
     }
 
-
     private void applyNewSpell(Level level) {
 
         char chosenSpell = chooseYmirSpell();
@@ -246,4 +246,15 @@ public class SpellHandler {
         return ymirTime;
     }
 
+
+    public void handleData(String data) {
+        String[] parts = data.split(":");
+        if (parts[0].equals("YMIR")) {
+            switch (parts[1]) {
+                case "FREEZE" -> handleFrozenBarriers(levelHandler.getLevel());
+                case "ACCEL" -> doubleAccel(levelHandler.getLevel());
+                case "HOLLOW" -> generateHollowBarriers(levelHandler.getLevel().getBarriers());
+            }
+        }
+    }
 }

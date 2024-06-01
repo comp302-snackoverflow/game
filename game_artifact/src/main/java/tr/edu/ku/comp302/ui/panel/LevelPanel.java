@@ -9,6 +9,7 @@ import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
+import tr.edu.ku.comp302.domain.listeners.MPDataListener;
 import tr.edu.ku.comp302.domain.listeners.Pausable;
 import tr.edu.ku.comp302.domain.listeners.PauseListener;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
@@ -24,7 +25,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class LevelPanel extends JPanel implements Pausable {
+public class LevelPanel extends JPanel implements Pausable, MPDataListener {
     private static final Logger logger = LogManager.getLogger(LevelPanel.class);
     private static final View heartView = View.of(View.HEART);
     private final JButton pauseButton;
@@ -241,5 +242,19 @@ public class LevelPanel extends JPanel implements Pausable {
 
     public void pause() {
         mainFrame.showPausePanel();
+    }
+
+    public void handleData(String data) {
+        String[] parts = data.split(":");
+        if (parts[0].equals("DATA")) {
+            int score = Integer.parseInt(parts[1]);
+            int chances = Integer.parseInt(parts[2]);
+            int barriersCount = Integer.parseInt(parts[3]);
+            System.out.println("Score: " + score + " Chances: " + chances + " Barriers: " + barriersCount);
+            // TODO: complete this method
+        } else if (parts[0].equals("INFO")) {
+            String info = parts[1];
+            System.out.println("Other player: " + info);
+        }
     }
 }
