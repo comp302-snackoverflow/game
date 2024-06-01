@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BuildHandler {
-    public static final int NOTHING_SELECTED_MODE = -2;
     public static final int DELETE_MODE = -1;
     public static final int SIMPLE_MODE = 1;
     public static final int FIRM_MODE = 2;
@@ -86,7 +85,8 @@ public class BuildHandler {
                 case FirmBarrier ignored -> firmBarrierCount++;
                 case ExplosiveBarrier ignored -> explosiveBarrierCount++;
                 case GiftBarrier ignored -> giftBarrierCount++;
-                default -> {}
+                default -> {
+                }
             }
         }
     }
@@ -100,7 +100,6 @@ public class BuildHandler {
                 firmBarrierCount >= REQUIRED_FIRM_BARRIER_COUNT &&
                 explosiveBarrierCount >= REQUIRED_EXPLOSIVE_BARRIER_COUNT &&
                 giftBarrierCount >= REQUIRED_GIFT_BARRIER_COUNT &&
-                // FIXME: Decide on below constant later.
                 simpleBarrierCount + firmBarrierCount + explosiveBarrierCount + giftBarrierCount <= 200;
     }
 
@@ -145,7 +144,7 @@ public class BuildHandler {
 
     private void generateRandomBarrier(double barrierWidth, BarrierType barrierType, SecureRandom secureRandom) {
         int buildSectionWidth = buildPanel.getBuildSection().getWidth();
-        int buildSectionHeight = buildPanel.getBuildSection().getHeight() * 4 / 8; // TODO: Change ratio later to a constant value
+        int buildSectionHeight = buildPanel.getBuildSection().getHeight() * 4 / 8;
         boolean collided;
         int x, y;
         Barrier randomBarrier;
@@ -155,7 +154,7 @@ public class BuildHandler {
             randomBarrier = createBarrier(barrierType, x, y, barrierWidth);
             // collided = checkBarrierCollisionWithBarriers(randomBarrier);
             collided = CollisionHandler.checkBarrierCollisionWithBarriers(randomBarrier, barriersOnMap);
-        }while(collided);
+        } while (collided);
         barriersOnMap.add(randomBarrier);
     }
 
@@ -183,8 +182,6 @@ public class BuildHandler {
         levelHandler.resizeFireBallImage();
         levelHandler.resizeBarrierImages();
         levelHandler.resizeRemainImage();
-        // FIXME: Resizing is wrong: Barriers overlap with each other
-        //  It is still buggy without this and I think its about vertical positioning.
         level.getBarriers().forEach(barrier -> barrier.adjustPositionAndSize(buildPanel.getBuildSection().getWidth(), buildPanel.getBuildSection().getHeight(), buildPanel.getWidth(), buildPanel.getHeight()));
         return level;
     }
@@ -216,8 +213,7 @@ public class BuildHandler {
             return;
         } else if (selectionMode == -1) {
             deleteBarrier(x, y);
-        }
-        else{
+        } else {
             if (barriersOnMap.size() < 200) {
                 putBarrierToMap(x, y, selectionMode);
             } else {
@@ -245,18 +241,15 @@ public class BuildHandler {
             // if (!checkBarrierCollisionWithBarriers(createdBarrier)){
             if (!CollisionHandler.checkBarrierCollisionWithBarriers(createdBarrier, barriersOnMap)) {
                 barriersOnMap.add(createdBarrier);
-            } else {
-                // TODO: Add logger message.
             }
         }
     }
 
-    private void deleteBarrier(int x, int y){
+    private void deleteBarrier(int x, int y) {
         Barrier tempBarrier = new SimpleBarrier(x, y);
         Barrier barrierToRemove = checkBarrierCollisionWithBarriers(tempBarrier);
-        if (barrierToRemove != null){
+        if (barrierToRemove != null) {
             barriersOnMap.remove(barrierToRemove);
-
         }
     }
 
@@ -286,23 +279,6 @@ public class BuildHandler {
 
     private boolean checkBarrierCollision(Barrier b1, Barrier b2) {
         return b1.getBoundingBox().intersects(b2.getBoundingBox());
-    }
-    //TODO: delete the two above when tested correctly !
-
-    public int getOldWidth() {
-        return oldWidth;
-    }
-
-    public void setOldWidth(int oldWidth) {
-        this.oldWidth = oldWidth;
-    }
-
-    public int getOldHeight() {
-        return oldHeight;
-    }
-
-    public void setOldHeight(int oldHeight) {
-        this.oldHeight = oldHeight;
     }
 
     private enum BarrierType {

@@ -11,10 +11,12 @@ import java.util.Base64;
 public class CreateGameHandler {
     private static final Logger logger = LogManager.getLogger(CreateGameHandler.class);
     private Thread listenerThread;
+
     private String generateGameCode(int levelId) {
         // generates a game code by combining the level id and a random number
         return Base64.getEncoder().encodeToString((levelId + "." + System.nanoTime()).getBytes());
     }
+
     public String createGame(int levelId, PeerJoinListener listener) {
         String gameCode = generateGameCode(levelId);
         try {

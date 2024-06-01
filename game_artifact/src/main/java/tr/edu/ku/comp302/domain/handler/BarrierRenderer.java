@@ -2,17 +2,11 @@ package tr.edu.ku.comp302.domain.handler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tr.edu.ku.comp302.domain.entity.barrier.Barrier;
-import tr.edu.ku.comp302.domain.entity.barrier.ExplosiveBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.FirmBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.HollowBarrier;
-import tr.edu.ku.comp302.domain.entity.barrier.SimpleBarrier;
+import tr.edu.ku.comp302.domain.entity.barrier.*;
 import tr.edu.ku.comp302.ui.view.View;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -23,7 +17,6 @@ public class BarrierRenderer {
     private static final View giftBarrierView = View.of(View.GIFT_BARRIER);
     private static final View frozenBarrierView = View.of(View.FROZEN_BARRIER);
     private static final View hollowBarrierView = View.of(View.HOLLOW_BARRIER);
-
     private static final Logger logger = LogManager.getLogger(BarrierRenderer.class);
 
     public void resizeBarrierImages(List<Barrier> barriers) {

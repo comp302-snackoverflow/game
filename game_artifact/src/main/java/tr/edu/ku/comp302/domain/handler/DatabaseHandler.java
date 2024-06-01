@@ -422,7 +422,7 @@ public class DatabaseHandler {
         List<HexData> hexes = loadHexes(saveId);
         List<SpellBoxData> spellBoxes = loadSpellBoxes(saveId);
 
-        return new GameData(fireball, lance, barriers, remains, hexes,spellBoxes, score);
+        return new GameData(fireball, lance, barriers, remains, hexes, spellBoxes, score);
     }
 
     private List<HexData> loadHexes(int saveId) {
