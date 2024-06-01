@@ -98,6 +98,7 @@ public class LoadService {
         if (rd.isDropped()) {
             remain.drop();
         }
+
         return remain;
     }
 
@@ -111,6 +112,8 @@ public class LoadService {
         if (sbd.isDropped()) {
             spellBox.drop();
         }
+
+        System.err.println("SpellBox Created: " + sbd.isDropped() + " " + xPos + " " + yPos);
         return spellBox;
     }
 

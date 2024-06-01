@@ -39,12 +39,15 @@ public class Level implements SaveListener {
         
 
         for (Barrier barrier : barriers.stream().filter(b -> b instanceof GiftBarrier).collect(Collectors.toList())) {
-            this.spellBoxes.add(new SpellBox(barrier.getXPosition(), barrier.getYPosition()));
+            SpellBox newSpellBox = new SpellBox(barrier.getXPosition(), barrier.getYPosition());
+            this.spellBoxes.add(newSpellBox);
+            barrier.setSpellBox(newSpellBox);
         };
 
         for (SpellBox spellBox: spellBoxes.stream().filter(b -> b.isDropped() ).collect(Collectors.toList())) {
             this.spellBoxes.add(spellBox);
         }
+
 
         this.spellInventory = spellInventory;
         this.nextTimeMs = nextTimeMs;

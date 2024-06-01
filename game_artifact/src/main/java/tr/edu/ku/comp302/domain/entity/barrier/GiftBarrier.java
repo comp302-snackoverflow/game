@@ -6,7 +6,7 @@ import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.Horizon
 import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 
 public class GiftBarrier extends Barrier {
-    private final SpellBox spellBox;
+    private SpellBox spellBox;
 
     public GiftBarrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
@@ -25,6 +25,10 @@ public class GiftBarrier extends Barrier {
 
     public SpellBox getSpellBox() {
         return spellBox;
+    }
+
+    public void setSpellBox(SpellBox spellBox){
+        this.spellBox = spellBox;
     }
 
 }
