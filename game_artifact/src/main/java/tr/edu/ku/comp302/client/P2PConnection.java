@@ -5,8 +5,6 @@ import org.apache.logging.log4j.Logger;
 import tr.edu.ku.comp302.domain.listeners.MessageListener;
 import tr.edu.ku.comp302.domain.listeners.MessageSender;
 import tr.edu.ku.comp302.domain.listeners.PeerJoinListener;
-import tr.edu.ku.comp302.server.PlayerInfo;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
