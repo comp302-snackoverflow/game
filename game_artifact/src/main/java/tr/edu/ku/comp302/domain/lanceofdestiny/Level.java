@@ -13,7 +13,6 @@ import tr.edu.ku.comp302.domain.entity.barrier.GiftBarrier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Level implements SaveListener {
     private static List<Level> levels = new ArrayList<>();
@@ -23,7 +22,7 @@ public class Level implements SaveListener {
     private List<Barrier> barriers;
     private List<Remain> remains;
     private List<Hex> hexes;
-    private List<SpellBox> spellBoxes = new ArrayList<>();
+    private List<SpellBox> spellBoxes;
     private List<Character> spellInventory;
     private int chances;
     private int score;
@@ -36,29 +35,7 @@ public class Level implements SaveListener {
         this.barriers = barriers;
         this.remains = remains;
         this.hexes = hexes;
-        
-        System.out.println("I am called once");
-
-        for (Barrier barrier : barriers.stream().filter(b -> b instanceof GiftBarrier).collect(Collectors.toList())) {
-
-            if (barrier instanceof GiftBarrier b) {
-                if (b.getSpellBox() != null){
-                    SpellBox newSpellBox = new SpellBox(b.getXPosition(), b.getYPosition());
-                    this.spellBoxes.add(newSpellBox);
-                    b.setSpellBox(newSpellBox);
-                    System.out.println("Added new spell box: " + newSpellBox.getXPosition() + ", " + newSpellBox.getYPosition());
-                }
-            }
-            
-        };
-
-        for (SpellBox spellBox: spellBoxes.stream().filter(b -> b.isDropped() ).collect(Collectors.toList())) {
-            this.spellBoxes.add(spellBox);
-            System.out.println("Added new spell box: " + spellBox.getXPosition() + ", " + spellBox.getYPosition());
-        }
-
-        
-
+        this.spellBoxes = spellBoxes;
         this.spellInventory = spellInventory;
         this.nextTimeMs = nextTimeMs;
         this.secondsPassed = secondsPassed;
@@ -151,7 +128,7 @@ public class Level implements SaveListener {
 
     @Override
     public boolean save() {
-        return saveService.saveGame(fireBall, lance, barriers, remains, score, hexes, spellBoxes);
+        return saveService.saveGame(fireBall, lance, barriers, remains, score);
     }
 
     public List<Hex> getHexes() {

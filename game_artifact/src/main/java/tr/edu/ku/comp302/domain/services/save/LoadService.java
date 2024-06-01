@@ -39,10 +39,8 @@ public class LoadService {
         Lance lance = loadLance(data.lanceData());
         List<Barrier> barriers = loadBarriers(data.barrierData());
         List<Remain> remains = loadRemains(data.remainData());
-        List<Hex> hexes = loadHexes(data.hexData());
-        List<SpellBox> spellBoxes = loadSpellBoxes(data.spellBoxData());
         // FIXME load hexes, spell boxes and chances
-        return new Level(lance, fb, barriers, remains, spellBoxes, hexes, new ArrayList<>(), data.score(), 0, 0, 3);
+        return new Level(lance, fb, barriers, remains, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), data.score(), 0, 0, 3);
     }
 
     public Level loadMap(int mapId) {
@@ -114,31 +112,6 @@ public class LoadService {
     }
 
 
-
-    private SpellBox createSpellBox(SpellBoxData sbd) {
-        double xPos = sbd.x();
-        double yPos = sbd.y();
-        SpellBox spellBox = new SpellBox(xPos, yPos);
-        spellBox.updatePositionRelativeToScreen(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
-        if (sbd.isDropped()) {
-            spellBox.drop();
-        }
-
-        System.err.println("SpellBox Created: " + sbd.isDropped() + " " + xPos + " " + yPos);
-        return spellBox;
-    }
-
-    private Hex createHex(HexData hd) {
-        double xPos = hd.x();
-        double yPos = hd.y();
-        double rotationAngle = hd.rotationAngle();
-        Hex hex = new Hex(xPos, yPos, rotationAngle);
-        hex.updatePositionRelativeToScreen(1, 1, LanceOfDestiny.getScreenWidth(), LanceOfDestiny.getScreenHeight());
-       
-        return hex;
-    }
-
-
     private Lance loadLance(LanceData ld) {
         double x = ld.x();
         double y = ld.y();
@@ -170,13 +143,4 @@ public class LoadService {
     private List<Remain> loadRemains(List<RemainData> remainData) {
         return remainData.stream().map(this::createRemain).collect(Collectors.toCollection(ArrayList::new));
     }
-
-    private List<Hex> loadHexes(List<HexData> hexData) {
-        return hexData.stream().map(this::createHex).collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private List<SpellBox> loadSpellBoxes(List<SpellBoxData> spellBoxData) {
-        return spellBoxData.stream().map(this::createSpellBox).collect(Collectors.toCollection(ArrayList::new));
-    }
-    
 }

@@ -93,24 +93,11 @@ public class PauseMenuPanel extends JPanel implements Resumable {
         this.saveListener = saveListener;
     }
 
-    /**
-     * Handles the save action by invoking the saveListener's save() method.
-     * If the save is successful, a success message is displayed.
-     * If the save fails, an error message is displayed.
-     *
-     * @throws IllegalStateException if the saveListener is null
-     */
     public void handleSave() {
-        // Check if saveListener is null
         if (saveListener == null) {
             throw new IllegalStateException("This should not have happened. Debug me!");
         }
-
-        // Invoke the save() method of the saveListener
-        boolean saveSuccessful = saveListener.save();
-
-        // Display message based on save result
-        if (saveSuccessful) {
+        if (saveListener.save()) {
             JOptionPane.showMessageDialog(this, "Game saved successfully!", "Save", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Game could not be saved!", "Save", JOptionPane.ERROR_MESSAGE);
