@@ -92,7 +92,7 @@ public class MainFrame extends JFrame {
     }
 
     private void prepareGameOverPanel(boolean isWon, int score) {
-        gameOverPanel = new GameOverPanel(isWon, score,this);
+        gameOverPanel = new GameOverPanel(isWon, score, this);
         gameOverPanel.setFocusable(true);
     }
 
@@ -224,6 +224,7 @@ public class MainFrame extends JFrame {
         }
         refresh();
     }
+
     public void showLevelPanel() {
         layout.show(cards, LEVEL);
         levelPanel.requestFocusInWindow();
@@ -236,17 +237,6 @@ public class MainFrame extends JFrame {
         layout.show(cards, BUILD);
         buildPanel.requestFocusInWindow();
         LanceOfDestiny.setCurrentGameState(GameState.MENU);
-        refresh();
-    }
-
-    public void showPausePanel(boolean isMultiplayer) {
-        layout.show(cards, PAUSE);
-        pausePanel.requestFocusInWindow();
-        if (isMultiplayer) {
-            LanceOfDestiny.setCurrentGameState(GameState.MP_PAUSE);
-        } else {
-            LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
-        }
         refresh();
     }
 
@@ -315,7 +305,6 @@ public class MainFrame extends JFrame {
         return buildPanel;
     }
 
-    // FIXME: bad practice. Find a way to set the level without passing it to the UI
     public void setCurrentLevel(Level level) {
         if (level == null) {
             lod.setConnection(null);

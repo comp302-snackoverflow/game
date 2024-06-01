@@ -4,6 +4,7 @@ import tr.edu.ku.comp302.domain.handler.SelectLevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.Level;
 import tr.edu.ku.comp302.domain.services.SessionManager;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -50,9 +51,9 @@ public class SelectLevelPanel extends JPanel {
 
         add(headerPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        
+
         try {
-        backgroundImage = ImageIO.read(getClass().getResource("/assets/light_sat.png"));
+            backgroundImage = ImageIO.read(getClass().getResource("/assets/light_sat.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

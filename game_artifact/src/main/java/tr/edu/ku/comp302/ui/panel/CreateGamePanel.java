@@ -17,7 +17,6 @@ public class CreateGamePanel extends JPanel implements PeerJoinListener {
     private static final Logger logger = LogManager.getLogger(CreateGamePanel.class);
     private final MainFrame mainFrame;
     private final CreateGameHandler createGameHandler;
-
     private String gameCode;
     private final JLabel gameCodeLabel;
     private Integer levelId;

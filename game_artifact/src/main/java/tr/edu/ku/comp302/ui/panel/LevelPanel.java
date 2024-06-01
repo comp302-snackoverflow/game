@@ -2,9 +2,8 @@ package tr.edu.ku.comp302.ui.panel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tr.edu.ku.comp302.domain.event.KeyPressHandler;
-
 import tr.edu.ku.comp302.domain.entity.SpellBox;
+import tr.edu.ku.comp302.domain.event.KeyPressHandler;
 import tr.edu.ku.comp302.domain.handler.ImageHandler;
 import tr.edu.ku.comp302.domain.handler.KeyboardHandler;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
@@ -12,15 +11,13 @@ import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.domain.listeners.MPDataListener;
 import tr.edu.ku.comp302.domain.listeners.Pausable;
 import tr.edu.ku.comp302.domain.listeners.PauseListener;
-import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.CircularButton;
+import tr.edu.ku.comp302.ui.frame.MainFrame;
 import tr.edu.ku.comp302.ui.view.View;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -75,7 +72,7 @@ public class LevelPanel extends JPanel implements Pausable, MPDataListener {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (backgroundImage != null ) {
+        if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
         levelHandler.renderLance(g);
@@ -136,10 +133,6 @@ public class LevelPanel extends JPanel implements Pausable, MPDataListener {
         return levelHandler;
     }
 
-    public void setLevelHandler(LevelHandler levelHandler) {
-        this.levelHandler = levelHandler;
-    }
-
     private void addButtons() {
         extensionSpellLabel = addCircularButtonWithLabel("/assets/lance_extension.png", LanceOfDestiny.getScreenWidth() - 100, 500, e -> {
             levelHandler.useSpell(SpellBox.EXTENSION_SPELL);
@@ -194,7 +187,7 @@ public class LevelPanel extends JPanel implements Pausable, MPDataListener {
         hexSpellLabel.setText(String.valueOf(counts[SpellBox.HEX_SPELL]));
     }
 
-    public void showYmir(Graphics g){
+    public void showYmir(Graphics g) {
         // Position the heart image at the bottom-left corner of the screen
         int x = 20; // Distance from the left edge
         int y = getHeight() - 20; // Distance from the bottom edgeü
@@ -214,8 +207,7 @@ public class LevelPanel extends JPanel implements Pausable, MPDataListener {
     }
 
 
-
-    public void changeBackgroundToYmir(){
+    public void changeBackgroundToYmir() {
         try {
             backgroundImage = ImageIO.read(getClass().getResource("/assets/dark.png"));
         } catch (IOException e) {
@@ -223,7 +215,7 @@ public class LevelPanel extends JPanel implements Pausable, MPDataListener {
         }
     }
 
-    public void changeBackgroundToOrginal(){
+    public void changeBackgroundToOrginal() {
         try {
             backgroundImage = ImageIO.read(getClass().getResource("/assets/light.png"));
         } catch (IOException e) {
@@ -247,7 +239,6 @@ public class LevelPanel extends JPanel implements Pausable, MPDataListener {
             int chances = Integer.parseInt(parts[2]);
             int barriersCount = Integer.parseInt(parts[3]);
             System.out.println("Score: " + score + " Chances: " + chances + " Barriers: " + barriersCount);
-            // TODO: complete this method
         } else if (parts[0].equals("INFO")) {
             String info = parts[1];
             System.out.println("Other player: " + info);

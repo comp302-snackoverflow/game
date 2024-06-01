@@ -1,7 +1,6 @@
 package tr.edu.ku.comp302.ui.panel.buildmode;
 
 import tr.edu.ku.comp302.domain.handler.BuildHandler;
-import tr.edu.ku.comp302.domain.lanceofdestiny.LanceOfDestiny;
 import tr.edu.ku.comp302.ui.frame.MainFrame;
 
 import javax.swing.*;
@@ -71,7 +70,7 @@ public class BuildPanel extends JPanel {
 
     private void addGenerateAction() {
         generatePanel.generateButton.addActionListener(e -> {
-            try{
+            try {
                 int simpleCount = Integer.parseInt(generatePanel.simpleBarrierCount.getText());
                 int firmCount = Integer.parseInt(generatePanel.firmBarrierCount.getText());
                 int explosiveCount = Integer.parseInt(generatePanel.explosiveBarrierCount.getText());
@@ -82,7 +81,7 @@ public class BuildPanel extends JPanel {
                             "is over 10, and that your overall barrier count does not exceed 200!");
                 }
                 buildHandler.generateRandomMap(simpleCount, firmCount, explosiveCount, giftingCount);
-            }catch (NumberFormatException nfe){
+            } catch (NumberFormatException nfe) {
                 alertBarrierInputs();
             }
         });
@@ -96,16 +95,15 @@ public class BuildPanel extends JPanel {
         barriersPanel.deleteButton.addActionListener(e -> buildHandler.setSelection(BuildHandler.DELETE_MODE));
     }
 
-    
 
     private void addButtonsActions() {
         buttonsPanel.saveButton.addActionListener(e -> buildHandler.saveMap(buildSection.getWidth(), buildSection.getHeight()));
         buttonsPanel.playButton.addActionListener(e -> {
-            if (buildHandler.countsSatisfied()){
+            if (buildHandler.countsSatisfied()) {
                 mainFrame.setCurrentLevel(buildHandler.getLevel());
                 mainFrame.showLevelPanel();
                 buildHandler.clearMap();
-            }else{
+            } else {
                 alertBarrierInputs();
             }
         });
@@ -160,7 +158,7 @@ public class BuildPanel extends JPanel {
         JOptionPane.showMessageDialog(this, "Map is full. Please clear some barriers before inserting more barriers.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void alertBarrierInputs(){
+    public void alertBarrierInputs() {
         JOptionPane.showMessageDialog(this, "Invalid input. Please enter non-negative integer.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
