@@ -36,13 +36,14 @@ public class Level implements SaveListener {
         this.barriers = barriers;
         this.remains = remains;
         this.hexes = hexes;
-        
+
 
         for (Barrier barrier : barriers.stream().filter(b -> b instanceof GiftBarrier).collect(Collectors.toList())) {
             this.spellBoxes.add(new SpellBox(barrier.getXPosition(), barrier.getYPosition()));
-        };
+        }
+        ;
 
-        for (SpellBox spellBox: spellBoxes.stream().filter(b -> b.isDropped() ).collect(Collectors.toList())) {
+        for (SpellBox spellBox : spellBoxes.stream().filter(b -> b.isDropped()).collect(Collectors.toList())) {
             this.spellBoxes.add(spellBox);
         }
 
@@ -83,14 +84,6 @@ public class Level implements SaveListener {
         this(new Lance(LanceOfDestiny.getScreenWidth() / 2.0 - LanceOfDestiny.getScreenWidth() / 20.0, LanceOfDestiny.getScreenHeight() * 0.8), new FireBall(0, 0));
     }
 
-    public static List<Level> getLevels() {
-        return levels;
-    }
-
-    public static void setLevels(List<Level> levels) {
-        Level.levels = levels;
-    }
-
     public Lance getLance() {
         return lance;
     }
@@ -101,10 +94,6 @@ public class Level implements SaveListener {
 
     public FireBall getFireBall() {
         return fireBall;
-    }
-
-    public void setFireBall(FireBall fireBall) {
-        this.fireBall = fireBall;
     }
 
     public List<Barrier> getBarriers() {
@@ -128,10 +117,6 @@ public class Level implements SaveListener {
         return remains;
     }
 
-    public void setRemains(List<Remain> remains) {
-        this.remains = remains;
-    }
-
     @Override
     public boolean save() {
         return saveService.saveGame(fireBall, lance, barriers, remains, score, hexes, spellBoxes);
@@ -139,10 +124,6 @@ public class Level implements SaveListener {
 
     public List<Hex> getHexes() {
         return hexes;
-    }
-
-    public void setHexes(List<Hex> hexes) {
-        this.hexes = hexes;
     }
 
     public List<SpellBox> getSpellBoxes() {
@@ -153,7 +134,10 @@ public class Level implements SaveListener {
     public void decreaseChances() {
         this.chances--;
     }
-    public void increaseChances() {this.chances++;}
+
+    public void increaseChances() {
+        this.chances++;
+    }
 
     public int getChances() {
         return chances;
@@ -167,10 +151,6 @@ public class Level implements SaveListener {
         return score;
     }
 
-    public long getNextTimeMs() {
-        return nextTimeMs;
-    }
-
     public int getSecondsPassed() {
         return secondsPassed;
     }
@@ -182,27 +162,26 @@ public class Level implements SaveListener {
         }
     }
 
-    public void collectSpell(char spell){
+    public void collectSpell(char spell) {
         spellInventory.add(spell);
     }
 
     public void removeSpell(char spell) {
         if (!inventoryHasSpell(spell)) return;
-        spellInventory.remove((Character)spell);
+        spellInventory.remove((Character) spell);
     }
 
     public boolean inventoryHasSpell(char spell) {
         return spellInventory.contains(spell);
     }
 
-
     public void createHex() {
         double xPosition = lance.getBoundingBox().getCenterX();
         double yPosition = lance.getBoundingBox().getCenterY();
         double rotationAngle = lance.getRotationAngle();
 
-        double xOffset = Math.cos(Math.toRadians(rotationAngle)) * lance.getLength()/2;
-        double yOffset = Math.sin(Math.toRadians(rotationAngle)) * lance.getLength()/2;
+        double xOffset = Math.cos(Math.toRadians(rotationAngle)) * lance.getLength() / 2;
+        double yOffset = Math.sin(Math.toRadians(rotationAngle)) * lance.getLength() / 2;
 
         double hex1X = xPosition + xOffset;
         double hex1Y = yPosition + yOffset;

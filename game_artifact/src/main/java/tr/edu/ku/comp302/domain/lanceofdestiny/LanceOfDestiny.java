@@ -8,7 +8,6 @@ import tr.edu.ku.comp302.client.P2PConnection;
 import tr.edu.ku.comp302.domain.handler.LevelHandler;
 import tr.edu.ku.comp302.domain.lanceofdestiny.state.*;
 import tr.edu.ku.comp302.domain.listeners.*;
-import tr.edu.ku.comp302.domain.services.save.GameData;
 import tr.edu.ku.comp302.ui.panel.LevelPanel;
 
 import java.util.ArrayList;
@@ -48,6 +47,7 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
         messageQueue = new ConcurrentLinkedQueue<>();
         listeners = new ArrayList<>();
     }
+
     public static int getScreenWidth() {
         return screenWidth;
     }
@@ -76,8 +76,8 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
         }
     }
 
-    public void changeState(){
-        switch (currentGameState){
+    public void changeState() {
+        switch (currentGameState) {
             case PLAYING -> state = new PlayingState(this);
             case PAUSE -> state = new PauseSPState(this);
             case MP_PAUSE -> state = new PauseMPState(this);
@@ -91,15 +91,15 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
         gameThread.start();
     }
 
-    public double getTimePerFrame(){
+    public double getTimePerFrame() {
         return 1_000_000_000.0 / FPS_SET;
     }
 
-    public double getTimePerUpdate(){
+    public double getTimePerUpdate() {
         return 1_000_000_000.0 / UPS_SET;
     }
 
-    public LevelHandler getLevelHandler(){
+    public LevelHandler getLevelHandler() {
         return levelHandler;
     }
 
@@ -111,20 +111,12 @@ public class LanceOfDestiny implements Runnable, PauseListener, ResumeListener, 
         LanceOfDestiny.screenHeight = screenHeight;
     }
 
-    public static GameState getCurrentGameState() {
-        return currentGameState;
-    }
-
     public Chronometer getChronometer() {
         return chronometer;
     }
 
     public LevelPanel getLevelPanel() {
         return levelPanel;
-    }
-
-    public int getFPS_SET() {
-        return FPS_SET;
     }
 
     public int getUPS_SET() {
