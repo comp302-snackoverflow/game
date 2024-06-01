@@ -65,11 +65,6 @@ public abstract class Barrier extends Entity {
         isFrozen = selected;
     }
 
-    public void setThickness(double thickness) {
-        this.thickness = thickness;
-        boundingBox.setRect(xPosition, yPosition, length, thickness);
-    }
-
     public int getHealth() {
         return health;
     }
@@ -150,10 +145,6 @@ public abstract class Barrier extends Entity {
 
     public void setLastCollisionTimeInMillis(double timeInMillis) {
         lastCollisionTimeInMillis = timeInMillis;
-    }
-
-    public Double getLastCollisionTimeInMillis() {
-        return lastCollisionTimeInMillis;
     }
 
 }

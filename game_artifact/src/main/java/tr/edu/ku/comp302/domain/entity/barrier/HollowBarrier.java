@@ -6,7 +6,6 @@ import tr.edu.ku.comp302.domain.entity.barrier.behavior.movementstrategy.Horizon
  * This is the simple barrier with one hit and no exceptional property
  */
 public class HollowBarrier extends Barrier {
-    public static final String TYPE = "hollow";
 
     public HollowBarrier(double xPosition, double yPosition) {
         super(xPosition, yPosition);
