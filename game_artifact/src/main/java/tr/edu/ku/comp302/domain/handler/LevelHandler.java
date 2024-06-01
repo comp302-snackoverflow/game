@@ -38,15 +38,13 @@ public class LevelHandler {
     private SpellHandler spellHandler;
     private LevelPanel levelPanel;
     private long lastHexCreationTime = 0;
-
     private Character lastMoving;
     private boolean tapMoving;
 
-    public LevelHandler(Level level ) {
+    public LevelHandler(Level level) {
         this.level = level;
         spellHandler = new SpellHandler(this);
     }
-
 
     public void resizeLanceImage() {
         Lance lance = getLance();
@@ -57,10 +55,9 @@ public class LevelHandler {
 
     public void resizeFireBallImage() {
         FireBall fireBall = getFireBall();
-        if(fireBall.isOverwhelming()){
+        if (fireBall.isOverwhelming()) {
             currentFireBallView = overwhelmedFireBallView;
-        }
-        else{
+        } else {
             currentFireBallView = fireBallView;
         }
         currentFireBallView.resizeImage(fireBall.getSize(), fireBall.getSize());
@@ -70,7 +67,7 @@ public class LevelHandler {
         barrierRenderer.resizeBarrierImages(getBarriers());
     }
 
-    public void resizeSpellBoxImage(){
+    public void resizeSpellBoxImage() {
         if (!getSpellBoxes().isEmpty()) {
             spellBoxView.resizeImage(level.getSpellBoxes().getFirst().getSize(), level.getSpellBoxes().getFirst().getSize());
         }
@@ -113,7 +110,7 @@ public class LevelHandler {
         barrierRenderer.renderBarriers(g, getBarriers());
     }
 
-    public void renderSpellBox(Graphics g){
+    public void renderSpellBox(Graphics g) {
         List<SpellBox> spellBoxes = level.getSpellBoxes();
 
         // Output the number of remains for debugging purposes
@@ -135,7 +132,7 @@ public class LevelHandler {
     public void renderHexes(Graphics g) {
         // Retrieve the hexes from the current level
         List<Hex> hexes = level.getHexes();
-        if (hexes != null){
+        if (hexes != null) {
             for (Hex hex : hexes) {
                 g.drawImage(hexView.getImage(), (int) hex.getXPosition(), (int) hex.getYPosition(), null);
             }
@@ -180,15 +177,14 @@ public class LevelHandler {
 
     }
 
-    private void updateTimeInSeconds(Chronometer chronometer){
+    private void updateTimeInSeconds(Chronometer chronometer) {
         level.updateTimeInSeconds((long) (chronometer.getCurrentTime() / 1e6));
     }
 
     private void handleScoreLogic(Chronometer chronometer) {
-        // FIXME: chronometer's elapsed time must be saved into DB
-        int score = getScore() +  300 / (level.getSecondsPassed() + 1);
+        int score = getScore() + 300 / (level.getSecondsPassed() + 1);
         level.setScore(score);
-        // newScore = oldScore + 300 / (currentTime - gameStartingTime) //TODO: is gameStartingTime needed ? Ask this to meriç/mert/ömer.
+        // newScore = oldScore + 300 / (currentTime - gameStartingTime)
     }
 
     // Warning: DO NOT try to make this method clean. You will most likely fail.
@@ -220,7 +216,7 @@ public class LevelHandler {
                 chronometer.setArrowKeyPressTime(index, currentTime);
             }
 
-            double elapsedTime = currentTime -  chronometer.getArrowKeyPressTimes()[index];
+            double elapsedTime = currentTime - chronometer.getArrowKeyPressTimes()[index];
             double elapsedMs = elapsedTime / 1_000_000.0 + chronometer.getLanceMovementRemainder(index);
             double speed = (currentTime - chronometer.getLastMovingTime()) / 1_000_000.0 >= 50 ? holdSpeed : tapSpeed;
             int minPx = calculateMinIntegerPxMovement(speed, upsSet);
@@ -287,7 +283,6 @@ public class LevelHandler {
                 fb.stickToLance(getLance());
             }
         }
-        // FIXME assumes this is called UPS_SET times per second
         fb.move(fb.getDx() / upsSet, fb.getDy() / upsSet);
     }
 
@@ -307,7 +302,7 @@ public class LevelHandler {
 
         for (Barrier barrier : barriers.stream().toList()) {
             if (barrier.isDead()) {
-                if (!(barrier instanceof HollowBarrier)){
+                if (!(barrier instanceof HollowBarrier)) {
                     handleScoreLogic(chronometer);
                 }
                 if (barrier instanceof ExplosiveBarrier b) {
@@ -358,7 +353,7 @@ public class LevelHandler {
         for (SpellBox spellBox : spellBoxes.stream().filter(SpellBox::isDropped).toList()) {
             spellBox.move();
 
-            if (CollisionHandler.checkSpellBoxLanceCollisions(getLance(), spellBox)){
+            if (CollisionHandler.checkSpellBoxLanceCollisions(getLance(), spellBox)) {
                 SoundHandler.playGiftSound();
                 spellBoxes.remove(spellBox);
                 collectSpell(spellBox.getSpell());
@@ -370,8 +365,6 @@ public class LevelHandler {
         }
 
     }
-
-
 
     private double calculateAngularChangePerUpdate(double angularSpeed, int upsSet) {
         return angularSpeed * getMsPerUpdate(upsSet) / 1000.0;
@@ -389,7 +382,7 @@ public class LevelHandler {
     }
 
     private void handleHexMovement(int upsSet) {
-        for (Hex hex: getHexes()){
+        for (Hex hex : getHexes()) {
             hex.move(hex.getSpeed() / upsSet);
         }
     }
@@ -398,7 +391,6 @@ public class LevelHandler {
         FireBall fb = getFireBall();
         if (fb.getYPosition() + fb.getSize() >= LanceOfDestiny.getScreenHeight()) {
             decreaseChances();
-            //TODO: Stop the game if the chances become 0!
             fb.stopFireball();
             fb.stickToLance(getLance());
         }
@@ -435,7 +427,8 @@ public class LevelHandler {
     public Lance getLance() {
         return level.getLance();
     }
-    public List<SpellBox> getSpellBoxes(){
+
+    public List<SpellBox> getSpellBoxes() {
         return level.getSpellBoxes();
     }
 
@@ -447,7 +440,7 @@ public class LevelHandler {
         spellHandler.startCreatingHex(level);
     }
 
-    public List<Hex> getHexes(){
+    public List<Hex> getHexes() {
         return level.getHexes();
     }
 
@@ -471,17 +464,17 @@ public class LevelHandler {
         spellHandler.createHex(level, currentTime, lastHexCreationTime);
     }
 
-    public void collectSpell(char spell){
-        
+    public void collectSpell(char spell) {
+
         SpellBox.incrementSpellCount(spell);
-        switch(spell) {
-            case(SpellBox.EXTENSION_SPELL), (SpellBox.HEX_SPELL):
+        switch (spell) {
+            case (SpellBox.EXTENSION_SPELL), (SpellBox.HEX_SPELL):
                 level.collectSpell(spell);
                 break;
-            case(SpellBox.OVERWHELMING_SPELL):
+            case (SpellBox.OVERWHELMING_SPELL):
                 applyOverwhelmingSpell();
                 break;
-            case(SpellBox.FELIX_FELICIS_SPELL):
+            case (SpellBox.FELIX_FELICIS_SPELL):
                 spellHandler.felixFelicis(level);
                 break;
             default:
@@ -494,6 +487,7 @@ public class LevelHandler {
         }
 
     }
+
     public void useSpell(char spell) {
         if (!level.inventoryHasSpell(spell)) return;
 
@@ -539,11 +533,12 @@ public class LevelHandler {
     public long getRemainingTimeForYmir() {
         return 30 - spellHandler.getYmirTime();
     }
+
     public SpellHandler getSpellHandler() {
         return spellHandler;
     }
 
-    public int getScore(){
+    public int getScore() {
         return level.getScore();
     }
 
@@ -553,7 +548,7 @@ public class LevelHandler {
 
 
     public boolean isFinished() {
-        if (level.getChances() == 0 || level.getBarriers().isEmpty())   {
+        if (level.getChances() == 0 || level.getBarriers().isEmpty()) {
             LanceOfDestiny.setCurrentGameState(GameState.PAUSE);
             return true;
         }
@@ -561,7 +556,7 @@ public class LevelHandler {
         return false;
     }
 
-    public boolean isWon(){
+    public boolean isWon() {
         if (level.getBarriers().isEmpty()) return true;
 
         return false;
