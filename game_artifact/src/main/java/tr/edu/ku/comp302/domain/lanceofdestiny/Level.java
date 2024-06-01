@@ -41,7 +41,6 @@ public class Level implements SaveListener {
         for (Barrier barrier : barriers.stream().filter(b -> b instanceof GiftBarrier).collect(Collectors.toList())) {
             this.spellBoxes.add(new SpellBox(barrier.getXPosition(), barrier.getYPosition()));
         }
-        ;
 
         for (SpellBox spellBox : spellBoxes.stream().filter(b -> b.isDropped()).collect(Collectors.toList())) {
             this.spellBoxes.add(spellBox);
